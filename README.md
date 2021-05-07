@@ -13,4 +13,4 @@ ir a "Archivo -> Abrir Carpeta" y abren la carpeta que crearon del directorio.
 
 - Y corren "npm install" y despues "npm start"
 
-- Con eso deberia bajarle todas las dependecias que estamos usando y funcionandoles el proyecto
+- Con eso deberia bajarle todas las dependecias que estamos usando y quedando funcional el proyecto
