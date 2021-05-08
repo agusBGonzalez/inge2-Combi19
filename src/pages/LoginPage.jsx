@@ -1,12 +1,14 @@
 import React from 'react'
 
 import MenuVacio from '../components/menus/MenuVacio'
+import LoginComponent from '../components/usuarios/LoginComponent'
+
 
 function LoginPage() {
     return (
         <div>
             <MenuVacio/>
-            <h2>LOGIN</h2>
+            <LoginComponent/>
         </div>
     );
   }

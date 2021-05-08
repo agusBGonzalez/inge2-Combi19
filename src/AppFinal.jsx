@@ -10,9 +10,6 @@ import AgregarProducto from './components/producto/AgregaProducto';
 import ListarProducto from './components/producto/ListarProducto';
 
 
-
-
-
 function AppFinal() {
   return (
     
@@ -26,7 +23,6 @@ function AppFinal() {
           <Route path='/Administrar' component={AdministrarPagina}></Route>
         </Switch>
       </Router>
-
 
   );
 }

@@ -1,12 +1,11 @@
 import React,{Fragment, useState} from 'react';
 import { BrowserRouter as Router, Link } from "react-router-dom";
 import logo from "../../images/logo-is.png";
+import {DropdownButton,Dropdown} from 'react-bootstrap'
 
 function MenuUsuario() {
 
     const navStyle = {
-      position: "absolute",
-      zIndex: 5,
       width: "100%",
     };
 
@@ -22,23 +21,20 @@ function MenuUsuario() {
                 <img src={logo} width="80" height="80" className="ms-4" />
               </Link>
             </div>
-            <div>
-              <button
-                type="button"
-                className="btn btn-secondary border border-2 me-1"
-              >
-                Registrarse
-              </button>
-              <button
-                type="button"
-                className="btn btn-outline-dark border border-2 "
-              >
-                Iniciar Sesion
-              </button>
-            </div>
-          </div>
+            <div className="collapse navbar-collapse d-flex justify-content-end">
+              <DropdownButton id="dropdown-user" variant="secondary" title="Mi Sesión">
+                <Dropdown.Item disabled>
+                  <Link className="dropdown-item" to={"/usuario"}>Mis Datos</Link>
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item>
+                  <Link className="dropdown-item" to={"/"}>Cerrar Sesión</Link>
+                </Dropdown.Item>
+              </DropdownButton>
+            </div> 
+          </div> 
         </nav>
-    </div>
+      </div>
     );
   }
   
