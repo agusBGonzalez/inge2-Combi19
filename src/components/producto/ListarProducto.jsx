@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { store } from '../../firebaseconf'
+import { store } from '../../firebaseConfig'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table } from 'reactstrap'
 
 const ListarProductos = () => {
@@ -11,7 +11,7 @@ const ListarProductos = () => {
     const [nombre, setNombre] = useState('')
     const [tipo, setTipo] = useState('')
     const [precio, setPrecio] = useState('')
-
+    const [error, setError] = useState({ id: '', dato: null })
 
     //useEffect(()=>{
     const getProductos = async () => {
@@ -23,7 +23,6 @@ const ListarProductos = () => {
 
     const borrarProducto = async (id) => {
         var opcion = window.confirm("Estás Seguro que deseas Eliminar el elemento ");
-
         if (opcion === true) {
             try {
 
@@ -38,6 +37,16 @@ const ListarProductos = () => {
     }
 
     const modificarProducto = async () => {
+        if (nombre === "") {
+            setError({ id: 'nombre', dato: 'El campo nombre esta vacio' })
+            return
+          } else if (tipo === "") {
+            setError({ id: 'tipo', dato: 'El campo tipo esta vacio' })
+            return
+          } else if (precio === "") {
+            setError({ id: 'precio', dato: 'El campo precio esta vacio' })
+            return
+          }
         const sitioRef = store.collection('productos').
             doc(prod.id).
             update({
@@ -45,6 +54,8 @@ const ListarProductos = () => {
                 tipo: tipo,
                 precio: precio
             });
+            
+        setError({ id: '', dato: null })
         getProductos()
         setNombre()
         setTipo()
@@ -126,6 +137,13 @@ const ListarProductos = () => {
                             value={precio}
                         />
                     </form>
+                    {
+                        error.dato != null ? (
+                            <div className="alert alert-danger">
+                                {error.dato}
+                            </div>
+                        ) : (<span></span>)
+                    }
                 </ModalBody>
                 <ModalFooter>
                     <Button onClick={() => modificarProducto()} className="btn btn-danger float-right">Aceptar</Button>

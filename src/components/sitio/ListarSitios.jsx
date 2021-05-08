@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { store } from '../../firebaseconf'
+import { store } from '../../firebaseConfig'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table } from 'reactstrap'
 
 const ListarSitios = () => {
@@ -9,6 +9,7 @@ const ListarSitios = () => {
     const [sitio, setSitio] = useState('')
     const [provincia, setProvincia] = useState('')
     const [ciudad, setCiudad] = useState('')
+    const [error, setError] = useState({ id: '', dato: null })
 
     //useEffect(()=>{
     const getSitios = async () => {
@@ -31,11 +32,20 @@ const ListarSitios = () => {
     }
 
     const modificarSitio = async () => {
+        if (provincia === "") {
+            setError({ id: 'provincia', dato: 'El campo provincia esta vacio' })
+            return
+          } else if (ciudad === "") {
+            setError({ id: 'ciudad', dato: 'El campo ciudad esta vacio' })
+            return
+        }
         const sitioRef = store.collection('sitios').doc(sitio.id);
         const res = await sitioRef.update({
             provincia: provincia,
             ciudad: ciudad
         });
+        
+        setError({ id: '', dato: null })
         getSitios()
         setProvincia('')
         setCiudad('')
@@ -131,6 +141,13 @@ const ListarSitios = () => {
                             value={ciudad}
                         />
                     </form>
+                    {
+                        error.dato != null ? (
+                            <div className="alert alert-danger">
+                                {error.dato}
+                            </div>
+                        ) : (<span></span>)
+                    }
                 </ModalBody>
                 <ModalFooter>
                     <Button onClick={() => modificarSitio()} className="btn btn-danger float-right">Aceptar</Button>
@@ -138,6 +155,7 @@ const ListarSitios = () => {
                 </ModalFooter>
             </Modal>
         </div>
+
     )
 }
 
