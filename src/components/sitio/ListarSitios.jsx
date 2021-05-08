@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { store } from '../../firebaseConfig'
+import { store } from '../../firebaseConf'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table } from 'reactstrap'
 
 const ListarSitios = () => {
