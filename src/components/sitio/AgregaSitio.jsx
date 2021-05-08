@@ -16,7 +16,7 @@ const AgregarSitio = () => {
       setError({ id: 'provincia', dato: 'El campo provincia esta vacio' })
       return
     } else if (!ciudad.trim()) {
-      setError({ id: 'ciudad', dato: 'El campo marca esta vacio' })
+      setError({ id: 'ciudad', dato: 'El campo ciudad esta vacio' })
       return
     }
     const regSitio = {
@@ -25,12 +25,10 @@ const AgregarSitio = () => {
     }
     try {
       const data = await store.collection('sitios').add(regSitio)
-      alert('La combi se registro correctamente')
+      alert('el sitio se registro correctamente', )
     } catch (e) {
       console.log(e)
     }
-
-
     setError({ id: '', dato: null })
     setProvincia('')
     setCiudad('')
@@ -89,7 +87,7 @@ const AgregarSitio = () => {
               placeholder='Ciudad'
               value={ciudad}
             />
-            <input onClick={(e) => agregar(e)} className='btn btn-info btn-m mt-3' type="submit" value='Registrar' />
+            <input onClick={(e) => agregar(e)} className='btn btn-info btn-m mt-3' type="submit" value='Agregar' />
             <input onClick={(e) => abrirModal(e)} className='btn btn-info btn-m mt-3 ml-3' type="submit" value='Cancelar' />
           </form>
           {
