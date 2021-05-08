@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {Button,Modal,ModalHeader,ModalBody,ModalFooter} from 'reactstrap' 
-import {store} from '../firebaseconf'
+import {store} from '../../firebaseconf'
 
 const RegistrarCombi = () => {
     const [patente, setPatente] = useState('')
