@@ -14,3 +14,5 @@ ir a "Archivo -> Abrir Carpeta" y abren la carpeta que crearon del directorio.
 - Y corren "npm install" y despues "npm start"
 
 - Con eso deberia bajarle todas las dependecias que estamos usando y quedando funcional el proyecto
+
+- pueden bajar el codigo desde el branch "develop" o de "main", aunque lo mejor seria que de develop. Para eso cambian de branch en git, y copia la otra url HTTPS que te da GitHub para clonar el proyecto
