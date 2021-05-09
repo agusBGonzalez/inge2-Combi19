@@ -37,6 +37,7 @@ const ListarProductos = () => {
     }
 
     const modificarProducto = async () => {
+        var encontre = false
         if (nombre === "") {
             setError({ id: 'nombre', dato: 'El campo nombre esta vacio' })
             return
@@ -47,6 +48,16 @@ const ListarProductos = () => {
             setError({ id: 'precio', dato: 'El campo precio esta vacio' })
             return
           }
+          productos.map(prod =>{
+            if(nombre === prod.nombre){
+              setError({ id: 'nombre', dato: 'El campo nombre esta repetido' })
+              encontre = true
+            }
+          })
+          if (encontre){
+              return
+          }
+
         const sitioRef = store.collection('productos').
             doc(prod.id).
             update({

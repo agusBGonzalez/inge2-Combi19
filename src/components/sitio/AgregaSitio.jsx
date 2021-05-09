@@ -5,13 +5,17 @@ import { store } from '../../firebaseconf'
 const AgregarSitio = () => {
   const [provincia, setProvincia] = useState('')
   const [ciudad, setCiudad] = useState('')
-
+const [sitios, setSitios] = useState ([])
   const [error, setError] = useState({ id: '', dato: null })
   const [errorRepetido, setErrorRepetido] = useState(null)
   const [modal, setModal] = useState(false)
 
   const agregar = async (e) => {
     e.preventDefault()
+    var encontre = false
+    const { docs } = await store.collection('sitios').get()
+    const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
+    setSitios(nuevoArray)
     if (!provincia.trim()) {
       setError({ id: 'provincia', dato: 'El campo provincia esta vacio' })
       return
@@ -19,13 +23,26 @@ const AgregarSitio = () => {
       setError({ id: 'ciudad', dato: 'El campo ciudad esta vacio' })
       return
     }
+    sitios.map(s => {
+      if (provincia === s.provincia) {
+        if (ciudad === s.ciudad) {
+          setError({ id: 'nombre', dato: 'Este sitio ya se encuentra cargado' })
+          encontre = true
+        }
+      }
+    })
+    if (encontre) {
+      return
+    }
+
+
     const regSitio = {
       provincia: provincia,
       ciudad: ciudad
     }
     try {
       const data = await store.collection('sitios').add(regSitio)
-      alert('el sitio se registro correctamente', )
+      alert('el sitio se registro correctamente',)
     } catch (e) {
       console.log(e)
     }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { store } from '../../firebaseConf'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table } from 'reactstrap'
 
+
 const ListarSitios = () => {
 
     const [sitios, setSitios] = useState([])
@@ -32,19 +33,32 @@ const ListarSitios = () => {
     }
 
     const modificarSitio = async () => {
+        var encontre = false
         if (provincia === "") {
             setError({ id: 'provincia', dato: 'El campo provincia esta vacio' })
             return
-          } else if (ciudad === "") {
+        } else if (ciudad === "") {
             setError({ id: 'ciudad', dato: 'El campo ciudad esta vacio' })
             return
         }
+        sitios.map(s => {
+            if (provincia === s.provincia) {
+                if (ciudad === s.ciudad) {
+                    setError({ id: 'nombre', dato: 'Este sitio ya se encuentra cargado' })
+                    encontre = true
+                }
+            }
+        })
+        if (encontre) {
+            return
+        }
+
         const sitioRef = store.collection('sitios').doc(sitio.id);
         const res = await sitioRef.update({
             provincia: provincia,
             ciudad: ciudad
         });
-        
+
         setError({ id: '', dato: null })
         getSitios()
         setProvincia('')
@@ -67,7 +81,7 @@ const ListarSitios = () => {
         <div className="container px-10">
             <h3>LISTADOS</h3>
             <button onClick={() => getSitios()} className="btn btn-info btn-m">Refrescar</button>
-            <Table>                
+            <Table>
                 <thead>
                     <tr>
                         <th>Provincia</th>
