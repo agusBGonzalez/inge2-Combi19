@@ -1,23 +1,35 @@
-import React, {useState} from 'react'
+import React, {useState,useEffect} from 'react'
 import {Button,Modal,ModalHeader,ModalBody,ModalFooter} from 'reactstrap' 
-import {store} from '../../firebaseconf'
+import {store} from '../firebaseconf'
 
 const RegistrarCombi = () => {
+    const [repetido,setRepetido] = useState ([{}])
     const [patente, setPatente] = useState('')
     const [marca, setMarca] = useState('')
     const [modelo, setModelo] = useState('')
     const [año, setAño] = useState('')
     const [butaca, setButaca] = useState('')
     const [tipo,setTipo] = useState('')
+    const [choferselect,setChoferSelect] = useState([{}])
     const [chofer,setChofer] = useState('')
     const [error,setError] = useState({id:'',dato:null})
-    const [errorRepetido, setErrorRepetido] = useState(null)
     const [modal,setModal] = useState(false)
     
-
-
+ 
+    useEffect(()=>{
+        const datoschoferes = async() =>{
+            const {docs} = await store.collection('choferselect').get()
+            const nuevoArray = docs.map( item => ({id:item.id, ...item.data()}))
+            setChoferSelect(nuevoArray)
+            const r = await store.collection('combi').get()
+            const nuevoArray2 = r.docs.map( item => ({id:item.id, ...item.data()}))
+            setRepetido(nuevoArray2)
+        }
+        datoschoferes()    
+    },[])    
 
     const agregar = async (e)=>{
+        let encontre = false
         e.preventDefault()
         if(!patente.trim()){
             setError({id:'patente',dato:'El campo patente esta vacio'})
@@ -41,17 +53,34 @@ const RegistrarCombi = () => {
             setError({id:'chofer',dato:'El campo chofer esta vacio'})
             return
         }
+            repetido.map(item =>{
+            if(patente === item.patente){
+                setError({id:'repetido',dato:'La patente ya se encuentra cargada'})
+                encontre = true
+            }
+        })
+        
+        if(encontre){
+            return
+        }
+        
         const regcombi= {
             patente:patente,
             marca:marca,
             modelo:modelo,
             año:año,
             butaca:butaca,
-            tipocombi:tipo
+            tipocombi:tipo,
+            chofer:chofer
+
         }
         try {
             const data = await store.collection('combi').add(regcombi)
+            const {docs} = await store.collection('combi').get()
+            const nuevoArray = docs.map( item => ({id:item.id, ...item.data()}))
+            setRepetido(nuevoArray)
             alert('La combi se registro correctamente')
+            
         } catch (e) {
             console.log(e)
         }
@@ -109,13 +138,31 @@ const RegistrarCombi = () => {
                         placeholder='Modelo'
                         value= {modelo}
                     />
-                    <input 
-                        onChange= {(e) => {setAño(e.target.value)}} 
-                        className='form-control mt-3'
-                        type="date" 
-                        placeholder='Año'
-                        value= {año}
-                    />
+                    <select onChange={(e) => {setAño(e.target.value)}} defaultValue='Tipo' className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
+                        <option selected disabled="disabled" value='Tipo'>Seleccione un Año</option>
+                        <option value='2000'>2000</option>
+                        <option value='2001'>2001</option>
+                        <option value='2002'>2002</option>
+                        <option value='2003'>2003</option>
+                        <option value='2004'>2004</option>
+                        <option value='2005'>2005</option>
+                        <option value='2006'>2006</option>
+                        <option value='2007'>2007</option>
+                        <option value='2008'>2008</option>
+                        <option value='2009'>2009</option>
+                        <option value='2010'>2010</option>
+                        <option value='2011'>2011</option>
+                        <option value='2012'>2012</option>
+                        <option value='2013'>2013</option>
+                        <option value='2014'>2014</option>
+                        <option value='2015'>2015</option>
+                        <option value='2016'>2016</option>
+                        <option value='2017'>2017</option>
+                        <option value='2018'>2018</option>
+                        <option value='2019'>2019</option>
+                        <option value='2020'>2020</option>
+                        <option value='2021'>2021</option>
+                    </select>
                     <input 
                         onChange= {(e) => {setButaca(e.target.value)}} 
                         className='form-control mt-3' 
@@ -123,19 +170,19 @@ const RegistrarCombi = () => {
                         placeholder='Cantidad de Butacas'
                         value={butaca}
                     />
-                    <select onChange={(e) => {setTipo(e.target.value)}} className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
-                        <option selected id='Tipo'>Seleccione Tipo de Combi</option>
-                        <option name='C'>Comoda</option>
-                        <option name='Super Comoda'>Super Comoda</option>
+                    <select onChange={(e) => {setTipo(e.target.value)}} defaultValue='Tipo' className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
+                        <option selected disabled="disabled" value='Tipo'>Seleccione Tipo de Combi</option>
+                        <option value='Comoda'>Comoda</option>
+                        <option value='Super Comoda'>Super Comoda</option>
                     </select>
                     <select onChange={(e) => {setChofer(e.target.value)}} className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
-                        <option selected id='Opcion'>Seleccione un Chofer</option>
-                        <option name='1'>Fabian Micieli</option>
-                        <option name='2'>Juan Comun</option>
-                        <option name='3'>Ruben Barroso</option>
-                        <option name='4'>Jorge Calvo</option>
-                        <option name='5'>Gimena Fernandez</option>
-                        <option name='6'>Susana Ret</option>
+                    <option selected disabled="disabled" name='1'>Seleccione un Chofer</option>
+                    {
+                        choferselect.map( item => (
+                            <option name ={item.id}>{item.apellido} {item.nombre}</option>
+                        )
+                        )
+                      }
                     </select>
                     <input onClick= {(e) => agregar(e)} className='btn btn-info btn-m mt-3' type="submit" value ='Registrar'/>
                     <input onClick={(e) => abrirModal(e)} className='btn btn-info btn-m mt-3 ml-3' type="submit" value ='Cancelar'/>
