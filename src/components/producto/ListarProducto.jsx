@@ -84,11 +84,19 @@ const ListarProductos = () => {
         setProd(item)
         setModal(!modal)
     }
-
+    var ok = true
+    const automaticamente = () => {
+        if (ok) {
+            getProductos()
+            ok = false
+        }
+    }
     return (
-        <div className='container px-10'>
+        <div className="container px-10">
             <h3>LISTADOS</h3>
-            // <button onClick={() => getProductos()} className="btn btn-info btn-m">Refrescar</button>
+            <button
+                //style={{ display: "none" }}
+                onClick={ () => getProductos()}> Refrescar </button>
             <Table>
                 <thead>
                     <tr>
@@ -168,3 +176,4 @@ const ListarProductos = () => {
 
 
 export default ListarProductos
+
