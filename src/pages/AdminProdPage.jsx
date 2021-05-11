@@ -58,11 +58,11 @@ function AdminProdPage() {
             .then(response => {
                 const fetchedProductos = [];
                 response.docs.forEach(document => {
-                    const fetchedProductos = {
+                    const fetchedProducto = {
                         id: document.id,
                         ...document.data()
                     };
-                    fetchedProductos.push(fetchedProductos)
+                    fetchedProductos.push(fetchedProducto)
                 });
                 setProductos(fetchedProductos)
             })
@@ -152,17 +152,17 @@ function AdminProdPage() {
         }
         store.collection('productos').where("nombre", "==", nombre)
             .get()
-            .then((querySnapshot) => {
-                let datosRepetidos = true
-              /*  querySnapshot.forEach((doc) => {
+            .then((querySnapshot) => {                
+                let datosRepetidos = false
+                querySnapshot.forEach((doc) => {
                     //COMO FILTRO POR PROVINCIA, QUEDA CHEQUEAR QUE NO HAYA UNA CIUDAD IGUAL
-                    const nomCuidad = doc.data().ciudad
-                    console.log(nomCuidad)
-                    console.log(ciudad)
-                    if (nomCuidad === ciudad) {
+                    const nropatente = doc.data().nombre
+                    //console.log(nomCuidad)   
+                    //console.log(ciudad)             
+                    if ((!esEditar) && (nropatente === nombre)) {
                         datosRepetidos = true
                     }
-                }); */
+                });
                 setEsProductoRepetido(datosRepetidos)
             })
 
