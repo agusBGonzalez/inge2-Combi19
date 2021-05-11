@@ -3,6 +3,7 @@ import MenuUsuario from '../components/menus/MenuUsuario'
 import MenuOpcAdmin from '../components/menus/MenuOpcAdmin'
 import {Table, Modal, Button, Alert} from 'react-bootstrap'
 import { store } from '../firebaseconf'
+import { TrashFill, PencilFill} from 'react-bootstrap-icons';
 
 
 function AdminSitiosPage() {
@@ -26,6 +27,9 @@ function AdminSitiosPage() {
     const [showAlert, setShowAlert] = useState(false);
     const handleCloseAlert = () => setShowAlert(false);
 
+    const [showAlert2, setShowAlert2] = useState(false);
+    const handleCloseAlert2 = () => setShowAlert2(false);
+
     const [msgError, setMsgError] = useState (null)
 
     //ALERT SUCESS
@@ -42,7 +46,7 @@ function AdminSitiosPage() {
     const [esSitioRepetido, setEsSitioRepetido] = useState(false)
     const handleCloseEdit = () => setShowModalEdit(false)
 
-
+    const [rutas, setRutas] = useState ([])
     const [sitios, setSitios] = useState([])
     const [modal, setModal] = useState(false)
     
@@ -64,7 +68,21 @@ function AdminSitiosPage() {
             });
             setSitios(fetchedSitios)
         })
-    }    
+    }  
+    const getRutas =  () => {
+        store.collection('rutasPruba').get()
+        .then(response => {
+            const fetchedSitios = [];
+            response.docs.forEach(document => {
+            const fetchedSitio = {
+                id: document.id,
+                ...document.data()
+            };
+            fetchedSitios.push(fetchedSitio)
+            });
+            setRutas(fetchedSitios)
+        })
+    }   
  
 
     //CARGA LA LISTA CUANDO SE CARGA EL COMPONENTE
@@ -98,6 +116,7 @@ function AdminSitiosPage() {
         setSitios(nuevoArray)
         await store.collection('sitios').doc(sitioEliminar).delete()
         getSitios()
+        getRutas()
         setShowModal(false)
         setMsgSucc('Se elimino con exito! Click aqui para cerrar')
         setShowAlertSucc(true)
@@ -137,7 +156,28 @@ function AdminSitiosPage() {
             setShowAlert(true)
             return
         }
+        alert('fuera del map')
 
+
+        //ESTA PARTE NO LA SE HACER, NO ENTIENDO COMO FUNCIONA TU CODIGO XD
+        rutas.map(r =>{ 
+            alert('dentro del map')
+            if (r.origen.provincia === provincia) {
+                if (r.origen.ciudad === ciudad) {
+                    setMsgError('Este sitio no se puede Editar, ya que es el origen de una ruta, primero modifique la ruta')
+                    setShowAlert2(true)
+                    return
+                }
+            }
+            if (r.destino.provincia === provincia) {
+                if (r.destino.ciudad === ciudad) {
+                    setMsgError('Este sitio no se puede Editar, ya que es el Destino de una ruta, primero modifique la ruta')
+                    setShowAlert2(true)
+                    return
+                }
+            }
+         })
+        
         store.collection('sitios').where("provincia", "==", provincia)
             .get()
             .then((querySnapshot) => {
@@ -170,6 +210,8 @@ function AdminSitiosPage() {
                 //FALTA MOSTRAR MSJ DE SUCESS
                 await store.collection('sitios').doc(sitioEditar).set(sitioAct)
                 getSitios()
+                getRutas()
+
                 setMsgSucc('Registro Exitoso! Click aqui para cerrar')
                 setShowAlertSucc(true)
                 setShowModalEdit(false)
@@ -184,6 +226,7 @@ function AdminSitiosPage() {
                 //FALTA MOSTRAR MSJ DE SUCESS
                 await store.collection('sitios').add(sitioAct)
                 getSitios()
+                getRutas()
                 setMsgSucc('Actualizacion Exitosa! Click aqui para cerrar')
                 setShowAlertSucc(true)
                 setShowModalEdit(false)
@@ -226,12 +269,16 @@ function AdminSitiosPage() {
                                         <tr key={item.id}>
                                             <td>{item.provincia}</td>
                                             <td>{item.ciudad}</td>
-                                            <td style={{width: "20%"}} >
+                                            <td style={{width: "12%"}} >
                                                   <div className="d-flex justify-content-around">
-                                                    <button className="btn btn-primary " onClick={(e) => { crearModificarSitio('E', item) }}>Modificar</button>
-                                                    <button className="btn btn-danger md-3 float-right" onClick={(id) => {borrarSitio(item.id) }}>Borrar</button>
-                                                    </div>
-                                            </td>
+                                                    <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarSitio('E', item) }}>
+                                                      <PencilFill color="white"></PencilFill>
+                                                    </button>
+                                                    <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(id) => {borrarSitio(item.id) }}>
+                                                        <TrashFill color="white"></TrashFill>
+                                                    </button>
+                                                  </div>
+                                              </td>
                                         </tr>
                                     ))
                                 ) : (
