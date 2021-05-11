@@ -178,14 +178,14 @@ const AdminCombiPage = () => {
                     const nropatente = doc.data().patente
                     //console.log(nomCuidad)   
                     //console.log(ciudad)             
-                    if (nropatente === patente) {
+                    if ((!esEditar) && (nropatente === patente)) {
                         datosRepetidos = true
                     }
                 });
                 setEsCombiRepetido(datosRepetidos)                               
             })
         
-        if (setShowAlert) {
+        if (esCombiRepetido) {
             setMsgError('Esta patente ya se encuentra cargada')
             setShowAlert(true)
             return
