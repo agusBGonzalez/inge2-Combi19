@@ -161,7 +161,7 @@ function AdminSitiosPage() {
             try{
                 //FALTA MOSTRAR MSJ DE SUCESS
                 await store.collection('sitios').doc(sitioEditar).set(sitioAct)
-                setMsgSucc('Registro Exitoso')
+                setMsgSucc('Registro Exitoso! Click aqui para cerrar')
                 setShowAlertSucc(true)
                 setShowModalEdit(false)
             } catch (err) {
@@ -174,7 +174,7 @@ function AdminSitiosPage() {
             try{
                 //FALTA MOSTRAR MSJ DE SUCESS
                 await store.collection('sitios').add(sitioAct)
-                setMsgSucc('Actualizacion Exitosa')
+                setMsgSucc('Actualizacion Exitosa! Click aqui para cerrar')
                 setShowAlertSucc(true)
                 setShowModalEdit(false)
             } catch (err) {
@@ -196,7 +196,7 @@ function AdminSitiosPage() {
         <div>
             <h3 style={{top: 110, position: 'absolute', left: 80,width: "60%",}}> Listado de Sitios</h3>
             <Button style={{top: 105, position: 'absolute', right:70, width: "150px", height: "40px"}} onClick={(e) => { crearModificarSitio('A', '') }} variant="secondary " > + Agregar Sitio</Button>
-            <Alert id="success" className="" variant="success" show={showAlertSucc} onClose={handleCloseAlertSucc} dismissible>
+            <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{bottom:0,zIndex:5, position: 'absolute', left: 75,width: "60%"}} >
 				{msgSucc}
 			</Alert>
             <div style={subPageStyle}>
@@ -262,6 +262,7 @@ function AdminSitiosPage() {
                         <form className='form-group'>
                             <select
                                 value={provincia} onChange={(e) => { setProvincia(e.target.value) }}
+                                onClick = {handleCloseAlert}
                                 className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
                                 <option disabled="disabled" value="">Seleccione Provincia</option>
                                 <option value="Buenos Aires">Buenos Aires</option>
@@ -289,6 +290,7 @@ function AdminSitiosPage() {
                                 <option value="Tucumán">Tucumán</option>
                             </select>
                             <input onChange={(e) => { setCiudad(e.target.value) }}
+                                onClick = {handleCloseAlert}
                                 className='form-control mt-5'
                                 type="text"
                                 placeholder='ciudad'
@@ -305,7 +307,7 @@ function AdminSitiosPage() {
                         <Button variant="primary" onClick={confirmarEdicion}>
                             Confirmar
                         </Button>
-                        <Button variant="secondary" onClick={handleCloseEdit}>
+                        <Button variant="secondary" onClick={() => {setShowModalEdit(false); setMsgError(null); setShowAlert(false);}}>
                             Cancelar
                         </Button>
                     </Modal.Footer>
