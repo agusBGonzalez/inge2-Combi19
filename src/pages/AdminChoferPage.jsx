@@ -162,13 +162,9 @@
             setShowAlert(true)
             return
          }
-         if (!telefono.trim()) {
-            setMsgError('El campo Telefono esta vacio' )
-            setShowAlert(true)
-            return
-         }
-         if (!password.trim()) {
-            setMsgError('El campo Password esta vacio' )
+
+         if (!password.trim() || (password.trim().length < 6)) {
+            setMsgError('El campo Password debe tener al menos 6 caracteres' )
             setShowAlert(true)
             return
          }
