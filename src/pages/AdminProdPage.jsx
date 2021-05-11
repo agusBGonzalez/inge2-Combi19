@@ -75,11 +75,11 @@ function AdminProdPage() {
             .then(response => {
                 const fetchedProductos = [];
                 response.docs.forEach(document => {
-                    const fetchedProductos = {
+                    const fetchedProducto = {
                         id: document.id,
                         ...document.data()
                     };
-                    fetchedProductos.push(fetchedProductos)
+                    fetchedProductos.push(fetchedProducto)
                 });
                 setProductos(fetchedProductos)
             })
@@ -120,6 +120,8 @@ function AdminProdPage() {
         } else {
 
             setEsEditar(false)
+        alert('else')
+
             console.log("entra2222")
             setProductoEditar('') 
             setNombre('')
@@ -151,17 +153,17 @@ function AdminProdPage() {
         store.collection('productos').where("nombre", "==", nombre)
             .get()
             .then((querySnapshot) => {
-                let datosRepetidos = false
-                querySnapshot.forEach((doc) => {
+                let datosRepetidos = true
+              /*  querySnapshot.forEach((doc) => {
                     //COMO FILTRO POR PROVINCIA, QUEDA CHEQUEAR QUE NO HAYA UNA CIUDAD IGUAL
-                    const nombreaux = doc.data().nombre
-                    //console.log(nomCuidad)   
-                    //console.log(ciudad)             
-                    if ((!esEditar) && (nombreaux === nombre)) {
+                    const nomCuidad = doc.data().ciudad
+                    console.log(nomCuidad)
+                    console.log(ciudad)
+                    if (nomCuidad === ciudad) {
                         datosRepetidos = true
                     }
-                });
-                setEsProductoRepetido(datosRepetidos)   
+                }); */
+                setEsProductoRepetido(datosRepetidos)
             })
 
         if (esProductoRepetido) {
@@ -238,6 +240,8 @@ function AdminProdPage() {
                                             <tr key={item.id}>
                                                 <td>{item.nombre}</td>
                                                 <td>{item.tipo}</td>
+                                                <td>{item.precio}</td>
+
                                                 <td style={{width: "12%"}} >
                                                   <div className="d-flex justify-content-around">
                                                     <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarProd('E', item) }}>
