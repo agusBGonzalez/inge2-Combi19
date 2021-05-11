@@ -58,11 +58,11 @@ function AdminProdPage() {
             .then(response => {
                 const fetchedProductos = [];
                 response.docs.forEach(document => {
-                    const fetchedProducto = {
+                    const fetchedProductos = {
                         id: document.id,
                         ...document.data()
                     };
-                    fetchedProductos.push(fetchedProducto)
+                    fetchedProductos.push(fetchedProductos)
                 });
                 setProductos(fetchedProductos)
             })
@@ -75,11 +75,11 @@ function AdminProdPage() {
             .then(response => {
                 const fetchedProductos = [];
                 response.docs.forEach(document => {
-                    const fetchedProducto = {
+                    const fetchedProductos = {
                         id: document.id,
                         ...document.data()
                     };
-                    fetchedProductos.push(fetchedProducto)
+                    fetchedProductos.push(fetchedProductos)
                 });
                 setProductos(fetchedProductos)
             })
@@ -110,6 +110,7 @@ function AdminProdPage() {
     const crearModificarProd = (oper, item) => {
 
         if (oper === 'E') {
+
             setEsEditar(true)
             console.log("entra")
             setProductoEditar(item.id)
@@ -117,6 +118,7 @@ function AdminProdPage() {
             setTipo(item.tipo)
             setPrecio(item.precio)
         } else {
+
             setEsEditar(false)
             console.log("entra2222")
             setProductoEditar('') 
@@ -149,17 +151,17 @@ function AdminProdPage() {
         store.collection('productos').where("nombre", "==", nombre)
             .get()
             .then((querySnapshot) => {
-                let datosRepetidos = true
-              /*  querySnapshot.forEach((doc) => {
+                let datosRepetidos = false
+                querySnapshot.forEach((doc) => {
                     //COMO FILTRO POR PROVINCIA, QUEDA CHEQUEAR QUE NO HAYA UNA CIUDAD IGUAL
-                    const nomCuidad = doc.data().ciudad
-                    console.log(nomCuidad)
-                    console.log(ciudad)
-                    if (nomCuidad === ciudad) {
+                    const nombreaux = doc.data().nombre
+                    //console.log(nomCuidad)   
+                    //console.log(ciudad)             
+                    if ((!esEditar) && (nombreaux === nombre)) {
                         datosRepetidos = true
                     }
-                }); */
-                setEsProductoRepetido(datosRepetidos)
+                });
+                setEsProductoRepetido(datosRepetidos)   
             })
 
         if (esProductoRepetido) {
@@ -236,7 +238,6 @@ function AdminProdPage() {
                                             <tr key={item.id}>
                                                 <td>{item.nombre}</td>
                                                 <td>{item.tipo}</td>
-                                                <td>{item.precio}</td>
                                                 <td style={{width: "12%"}} >
                                                   <div className="d-flex justify-content-around">
                                                     <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarProd('E', item) }}>
@@ -295,9 +296,9 @@ function AdminProdPage() {
                                 value={tipo} onChange={(e) => { setTipo(e.target.value) }}
                                 onClick = {handleCloseAlert}
                                 className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
-                                <option disabled="disabled" value="">Seleccione Tipo</option>
+                                <option disabled="disabled" value="">Seleccione Provincia</option>
                                 <option value="Dulce">Dulce</option>
-                                <option value="Salado">Salado</option>
+                                <option value="Salado">Agridulce</option>
                                 <option value="Agridulce">Agridulce</option>
                             </select>
                             <input onChange={(e) => { setPrecio(e.target.value) }}
