@@ -2,18 +2,22 @@ import React, { useState } from 'react'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
 import { store } from '../../firebaseconf'
 
+
 const AgregarProducto = () => {
+  const [productos, setProductos] = useState([])
   const [nombre, setNombre] = useState('')
   const [tipo, setTipo] = useState('')
   const [precio, setPrecio] = useState('')
-
-
   const [error, setError] = useState({ id: '', dato: null })
   const [errorRepetido, setErrorRepetido] = useState(null)
   const [modal, setModal] = useState(false)
 
   const agregar = async (e) => {
     e.preventDefault()
+    var encontre=false
+    const { docs } = await store.collection('productos').get()
+    const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
+    setProductos(nuevoArray)
     if (!nombre.trim()) {
       setError({ id: 'nombre', dato: 'El campo nombre esta vacio' })
       return
@@ -23,7 +27,17 @@ const AgregarProducto = () => {
     } else if (!precio.trim()) {
       setError({ id: 'precio', dato: 'El campo precio esta vacio' })
       return
+    } 
+    productos.map(prod =>{
+      if(nombre === prod.nombre){
+        setError({ id: 'nombre', dato: 'El campo nombre esta repetido' })
+        encontre = true
+      }
+    })
+    if (encontre){
+        return
     }
+
     const regProducto = {
       nombre: nombre,
       tipo: tipo,
@@ -35,8 +49,6 @@ const AgregarProducto = () => {
     } catch (e) {
       console.log(e)
     }
-
-
     setError({ id: '', dato: null })
     setNombre('')
     setTipo('')
@@ -93,7 +105,12 @@ const AgregarProducto = () => {
               <div className="alert alert-danger">
                 {error.dato}
               </div>
-            ) : (<span></span>)
+            ) : (<div></div>)
+          }
+          {
+            errorRepetido != null ? (
+              { errorRepetido }
+            ) : (<div></div>)
           }
         </div>
         <div className="col"></div>

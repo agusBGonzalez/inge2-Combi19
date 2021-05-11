@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react'
-import { store } from '../../firebaseconf'
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
+import { store } from '../../firebaseConf'
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table } from 'reactstrap'
+
 
 const ListarSitios = () => {
 
     const [sitios, setSitios] = useState([])
     const [modal, setModal] = useState(false)
-
+    const [sitio, setSitio] = useState('')
+    const [provincia, setProvincia] = useState('')
+    const [ciudad, setCiudad] = useState('')
+    const [error, setError] = useState({ id: '', dato: null })
 
     //useEffect(()=>{
     const getSitios = async () => {
@@ -17,22 +21,49 @@ const ListarSitios = () => {
     //  },[])
 
     const borrarSitio = async (id) => {
-        try {
-            await store.collection('sitios').doc(id).delete()
+        var opcion = window.confirm("Estás Seguro que deseas Eliminar el elemento ");
+        if (opcion === true) {
             const { docs } = await store.collection('sitios').get()
             const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
             setSitios(nuevoArray)
-        } catch (e) {
-            console.log(e)
+            await store.collection('sitios').doc(id).delete()
+            getSitios()
+            alert('se elimino el sitio')
         }
     }
 
-    const modificarSitio = async (id) => {
-        try {
-            const data = await store.collection('sitio').doc(id).get()
-        } catch (e) {
-            console.log(e)
+    const modificarSitio = async () => {
+        var encontre = false
+        if (provincia === "") {
+            setError({ id: 'provincia', dato: 'El campo provincia esta vacio' })
+            return
+        } else if (ciudad === "") {
+            setError({ id: 'ciudad', dato: 'El campo ciudad esta vacio' })
+            return
         }
+        sitios.map(s => {
+            if (provincia === s.provincia) {
+                if (ciudad === s.ciudad) {
+                    setError({ id: 'nombre', dato: 'Este sitio ya se encuentra cargado' })
+                    encontre = true
+                }
+            }
+        })
+        if (encontre) {
+            return
+        }
+
+        const sitioRef = store.collection('sitios').doc(sitio.id);
+        const res = await sitioRef.update({
+            provincia: provincia,
+            ciudad: ciudad
+        });
+
+        setError({ id: '', dato: null })
+        getSitios()
+        setProvincia('')
+        setCiudad('')
+        setModal(false)
     }
 
 
@@ -41,42 +72,57 @@ const ListarSitios = () => {
         setModal(false)
     }
 
-    const abrirModal = (e) => {
+    const abrirModal = (e, item) => {
         e.preventDefault()
+        setSitio(item)
         setModal(!modal)
     }
-
-
     return (
-        <div>
+        <div className="container px-10">
             <h3>LISTADOS</h3>
             <button onClick={() => getSitios()} className="btn btn-info btn-m">Refrescar</button>
-            <ul className="list-group">
-                {
-                    sitios.length !== 0 ?
-                        (
-                            sitios.map(item => (
-                                <li className="list-group-item" key={item.id}> {item.provincia} -- {item.ciudad}
-                                    <button onClick={(id) => { borrarSitio(item.id) }} className="btn btn-danger float-right">Borrar</button>
-                                    <button onClick={(e) => { abrirModal(e) }} className="btn btn-info float-right mr-3">Modificar</button>
-                                </li>
+            <Table>
+                <thead>
+                    <tr>
+                        <th>Provincia</th>
+                        <th>Ciudad</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        sitios.length !== 0 ?
+                            (
+                                sitios.map(item => (
+                                    <tr key={item.id}>
+                                        <td>{item.provincia}</td>
+                                        <td>{item.ciudad}</td>
+                                        <td>
+                                            <Button color="primary" onClick={(e) => { abrirModal(e, item) }}>Modificar</Button>
+                                            <Button color="danger" onClick={(id) => { borrarSitio(item.id) }}>borrar</Button>
+                                        </td>
 
-                            ))
+                                    </tr>
+                                ))
+                            ) : (
+                                <div className="alert alert-warning mt-19"> No hay elementos en la lista </div>
+                            )
+                    }
+                </tbody>
 
-                        ) : (
-                            <div></div>
-                        )
-                }
-            </ul>
+            </Table>
+
+
             <Modal isOpen={modal}>
                 <ModalHeader>
-                    <h4>Modificar Combi</h4>
+                    <h4>Modificar Sitio</h4>
                 </ModalHeader>
                 <ModalBody>
                     <form className='form-group'>
-                        <select //onChange={(e) => {setTipo(e.target.value)}} 
+                        <select
+                            value={provincia} onChange={(e) => { setProvincia(e.target.value) }}
                             className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
-                            <option selected id='provincia'>Seleccione Provincia</option>
+                            <option disabled="disabled" selected id='provincia'>Seleccione Provincia</option>
                             <option value="Buenos Aires">Buenos Aires</option>
                             <option value="Catamarca">Catamarca</option>
                             <option value="Chaco">Chaco</option>
@@ -101,18 +147,25 @@ const ListarSitios = () => {
                             <option value="Tierra del Fuego, Antártida e Isla del Atlántico Sur">Tierra del Fuego, Antártida e Isla del Atlántico Sur</option>
                             <option value="Tucumán">Tucumán</option>
                         </select>
-                        <input
-                            //onChange= {(e) => {setPatente(e.target.value)}} 
+                        <input onChange={(e) => { setCiudad(e.target.value) }}
                             className='form-control mt-5'
                             type="text"
-                            placeholder='Sitio'
-                        //value={patente}
+                            placeholder='ciudad'
+                            id="ciudad"
+                            value={ciudad}
                         />
                     </form>
+                    {
+                        error.dato != null ? (
+                            <div className="alert alert-danger">
+                                {error.dato}
+                            </div>
+                        ) : (<span></span>)
+                    }
                 </ModalBody>
                 <ModalFooter>
-                    <Button onClick={(e) => modificarSitio(e)} className="btn btn-danger float-right">Aceptar</Button>
-                    <Button onClick={(e) => abrirModal(e)} color="secondary">Cancelar</Button>
+                    <Button onClick={() => modificarSitio()} className="btn btn-danger float-right">Aceptar</Button>
+                    <Button onClick={(e) => cancelar(e)} color="secondary">Cancelar</Button>
                 </ModalFooter>
             </Modal>
         </div>

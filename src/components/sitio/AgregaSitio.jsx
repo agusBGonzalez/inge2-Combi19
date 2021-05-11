@@ -5,32 +5,47 @@ import { store } from '../../firebaseconf'
 const AgregarSitio = () => {
   const [provincia, setProvincia] = useState('')
   const [ciudad, setCiudad] = useState('')
-
+const [sitios, setSitios] = useState ([])
   const [error, setError] = useState({ id: '', dato: null })
   const [errorRepetido, setErrorRepetido] = useState(null)
   const [modal, setModal] = useState(false)
 
   const agregar = async (e) => {
     e.preventDefault()
+    var encontre = false
+    const { docs } = await store.collection('sitios').get()
+    const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
+    setSitios(nuevoArray)
     if (!provincia.trim()) {
       setError({ id: 'provincia', dato: 'El campo provincia esta vacio' })
       return
     } else if (!ciudad.trim()) {
-      setError({ id: 'ciudad', dato: 'El campo marca esta vacio' })
+      setError({ id: 'ciudad', dato: 'El campo ciudad esta vacio' })
       return
     }
+    sitios.map(s => {
+      if (provincia === s.provincia) {
+        if (ciudad === s.ciudad) {
+          setError({ id: 'nombre', dato: 'Este sitio ya se encuentra cargado' })
+          encontre = true
+        }
+      }
+    })
+    if (encontre) {
+      return
+    }
+
+
     const regSitio = {
       provincia: provincia,
       ciudad: ciudad
     }
     try {
       const data = await store.collection('sitios').add(regSitio)
-      alert('La combi se registro correctamente')
+      alert('el sitio se registro correctamente',)
     } catch (e) {
       console.log(e)
     }
-
-
     setError({ id: '', dato: null })
     setProvincia('')
     setCiudad('')
@@ -89,7 +104,7 @@ const AgregarSitio = () => {
               placeholder='Ciudad'
               value={ciudad}
             />
-            <input onClick={(e) => agregar(e)} className='btn btn-info btn-m mt-3' type="submit" value='Registrar' />
+            <input onClick={(e) => agregar(e)} className='btn btn-info btn-m mt-3' type="submit" value='Agregar' />
             <input onClick={(e) => abrirModal(e)} className='btn btn-info btn-m mt-3 ml-3' type="submit" value='Cancelar' />
           </form>
           {

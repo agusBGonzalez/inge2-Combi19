@@ -1,17 +1,17 @@
 import React from 'react'
-import MenuOpcUsuario from '../components/menus/MenuOpcUsuario'
 import MenuUsuario from '../components/menus/MenuUsuario'
+import MenuOpcChofer from '../components/menus/MenuOpcChofer'
 
 
-function UsuarioPage() {
+function ChoferPage() {
   
   return (
       <div>
         <MenuUsuario/>
-        <MenuOpcUsuario/>
+        <MenuOpcChofer/>
       </div>
 
   );
 }
   
-  export default UsuarioPage;
+  export default ChoferPage;
