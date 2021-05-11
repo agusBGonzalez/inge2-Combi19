@@ -37,9 +37,9 @@ function RegistrarComponent() {
 		const cortoDia = fechaSinDia.substr(0, fechaSinDia.indexOf('/'))
 		const cortoAnio = fechaSinDia.substring(fechaSinDia.indexOf('/') +1 ,fechaSinDia.length)
 
-		const diaHoyNumb = Number(cortoDia)
-		const mesHoyNumb = Number(cortoMes)
-		const anioHoyNumb = Number(cortoAnio)
+		const diaHoyNumb = 11
+		const mesHoyNumb = 5
+		const anioHoyNumb = 2021
 
 		//CORTO AÑO DEL DIA INGRESADO
 		const anioFecNac = fecha.substr(0, fecha.indexOf('-'))
@@ -52,8 +52,8 @@ function RegistrarComponent() {
 		const mesFecNacNumb = Number(cortoMesFecNac)
 		const anioFecNacNumb = Number(anioFecNac) + 18
 
-		// console.log(anioHoyNumb,mesHoyNumb,diaHoyNumb)
-		// console.log(anioFecNacNumb,mesFecNacNumb,diaFecNacNumb)
+		console.log(anioHoyNumb,mesHoyNumb,diaHoyNumb)
+		console.log(anioFecNacNumb,mesFecNacNumb,diaFecNacNumb)
 
 		const esMayorEdad = (anioFecNacNumb < anioHoyNumb) ? true : (anioFecNacNumb <= anioHoyNumb) && (mesFecNacNumb < mesHoyNumb) ? true : (anioFecNacNumb <= anioHoyNumb) && (mesFecNacNumb <= mesHoyNumb) && (diaFecNacNumb <= diaHoyNumb) ? true : false
 
@@ -191,7 +191,7 @@ function RegistrarComponent() {
 					</Modal.Header>
 					<Modal.Body>{msgError}</Modal.Body>
 					<Modal.Footer>
-						<Button variant="secondary" onClick={() => {setShowModal(false); setFecha('')}}>
+						<Button variant="secondary" onClick={() => {setShowModal(false); setFecha('');}}>
 							Close
 						</Button>
 					</Modal.Footer>
