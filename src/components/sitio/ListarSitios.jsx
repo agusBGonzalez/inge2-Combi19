@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react'
 import { store } from '../../firebaseconf'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table } from 'reactstrap'
 
-
 const ListarSitios = () => {
-
+    // colecciones de firebase
     const [sitios, setSitios] = useState([])
+    const [rutas, setRutas] = useState([])
+
     const [modal, setModal] = useState(false)
     const [sitio, setSitio] = useState('')
     const [provincia, setProvincia] = useState('')
     const [ciudad, setCiudad] = useState('')
     const [error, setError] = useState({ id: '', dato: null })
+    const [errorRutaAsignada, setErrorRutaAsignada] = useState({ id: '', dato: null })
 
     //useEffect(()=>{
     const getSitios = async () => {
@@ -19,21 +21,46 @@ const ListarSitios = () => {
         setSitios(nuevoArray)
     }
     //  },[])
+    const getRutas = async () => {
+        const { docs } = await store.collection('rutasPruba').get()
+        const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
+        setRutas(nuevoArray)
+    }
 
-    const borrarSitio = async (id) => {
+    const borrarSitio = async (s) => {
         var opcion = window.confirm("Estás Seguro que deseas Eliminar el elemento ");
+        var encontre = false
         if (opcion === true) {
-            const { docs } = await store.collection('sitios').get()
-            const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
-            setSitios(nuevoArray)
-            await store.collection('sitios').doc(id).delete()
+            rutas.map(r => {
+                // esto se hace asi si ruta tiene un objeto de tipo sitio, mañana lo modifico
+                if (r.origen.provincia === s.provincia) {
+                    if (r.origen.ciudad === s.ciudad) {
+                        setErrorRutaAsignada({ id: 'provincia', dato: 'Este sitio no se puede borrar, ya que es el origen de una ruta, primero modifique la ruta' })
+                        encontre = true
+                    }
+                }
+                if (r.destino.provincia === s.provincia) {
+                    if (r.destino.ciudad === s.ciudad) {
+                        setErrorRutaAsignada({ id: 'provincia', dato: 'Este sitio no se puede borrar, ya que es el destino de una ruta, primero modifique la ruta' })
+                        encontre = true
+                    }
+                }
+                // quedaria if (r.origenProvincia== s.provicia )
+            })
+            if (encontre) {
+                return
+            }
+            await store.collection('sitios').doc(s.id).delete()
             getSitios()
             alert('se elimino el sitio')
+            setErrorRutaAsignada({ id: '', dato: null })
+
         }
     }
 
     const modificarSitio = async () => {
         var encontre = false
+        var encontre2= false
         if (provincia === "") {
             setError({ id: 'provincia', dato: 'El campo provincia esta vacio' })
             return
@@ -41,6 +68,23 @@ const ListarSitios = () => {
             setError({ id: 'ciudad', dato: 'El campo ciudad esta vacio' })
             return
         }
+        rutas.map(r => {
+            // esto se hace asi si ruta tiene un objeto de tipo sitio, mañana lo modifico
+            if (r.origen.provincia === s.provincia) {
+                if (r.origen.ciudad === s.ciudad) {
+                    setErrorRutaAsignada({ id: 'provincia', dato: 'Este sitio no se puede borrar, ya que es el origen de una ruta, primero modifique la ruta' })
+                    encontre2 = true
+                }
+            }
+            if (r.destino.provincia === s.provincia) {
+                if (r.destino.ciudad === s.ciudad) {
+                    setErrorRutaAsignada({ id: 'provincia', dato: 'Este sitio no se puede borrar, ya que es el destino de una ruta, primero modifique la ruta' })
+                    encontre2 = true
+                }
+            }
+            // quedaria if (r.origenProvincia== s.provicia )
+        })
+
         sitios.map(s => {
             if (provincia === s.provincia) {
                 if (ciudad === s.ciudad) {
@@ -52,13 +96,15 @@ const ListarSitios = () => {
         if (encontre) {
             return
         }
-
+        if (encontre2) {
+            return
+        }
         const sitioRef = store.collection('sitios').doc(sitio.id);
         const res = await sitioRef.update({
             provincia: provincia,
             ciudad: ciudad
-        });
-
+        })
+        alert ('se modifico el sitio')
         setError({ id: '', dato: null })
         getSitios()
         setProvincia('')
@@ -77,10 +123,14 @@ const ListarSitios = () => {
         setSitio(item)
         setModal(!modal)
     }
+
     return (
         <div className="container px-10">
             <h3>LISTADOS</h3>
-            <button onClick={() => getSitios()} className="btn btn-info btn-m">Refrescar</button>
+            <button /* style={{ display: "none" }} */ onClick={() => getSitios()}> Refrescar itios </button>
+            <button /* style={{ display: "none" }} */ onClick={() => getRutas()}> Refrescar rutas </button>
+
+
             <Table>
                 <thead>
                     <tr>
@@ -99,7 +149,7 @@ const ListarSitios = () => {
                                         <td>{item.ciudad}</td>
                                         <td>
                                             <Button color="primary" onClick={(e) => { abrirModal(e, item) }}>Modificar</Button>
-                                            <Button color="danger" onClick={(id) => { borrarSitio(item.id) }}>borrar</Button>
+                                            <Button color="danger" onClick={(id) => { borrarSitio(item) }}>borrar</Button>
                                         </td>
 
                                     </tr>
@@ -107,6 +157,13 @@ const ListarSitios = () => {
                             ) : (
                                 <div className="alert alert-warning mt-19"> No hay elementos en la lista </div>
                             )
+                    }
+                    {
+                        errorRutaAsignada.dato != null ? (
+                            <div className="alert alert-danger">
+                                {errorRutaAsignada.dato}
+                            </div>
+                        ) : (<span></span>)
                     }
                 </tbody>
 
