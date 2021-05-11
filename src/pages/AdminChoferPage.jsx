@@ -295,9 +295,9 @@
           </div>
           <Modal id="modalEliminar" show={showModal} onHide={handleClose}>
               <Modal.Header >
-                  <Modal.Title>Eliminación de Sitio</Modal.Title>
+                  <Modal.Title>Eliminación de Chofer</Modal.Title>
               </Modal.Header>
-              <Modal.Body>¿Está seguro que desea eliminar el sitio seleccionado?</Modal.Body>
+              <Modal.Body>¿Está seguro que desea eliminar el chofer seleccionado?</Modal.Body>
               <Modal.Footer>
                   <Button variant="primary" onClick={confirmarEliminacion}>
                       Confirmar
