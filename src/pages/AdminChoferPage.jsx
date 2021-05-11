@@ -1,9 +1,9 @@
-
   import React,{useState, useEffect} from 'react'
   import MenuUsuario from '../components/menus/MenuUsuario'
   import MenuOpcAdmin from '../components/menus/MenuOpcAdmin'
   import {Table, Modal, Button, Alert} from 'react-bootstrap'
   import { store } from '../firebaseconf'
+  import { TrashFill, PencilFill} from 'react-bootstrap-icons';
   
   
   function AdminChoferPage() {
@@ -20,7 +20,8 @@
   
       //MODAL ELIMINAR
       const [showModal, setShowModal] = useState(false);
-      const [sitioEliminar, setSitioEliminar] = useState('');
+      const [choferEliminar, setChoferEliminar] = useState('');
+
       const handleClose = () => setShowModal(false);
   
       //ALERT ERROR
@@ -38,22 +39,16 @@
   
       //MODAL REGISTRAR / MODIFICAR
       const [showModalEdit, setShowModalEdit] = useState(false)
-      const [sitioEditar, setSitioEditar] = useState('')
+      const [choferEditar, setChoferEditar] = useState('')
       const [esEditar, setEsEditar] = useState(false)
-      const [esSitioRepetido, setEsSitioRepetido] = useState(false)
-
       const [esChoferRepetido, setEsChoferRepetido] = useState(false)
+      
+
       const handleCloseEdit = () => setShowModalEdit(false)
-  
-  
-      const [sitios, setSitios] = useState([])
 
       const [choferes, setChoferes] = useState([])
-    //   const [modal, setModal] = useState(false)
       
-      const [provincia, setProvincia] = useState('')
-      const [ciudad, setCiudad] = useState('')
-      //
+
       const [nombres, setNombres] = useState('')
       const [apellido, setApellido] = useState('')
       const [dni, setDni] = useState('')
@@ -63,35 +58,35 @@
       
   
   
-      const getSitios =  () => {
-          store.collection('sitios').get()
+      const getChoferes =  () => {
+          store.collection('choferes').get()
           .then(response => {
-              const fetchedSitios = [];
+              const fetchedChoferes = [];
               response.docs.forEach(document => {
-              const fetchedSitio = {
+              const fetchedChofer = {
                   id: document.id,
                   ...document.data()
               };
-              fetchedSitios.push(fetchedSitio)
+              fetchedChoferes.push(fetchedChofer)
               });
-              setSitios(fetchedSitios)
+              setChoferes(fetchedChoferes)
           })
       }    
    
   
       //CARGA LA LISTA CUANDO SE CARGA EL COMPONENTE
       useEffect(() => {
-          store.collection('sitios').get()
+          store.collection('choferes').get()
           .then(response => {
-              const fetchedSitios = [];
+              const fetchedChoferes = [];
               response.docs.forEach(document => {
-              const fetchedSitio = {
+              const fetchedChofer = {
                   id: document.id,
                   ...document.data()
               };
-              fetchedSitios.push(fetchedSitio)
+              fetchedChoferes.push(fetchedChofer)
               });
-              setSitios(fetchedSitios)
+              setChoferes(fetchedChoferes)
           })
           .catch(error => {
               setMsgError(error)
@@ -99,17 +94,17 @@
           });
       }, []);    
   
-      const borrarSitio = async (id) => {
-          setSitioEliminar(id)
+      const borrarChofer = async (id) => {
+          setChoferEliminar(id)
           setShowModal(true);
       }    
   
       const confirmarEliminacion = async () => {
-          const { docs } = await store.collection('sitios').get()
+          const { docs } = await store.collection('choferes').get()
           const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
-          setSitios(nuevoArray)
-          await store.collection('sitios').doc(sitioEliminar).delete()
-          getSitios()
+          setChoferes(nuevoArray)
+          await store.collection('choferes').doc(choferEliminar).delete()
+          getChoferes()
           setShowModal(false)
           setMsgSucc('Se elimino con exito! Click aqui para cerrar')
           setShowAlertSucc(true)
@@ -117,20 +112,28 @@
       }
       
   
-      const crearModificarSitio = (oper, item) =>{
+      const crearModificarChofer = (oper, item) =>{
   
           if (oper === 'E') {
               setEsEditar(true)
-              console.log("entra")
-              setSitioEditar(item.id)
-              setProvincia(item.provincia)
-              setCiudad(item.ciudad)
+              setChoferEditar(item.id)
+              setNombres(item.nombres)
+              setApellido(item.apellido)
+              setDni(item.dni)
+              setEmail(item.email)
+              setTelefono(item.telefono)
+              setPassword(item.password)
+
           } else {
               setEsEditar(false)
-              console.log("entra2222")
-              setSitioEditar('')
-              setProvincia('')
-              setCiudad('') 
+             
+              setChoferEditar('')
+              setNombres('')
+              setApellido('')
+              setDni('')
+              setEmail('')
+              setTelefono('')
+              setPassword('')
           }
           setShowModalEdit(true)
       }
@@ -138,64 +141,73 @@
   
       const confirmarEdicion = async (e) => {
           e.preventDefault()
-  
-          if (provincia === "") {
-              setMsgError('El campo provincia esta vacio' )
+
+          if (!nombres.trim()) {
+              setMsgError('El campo Nombre esta vacio' )
               setShowAlert(true)
               return
           }
-          if (ciudad === "") {
-              setMsgError('El campo ciudad esta vacio')
-              setShowAlert(true)
-              return
+          if (!apellido.trim()) {
+            setMsgError('El campo Apellido esta vacio' )
+            setShowAlert(true)
+            return
           }
+          if (!dni.trim()) {
+                setMsgError('El campo DNI esta vacio' )
+                setShowAlert(true)
+                return
+          }
+          if (!email.trim()) {
+            setMsgError('El campo Email esta vacio' )
+            setShowAlert(true)
+            return
+         }
+         if (!telefono.trim()) {
+            setMsgError('El campo Telefono esta vacio' )
+            setShowAlert(true)
+            return
+         }
+         if (!password.trim()) {
+            setMsgError('El campo Password esta vacio' )
+            setShowAlert(true)
+            return
+         }
   
-          store.collection('sitios').where("provincia", "==", provincia)
+          store.collection('choferes').where("email", "==", email)
               .get()
               .then((querySnapshot) => {
                   let datosRepetidos = false
                   querySnapshot.forEach((doc) => {
                       //COMO FILTRO POR PROVINCIA, QUEDA CHEQUEAR QUE NO HAYA UNA CIUDAD IGUAL
-                      const nomCuidad = doc.data().ciudad
-                      console.log(nomCuidad)   
-                      console.log(ciudad)             
-                      if (nomCuidad === ciudad) {
+                      const dniBusq = doc.data().dni           
+                      if (dniBusq === dni) {
                           datosRepetidos = true
                       }
-                  });
-                  setEsSitioRepetido(datosRepetidos)                               
+                  });  
+                  setEsChoferRepetido(datosRepetidos)                               
               })
           
-          if (esSitioRepetido) {
-              setMsgError('Este sitio ya se encuentra cargado')
+          if (esChoferRepetido) {
+              setMsgError('Este Chofer ya se encuentra cargado')
               setShowAlert(true)
               return
           }
-  
-          const sitioAct = {
-              ciudad: ciudad,
-              provincia: provincia
+          
+
+          const choferAct = {
+            nombres: nombres,
+            apellido: apellido,
+            dni: dni,
+            email: email,
+            telefono: telefono,
+            password: password
           }
           
           if (esEditar){
               try{
                   //FALTA MOSTRAR MSJ DE SUCESS
-                  await store.collection('sitios').doc(sitioEditar).set(sitioAct)
-                  getSitios()
-                  setMsgSucc('Registro Exitoso! Click aqui para cerrar')
-                  setShowAlertSucc(true)
-                  setShowModalEdit(false)
-              } catch (err) {
-                  console.log(err)
-                  setMsgError(err)
-                  setShowAlert(true)
-              }
-  
-          } else {
-              try{
-                  //FALTA MOSTRAR MSJ DE SUCESS
-                  await store.collection('sitios').add(sitioAct)
-                  getSitios()
+                  await store.collection('choferes').doc(choferEditar).set(choferAct)
+                  getChoferes()
                   setMsgSucc('Actualizacion Exitosa! Click aqui para cerrar')
                   setShowAlertSucc(true)
                   setShowModalEdit(false)
@@ -204,8 +216,21 @@
                   setMsgError(err)
                   setShowAlert(true)
               }
-              
   
+          } else {
+              try{
+                  //FALTA MOSTRAR MSJ DE SUCESS
+                  await store.collection('choferes').add(choferAct)
+                  getChoferes()
+                  setMsgSucc('Registro Exitoso! Click aqui para cerrar')
+                  setShowAlertSucc(true)
+                  setShowModalEdit(false)
+              } catch (err) {
+                  console.log(err)
+                  setMsgError(err)
+                  setShowAlert(true)
+              }
+              
           }
   
       }
@@ -217,7 +242,7 @@
           <MenuOpcAdmin/>
           <div>
               <h3 style={{top: 110, position: 'absolute', left: 80,width: "60%",}}> Listado de Choferes</h3>
-              <Button style={{top: 105, position: 'absolute', right:70, width: "150px", height: "40px"}} onClick={(e) => { crearModificarSitio('A', '') }} variant="secondary " > + Agregar Chofer</Button>
+              <Button style={{top: 105, position: 'absolute', right:70, width: "150px", height: "40px"}} onClick={(e) => { crearModificarChofer('A', '') }} variant="secondary " > + Agregar Chofer</Button>
               <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{bottom:0,zIndex:5, position: 'absolute', left: 75,width: "60%"}} >
                   {msgSucc}
               </Alert>
@@ -235,20 +260,24 @@
                       </thead>
                       <tbody>
                           {
-                              sitios.length !== 0 ?
+                              choferes.length !== 0 ?
                                   (
-                                      sitios.map(item => (
+                                    choferes.map(item => (
                                           <tr key={item.id}>
-                                              <td>{item.provincia}</td>
-                                              <td>{item.ciudad}</td>
-                                              <td style={{width: "20%"}} >
+                                              <td>{item.dni}</td>
+                                              <td>{item.apellido}</td>
+                                              <td>{item.nombres}</td>
+                                              <td>{item.email}</td>
+                                              <td>{item.telefono}</td>
+                                              <td style={{width: "12%"}} >
                                                   <div className="d-flex justify-content-around">
-                                                  <button className="btn btn-primary d-flex" onClick={(e) => { crearModificarSitio('E', item) }}>Modificar</button>
-                                                  <button className="btn btn-danger pr-3 flex" onClick={(id) => {borrarSitio(item.id) }}>Borrar</button>
+                                                    <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarChofer('E', item) }}>
+                                                      <PencilFill color="white"></PencilFill>
+                                                    </button>
+                                                    <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(id) => {borrarChofer(item.id) }}>
+                                                        <TrashFill color="white"></TrashFill>
+                                                    </button>
                                                   </div>
-                                              </td>
-                                              <td>
-                                                  
                                               </td>
       
                                           </tr>
@@ -260,7 +289,7 @@
                       </tbody>
                   </Table>
                   {
-                      sitios.length === 0 ? <div className="alert alert-warning mt-19"> No hay elementos en la lista </div> : <div></div>
+                      choferes.length === 0 ? <div className="alert alert-warning mt-19"> No hay elementos en la lista </div> : <div></div>
                   }
               </div>
           </div>

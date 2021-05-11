@@ -3,6 +3,7 @@ import MenuUsuario from '../components/menus/MenuUsuario'
 import MenuOpcAdmin from '../components/menus/MenuOpcAdmin'
 import {Table, Modal, Button, Alert} from 'react-bootstrap'
 import { store } from '../firebaseconf'
+import { TrashFill, PencilFill} from 'react-bootstrap-icons';
 
 
 function AdminSitiosPage() {
@@ -268,12 +269,16 @@ function AdminSitiosPage() {
                                         <tr key={item.id}>
                                             <td>{item.provincia}</td>
                                             <td>{item.ciudad}</td>
-                                            <td style={{width: "20%"}} >
+                                            <td style={{width: "12%"}} >
                                                   <div className="d-flex justify-content-around">
-                                                    <button className="btn btn-primary " onClick={(e) => { crearModificarSitio('E', item) }}>Modificar</button>
-                                                    <button className="btn btn-danger md-3 float-right" onClick={(id) => {borrarSitio(item.id) }}>Borrar</button>
-                                                    </div>
-                                            </td>
+                                                    <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarSitio('E', item) }}>
+                                                      <PencilFill color="white"></PencilFill>
+                                                    </button>
+                                                    <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(id) => {borrarSitio(item.id) }}>
+                                                        <TrashFill color="white"></TrashFill>
+                                                    </button>
+                                                  </div>
+                                              </td>
                                         </tr>
                                     ))
                                 ) : (

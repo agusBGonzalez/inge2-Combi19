@@ -3,6 +3,7 @@ import MenuUsuario from '../components/menus/MenuUsuario'
 import MenuOpcAdmin from '../components/menus/MenuOpcAdmin'
 import { Table, Modal, Button, Alert } from 'react-bootstrap'
 import { store } from '../firebaseconf'
+import { TrashFill, PencilFill} from 'react-bootstrap-icons';
 
 
 function AdminProdPage() {
@@ -213,7 +214,7 @@ function AdminProdPage() {
             <MenuOpcAdmin />
             <div>
                 <h3 style={{ top: 110, position: 'absolute', left: 80, width: "60%", }}> Listado de Productos</h3>
-                <Button style={{ top: 105, position: 'absolute', right: 70, width: "150px", height: "40px" }} onClick={(e) => { crearModificarProd('A', '') }} variant="secondary " > + Agregar Producto</Button>
+                <Button style={{ top: 105, position: 'absolute', right: 70, width: "200px", height: "40px" }} onClick={(e) => { crearModificarProd('A', '') }} variant="secondary " > + Agregar Producto</Button>
                 <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{ bottom: 0, zIndex: 5, position: 'absolute', left: 75, width: "60%" }} >
                     {msgSucc}
                 </Alert>
@@ -235,12 +236,16 @@ function AdminProdPage() {
                                             <tr key={item.id}>
                                                 <td>{item.nombre}</td>
                                                 <td>{item.tipo}</td>
-                                                <td style={{ width: "20%" }} >
-                                                    <div className="d-flex justify-content-around">
-                                                        <button className="btn btn-primary " onClick={(e) => { crearModificarProd('E', item) }}>Modificar</button>
-                                                        <button className="btn btn-danger md-3 float-right" onClick={(id) => { borrarProducto(item.id) }}>Borrar</button>
-                                                    </div>
-                                                </td>
+                                                <td style={{width: "12%"}} >
+                                                  <div className="d-flex justify-content-around">
+                                                    <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarProd('E', item) }}>
+                                                      <PencilFill color="white"></PencilFill>
+                                                    </button>
+                                                    <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(id) => {borrarProducto(item.id) }}>
+                                                        <TrashFill color="white"></TrashFill>
+                                                    </button>
+                                                  </div>
+                                              </td>
                                             </tr>
                                         ))
                                     ) : (
