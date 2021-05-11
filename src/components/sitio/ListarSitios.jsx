@@ -58,7 +58,7 @@ const ListarSitios = () => {
         }
     }
 
-    const modificarSitio = async () => {
+    const modificarSitio = async (s) => {
         var encontre = false
         var encontre2= false
         if (provincia === "") {

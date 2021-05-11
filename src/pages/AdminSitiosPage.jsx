@@ -3,7 +3,6 @@ import MenuUsuario from '../components/menus/MenuUsuario'
 import MenuOpcAdmin from '../components/menus/MenuOpcAdmin'
 import {Table, Modal, Button, Alert} from 'react-bootstrap'
 import { store } from '../firebaseconf'
-import AgregarSitio from '../components/sitio/AgregaSitio'
 
 
 function AdminSitiosPage() {
@@ -217,7 +216,6 @@ function AdminSitiosPage() {
                             <th>Provincia</th>
                             <th>Ciudad</th>
                             <th>Acciones</th>
-                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -228,13 +226,12 @@ function AdminSitiosPage() {
                                         <tr key={item.id}>
                                             <td>{item.provincia}</td>
                                             <td>{item.ciudad}</td>
-                                            <td>
-                                                <button className="btn btn-primary " onClick={(e) => { crearModificarSitio('E', item) }}>Modificar</button>
+                                            <td style={{width: "20%"}} >
+                                                  <div className="d-flex justify-content-around">
+                                                    <button className="btn btn-primary " onClick={(e) => { crearModificarSitio('E', item) }}>Modificar</button>
+                                                    <button className="btn btn-danger md-3 float-right" onClick={(id) => {borrarSitio(item.id) }}>Borrar</button>
+                                                    </div>
                                             </td>
-                                            <td>
-                                                <button className="btn btn-danger md-3 float-right" onClick={(id) => {borrarSitio(item.id) }}>Borrar</button>
-                                            </td>
-    
                                         </tr>
                                     ))
                                 ) : (
