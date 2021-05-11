@@ -1,6 +1,6 @@
 import React from 'react'
-import MenuOpcUsuario from '../components/menus/MenuOpcUsuario'
 import MenuUsuario from '../components/menus/MenuUsuario'
+import MenuOpcAdmin from '../components/menus/MenuOpcAdmin'
 
 
 function UsuarioPage() {
@@ -8,7 +8,8 @@ function UsuarioPage() {
   return (
       <div>
         <MenuUsuario/>
-        <MenuOpcUsuario/>
+        <MenuOpcAdmin/>
+
       </div>
 
   );

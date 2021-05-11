@@ -6,7 +6,7 @@ import imagen3 from "../../images/inicioCarousel/pexels-lê-minh-977213.jpg";
 import imagen4 from "../../images/inicioCarousel/pexels-pixabay-210182.jpg";
 
 function InicioCarousel() {
-
+  
   return (
     <div className="containerCarousel">
       <Carousel fade pause={false} >

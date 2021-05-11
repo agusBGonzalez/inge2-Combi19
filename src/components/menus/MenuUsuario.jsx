@@ -1,12 +1,36 @@
-import React,{Fragment, useState} from 'react';
-import { BrowserRouter as Router, Link } from "react-router-dom";
-import logo from "../../images/logo-is.png";
+import React,{useEffect, useState} from 'react'
+import { Link, useHistory} from 'react-router-dom'
+import logo from '../../images/logo-is.png'
 import {DropdownButton,Dropdown} from 'react-bootstrap'
+import {auth} from '../../firebaseconf'
 
 function MenuUsuario() {
 
+    const historial = useHistory()
+    const[usuario,setUsuario] = useState(null)
+
+    useEffect( () =>{
+        auth.onAuthStateChanged( (user) => {
+           if(user){
+              setUsuario(user.email)
+              console.log(user.email)
+           } 
+        })
+        return () => {setUsuario(null)}
+    },[])
+
+    const CerrarSesion = () => {
+        auth.signOut()
+        setUsuario(null)
+        historial.push('/')
+    }
+
+
     const navStyle = {
+      position: "absolute",
+      top: 0,
       width: "100%",
+      borderBottom: "3px solid gray"
     };
 
     return (
@@ -17,19 +41,13 @@ function MenuUsuario() {
         >
           <div className="container-fluid d-flex">
             <div className="navbar-header">
-              <Link to="/">
-                <img src={logo} width="80" height="80" className="ms-4" />
-              </Link>
+              <img src={logo} alt="logo-is" width="80" height="80" className="ms-4" />
             </div>
-            <div className="collapse navbar-collapse d-flex justify-content-end">
+            <div>
               <DropdownButton id="dropdown-user" variant="secondary" title="Mi Sesión">
-                <Dropdown.Item disabled>
-                  <Link className="dropdown-item" to={"/usuario"}>Mis Datos</Link>
-                </Dropdown.Item>
+                <Dropdown.Item as={Link} disabled to="/usuario">Mis Datos</Dropdown.Item>
                 <Dropdown.Divider />
-                <Dropdown.Item>
-                  <Link className="dropdown-item" to={"/"}>Cerrar Sesión</Link>
-                </Dropdown.Item>
+                <Dropdown.Item onClick={CerrarSesion}>Cerrar Sesión</Dropdown.Item>
               </DropdownButton>
             </div> 
           </div> 
