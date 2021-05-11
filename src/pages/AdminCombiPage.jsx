@@ -3,6 +3,7 @@ import MenuUsuario from '../components/menus/MenuUsuario'
 import MenuOpcAdmin from '../components/menus/MenuOpcAdmin'
 import {Table, Modal, Button, Alert} from 'react-bootstrap'
 import { store } from '../firebaseconf'
+import { TrashFill, PencilFill} from 'react-bootstrap-icons';
 
 
 const AdminCombiPage = () => {
@@ -271,13 +272,17 @@ const AdminCombiPage = () => {
                                             <td>{item.año}</td>  
                                             <td>{item.butaca}</td> 
                                             <td>{item.tipocombi}</td> 
-                                            <td>{item.chofer}</td> 
-                                            <td style={{width: "20%"}} >
+                                            <td>{item.chofer}</td>
+                                            <td style={{width: "12%"}} >
                                                   <div className="d-flex justify-content-around">
-                                                    <button className="btn btn-primary " onClick={(e) => { crearModificarCombi('E', item) }}>Modificar</button>
-                                                    <button className="btn btn-danger md-3 float-right" onClick={(id) => {borrarCombi(item.id) }}>Borrar</button>
-                                                    </div>
-                                            </td>
+                                                    <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarCombi('E', item) }}>
+                                                      <PencilFill color="white"></PencilFill>
+                                                    </button>
+                                                    <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(id) => {borrarCombi(item.id) }}>
+                                                        <TrashFill color="white"></TrashFill>
+                                                    </button>
+                                                  </div>
+                                              </td> 
                                         </tr>
                                     ))
                                 ) : (
