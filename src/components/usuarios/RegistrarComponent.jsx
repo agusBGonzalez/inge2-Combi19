@@ -191,7 +191,7 @@ function RegistrarComponent() {
 					</Modal.Header>
 					<Modal.Body>{msgError}</Modal.Body>
 					<Modal.Footer>
-						<Button variant="secondary" onClick={handleClose}>
+						<Button variant="secondary" onClick={() => {setShowModal(false); setFecha('')}}>
 							Close
 						</Button>
 					</Modal.Footer>
