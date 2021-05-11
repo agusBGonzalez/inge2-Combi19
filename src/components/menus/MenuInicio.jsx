@@ -7,6 +7,7 @@ function MenuInicio() {
     position: "absolute",
     zIndex: 5,
     width: "100%",
+    borderBottom: "3px solid gray"
   };
 
   return (
@@ -23,7 +24,11 @@ function MenuInicio() {
             </div>
             <div>
 							<Link className="btn btn-secondary border border-2 me-1" to={"/registrar"}>Registrarse</Link>
-							<Link className="btn btn-outline-dark border border-2" to={"/login"}>Iniciar Sesion</Link>
+							<Link className="btn btn-outline-dark border border-2 me-1" to={"/login"}>Iniciar Sesion</Link>
+              {/* REMOVER boton usuario */}
+              {/* <Link className="btn btn-outline-dark border border-2" to={"/usuarioAdmin"}>UsuarioAdm</Link>
+              <Link className="btn btn-outline-dark border border-2" to={"/usuarioChofer"}>UsuarioChofer</Link>
+              <Link className="btn btn-outline-dark border border-2" to={"/usuarioCliente"}>UsuarioCliente</Link> */}
             </div>
           </div>
         </nav>
