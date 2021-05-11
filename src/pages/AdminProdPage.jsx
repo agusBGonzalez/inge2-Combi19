@@ -58,11 +58,11 @@ function AdminProdPage() {
             .then(response => {
                 const fetchedProductos = [];
                 response.docs.forEach(document => {
-                    const fetchedProductos = {
+                    const fetchedProducto = {
                         id: document.id,
                         ...document.data()
                     };
-                    fetchedProductos.push(fetchedProductos)
+                    fetchedProductos.push(fetchedProducto)
                 });
                 setProductos(fetchedProductos)
             })
@@ -75,11 +75,11 @@ function AdminProdPage() {
             .then(response => {
                 const fetchedProductos = [];
                 response.docs.forEach(document => {
-                    const fetchedProductos = {
+                    const fetchedProducto = {
                         id: document.id,
                         ...document.data()
                     };
-                    fetchedProductos.push(fetchedProductos)
+                    fetchedProductos.push(fetchedProducto)
                 });
                 setProductos(fetchedProductos)
             })
@@ -236,6 +236,7 @@ function AdminProdPage() {
                                             <tr key={item.id}>
                                                 <td>{item.nombre}</td>
                                                 <td>{item.tipo}</td>
+                                                <td>{item.precio}</td>
                                                 <td style={{width: "12%"}} >
                                                   <div className="d-flex justify-content-around">
                                                     <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarProd('E', item) }}>
@@ -294,9 +295,9 @@ function AdminProdPage() {
                                 value={tipo} onChange={(e) => { setTipo(e.target.value) }}
                                 onClick = {handleCloseAlert}
                                 className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
-                                <option disabled="disabled" value="">Seleccione Provincia</option>
+                                <option disabled="disabled" value="">Seleccione Tipo</option>
                                 <option value="Dulce">Dulce</option>
-                                <option value="Salado">Agridulce</option>
+                                <option value="Salado">Salado</option>
                                 <option value="Agridulce">Agridulce</option>
                             </select>
                             <input onChange={(e) => { setPrecio(e.target.value) }}
