@@ -6,6 +6,10 @@ import LoginPage from './pages/LoginPage';
 import UsuarioPage from './pages/UsuarioPage';
 import ChoferPage from './pages/ChoferPage';
 import AdminPage from './pages/AdminPage';
+import AdminSitiosPage from './pages/AdminSitiosPage';
+import AdminChoferPage from './pages/AdminChoferPage';
+
+
 
 
 
@@ -20,6 +24,9 @@ function AppFinal() {
           <Route path='/usuarioAdmin' component={AdminPage}></Route>
           <Route path='/usuarioChofer' component={ChoferPage}></Route>
           <Route path='/usuarioCliente' component={UsuarioPage}></Route>
+          <Route path='/listaSitios' component={AdminSitiosPage}></Route>
+          <Route path='/listaChoferes' component={AdminChoferPage}></Route>
+          {/* <Route path='/listaCombis' component={UsuarioPage}></Route> */}
         </Switch>
       </Router>
 

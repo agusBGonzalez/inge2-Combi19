@@ -1,5 +1,5 @@
 import React from 'react'
-// import {ListGroup,Tab,Row,Col,Sonnet} from 'react-bootstrap'
+import { useHistory } from "react-router-dom"
 
 import SideNav, { Toggle, Nav, NavItem, NavIcon, NavText } from '@trendmicro/react-sidenav';
 
@@ -12,17 +12,20 @@ import { CalendarWeek, Truck, PersonLinesFill, GeoAltFill, Cart4, Map} from 'rea
 
 function MenuOpcAdmin() {
 
+    const historial = useHistory()
+
     return (
 
         <SideNav
             onSelect={(selected) => {
-                // Add your code here
+                const to = '/' + selected;
+                historial.push(to);
             }}
             style={{ backgroundColor: "#7CA0AF",top: "99px" }}
         >
             <SideNav.Toggle />
-            <SideNav.Nav defaultSelected="" >
-                <NavItem eventKey="home">
+            <SideNav.Nav defaultSelected="usuarioAdmin" >
+                <NavItem eventKey="listaSitios">
                     <NavIcon>
                         <GeoAltFill color="black"></GeoAltFill>
                     </NavIcon>
@@ -30,7 +33,7 @@ function MenuOpcAdmin() {
                         Sitios
                     </NavText>
                 </NavItem>
-                <NavItem eventKey="home">
+                <NavItem eventKey="listaRutas">
                     <NavIcon>
                         <Map color="black"></Map>
                     </NavIcon>
@@ -38,7 +41,7 @@ function MenuOpcAdmin() {
                         Rutas
                     </NavText>
                 </NavItem>
-                <NavItem eventKey="home">
+                <NavItem eventKey="listaViajes">
                     <NavIcon>
                         <CalendarWeek color="black"></CalendarWeek>
                     </NavIcon>
@@ -46,7 +49,7 @@ function MenuOpcAdmin() {
                         Viajes
                     </NavText>
                 </NavItem>
-                <NavItem eventKey="home">
+                <NavItem eventKey="listaCombis">
                     <NavIcon>
                         <Truck color="black"></Truck>
                     </NavIcon>
@@ -54,7 +57,7 @@ function MenuOpcAdmin() {
                         Combis
                     </NavText>
                 </NavItem>
-                <NavItem eventKey="home">
+                <NavItem eventKey="listaChoferes">
                     <NavIcon>
                         <PersonLinesFill color="black"></PersonLinesFill>
                     </NavIcon>
@@ -62,7 +65,7 @@ function MenuOpcAdmin() {
                         Choferes
                     </NavText>
                 </NavItem>
-                <NavItem eventKey="home">
+                <NavItem eventKey="listaProductos">
                     <NavIcon>
                         <Cart4 color="black"></Cart4>
                     </NavIcon>
