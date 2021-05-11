@@ -23,19 +23,25 @@ function AdminSitiosPage() {
     const [sitioEliminar, setSitioEliminar] = useState('');
     const handleClose = () => setShowModal(false);
 
-    //ALERT
+    //ALERT ERROR
     const [showAlert, setShowAlert] = useState(false);
     const handleCloseAlert = () => setShowAlert(false);
 
     const [msgError, setMsgError] = useState (null)
 
+    //ALERT SUCESS
+    const [showAlertSucc, setShowAlertSucc] = useState(false)
+    const handleCloseAlertSucc = () => setShowAlertSucc(false)
+
+    const [msgSucc, setMsgSucc] = useState (null)
+
 
     //MODAL REGISTRAR / MODIFICAR
-    const [showModalEdit, setShowModalEdit] = useState(false);
-    const [sitioEditar, setSitioEditar] = useState('');
-    const [esEditar, setEsEditar] = useState(false);
-    const [esSitioRepetido, setEsSitioRepetido] = useState(false);
-    const handleCloseEdit = () => setShowModalEdit(false);
+    const [showModalEdit, setShowModalEdit] = useState(false)
+    const [sitioEditar, setSitioEditar] = useState('')
+    const [esEditar, setEsEditar] = useState(false)
+    const [esSitioRepetido, setEsSitioRepetido] = useState(false)
+    const handleCloseEdit = () => setShowModalEdit(false)
 
 
     const [sitios, setSitios] = useState([])
@@ -93,12 +99,15 @@ function AdminSitiosPage() {
 
     const crearModificarSitio = (oper, item) =>{
 
-        (oper === 'A') ? setEsEditar(false) : setEsEditar(true)
-        if (esEditar) {
+        if (oper === 'E') {
+            setEsEditar(true)
+            console.log("entra")
             setSitioEditar(item.id)
             setProvincia(item.provincia)
             setCiudad(item.ciudad)
         } else {
+            setEsEditar(false)
+            console.log("entra2222")
             setSitioEditar('')
             setProvincia('')
             setCiudad('') 
@@ -152,6 +161,9 @@ function AdminSitiosPage() {
             try{
                 //FALTA MOSTRAR MSJ DE SUCESS
                 await store.collection('sitios').doc(sitioEditar).set(sitioAct)
+                setMsgSucc('Registro Exitoso')
+                setShowAlertSucc(true)
+                setShowModalEdit(false)
             } catch (err) {
                 console.log(err)
                 setMsgError(err)
@@ -162,6 +174,9 @@ function AdminSitiosPage() {
             try{
                 //FALTA MOSTRAR MSJ DE SUCESS
                 await store.collection('sitios').add(sitioAct)
+                setMsgSucc('Actualizacion Exitosa')
+                setShowAlertSucc(true)
+                setShowModalEdit(false)
             } catch (err) {
                 console.log(err)
                 setMsgError(err)
@@ -171,53 +186,8 @@ function AdminSitiosPage() {
 
         }
 
-
-        // const { docs } = await store.collection('sitios').get()
-        // const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
-        // setSitios(nuevoArray)
-        // await store.collection('sitios').doc(sitioEliminar).delete()
-        // getSitios()
-        // alert('se elimino el sitio')
-
     }
 
-    
-
-    const modificarSitio = async () => {
-            var encontre = false
-            if (provincia === "") {
-                setMsgError( 'El campo provincia esta vacio' )
-                return
-            } else if (ciudad === "") {
-                setMsgError('El campo ciudad esta vacio' )
-                return
-            }
-            sitios.map(s => {
-                if (provincia === s.provincia) {
-                    if (ciudad === s.ciudad) {
-                        setMsgError('Este sitio ya se encuentra cargado')
-                        encontre = true
-                    }
-                }
-            })
-            if (encontre) {
-                return
-            }
-
-        const sitioRef = store.collection('sitios').doc(sitioEditar).set();
-        const res = await sitioRef.update({
-            provincia: provincia,
-            ciudad: ciudad
-        });
-
-        setMsgError(null )
-        getSitios()
-        setProvincia('')
-        setCiudad('')
-        setModal(false)
-    }
-
-    
   
     return (
       <div>
@@ -226,7 +196,9 @@ function AdminSitiosPage() {
         <div>
             <h3 style={{top: 110, position: 'absolute', left: 80,width: "60%",}}> Listado de Sitios</h3>
             <Button style={{top: 105, position: 'absolute', right:70, width: "150px", height: "40px"}} onClick={(e) => { crearModificarSitio('A', '') }} variant="secondary " > + Agregar Sitio</Button>
-            
+            <Alert id="success" className="" variant="success" show={showAlertSucc} onClose={handleCloseAlertSucc} dismissible>
+				{msgSucc}
+			</Alert>
             <div style={subPageStyle}>
                 <Table striped bordered hover variant="dark">
                     <thead>
@@ -291,7 +263,7 @@ function AdminSitiosPage() {
                             <select
                                 value={provincia} onChange={(e) => { setProvincia(e.target.value) }}
                                 className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
-                                <option disabled="disabled" selected id='provincia'>Seleccione Provincia</option>
+                                <option disabled="disabled" value="">Seleccione Provincia</option>
                                 <option value="Buenos Aires">Buenos Aires</option>
                                 <option value="Catamarca">Catamarca</option>
                                 <option value="Chaco">Chaco</option>
