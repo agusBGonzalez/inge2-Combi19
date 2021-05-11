@@ -53,11 +53,18 @@ function AdminSitiosPage() {
 
 
     const getSitios =  () => {
-        const { docs } = store.collection('sitios').get()
-            .then
-        const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
-        setSitios(nuevoArray)
-        console.log(nuevoArray)
+        store.collection('sitios').get()
+        .then(response => {
+            const fetchedSitios = [];
+            response.docs.forEach(document => {
+            const fetchedSitio = {
+                id: document.id,
+                ...document.data()
+            };
+            fetchedSitios.push(fetchedSitio)
+            });
+            setSitios(fetchedSitios)
+        })
     }    
  
 
@@ -92,8 +99,10 @@ function AdminSitiosPage() {
         setSitios(nuevoArray)
         await store.collection('sitios').doc(sitioEliminar).delete()
         getSitios()
-        alert('se elimino el sitio')
-
+        setShowModal(false)
+        setMsgSucc('Se elimino con exito! Click aqui para cerrar')
+        setShowAlertSucc(true)
+        setShowModalEdit(false)
     }
     
 
@@ -112,7 +121,7 @@ function AdminSitiosPage() {
             setProvincia('')
             setCiudad('') 
         }
-        setShowModalEdit(true);
+        setShowModalEdit(true)
     }
 
 
@@ -161,6 +170,7 @@ function AdminSitiosPage() {
             try{
                 //FALTA MOSTRAR MSJ DE SUCESS
                 await store.collection('sitios').doc(sitioEditar).set(sitioAct)
+                getSitios()
                 setMsgSucc('Registro Exitoso! Click aqui para cerrar')
                 setShowAlertSucc(true)
                 setShowModalEdit(false)
@@ -174,6 +184,7 @@ function AdminSitiosPage() {
             try{
                 //FALTA MOSTRAR MSJ DE SUCESS
                 await store.collection('sitios').add(sitioAct)
+                getSitios()
                 setMsgSucc('Actualizacion Exitosa! Click aqui para cerrar')
                 setShowAlertSucc(true)
                 setShowModalEdit(false)
