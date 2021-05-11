@@ -8,7 +8,7 @@ import ChoferPage from './pages/ChoferPage';
 import AdminPage from './pages/AdminPage';
 import AdminSitiosPage from './pages/AdminSitiosPage';
 import AdminChoferPage from './pages/AdminChoferPage';
-
+import AdminCombiPage from './pages/AdminCombiPage';
 
 
 
@@ -26,6 +26,7 @@ function AppFinal() {
           <Route path='/usuarioCliente' component={UsuarioPage}></Route>
           <Route path='/listaSitios' component={AdminSitiosPage}></Route>
           <Route path='/listaChoferes' component={AdminChoferPage}></Route>
+          <Route path='/listaCombis' component={AdminCombiPage}></Route>
           {/* <Route path='/listaCombis' component={UsuarioPage}></Route> */}
         </Switch>
       </Router>
