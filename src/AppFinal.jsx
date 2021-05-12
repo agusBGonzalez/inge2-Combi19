@@ -10,6 +10,9 @@ import AdminSitiosPage from './pages/admin/AdminSitiosPage';
 import AdminChoferPage from './pages/admin/AdminChoferPage';
 import AdminCombiPage from './pages/admin/AdminCombiPage';
 import AdminProdPage from './pages/admin/AdminProdPage';
+import AdminRutaPage from './pages/admin/AdminRutaPage';
+import AdminViajePage from './pages/admin/AdminViajePage';
+
 
 
 
@@ -30,6 +33,8 @@ function AppFinal() {
           <Route path='/listaChoferes' component={AdminChoferPage}></Route>
           <Route path='/listaCombis' component={AdminCombiPage}></Route>
           <Route path='/listaProductos' component={AdminProdPage}></Route>
+          <Route path='/listaRutas' component={AdminRutaPage}></Route>
+          <Route path='/listaViajes' component={AdminViajePage}></Route>
         </Switch>
       </Router>
 

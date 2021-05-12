@@ -245,7 +245,7 @@ function AdminSitiosPage() {
     return (
       <div>
         <MenuUsuario/>
-        <MenuOpcAdmin/>
+        <MenuOpcAdmin  optionName="listaSitios"/>
         <div>
             <h3 style={{top: 110, position: 'absolute', left: 80,width: "60%",}}> Listado de Sitios</h3>
             <Button style={{top: 105, position: 'absolute', right:70, width: "150px", height: "40px"}} onClick={(e) => { crearModificarSitio('A', '') }} variant="secondary " > + Agregar Sitio</Button>

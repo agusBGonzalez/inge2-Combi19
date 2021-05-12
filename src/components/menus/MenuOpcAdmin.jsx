@@ -1,16 +1,17 @@
 import React from 'react'
 import { useHistory } from "react-router-dom"
 
-import SideNav, { Toggle, Nav, NavItem, NavIcon, NavText } from '@trendmicro/react-sidenav';
+import SideNav, { NavItem, NavIcon, NavText } from '@trendmicro/react-sidenav';
 
 // Be sure to include styles at some point, probably during your bootstraping
 import '@trendmicro/react-sidenav/dist/react-sidenav.css';
 import './SideBar.css';
 
-import { CalendarWeek, Truck, PersonLinesFill, GeoAltFill, Cart4, Map} from 'react-bootstrap-icons';
+import { CalendarWeek, Truck, PersonLinesFill, GeoAltFill, Cart4, Map, HouseFill} from 'react-bootstrap-icons';
 
 
-function MenuOpcAdmin() {
+function MenuOpcAdmin(props) {
+    
 
     const historial = useHistory()
 
@@ -24,7 +25,15 @@ function MenuOpcAdmin() {
             style={{ backgroundColor: "#7CA0AF",top: "99px" }}
         >
             <SideNav.Toggle />
-            <SideNav.Nav defaultSelected="usuarioAdmin" >
+            <SideNav.Nav defaultSelected={props.optionName} >
+                <NavItem eventKey="usuarioAdmin">
+                    <NavIcon>
+                        <HouseFill color="black"></HouseFill>
+                    </NavIcon>
+                    <NavText style={{color:"black"}}>
+                        Inicio
+                    </NavText>
+                </NavItem>
                 <NavItem eventKey="listaSitios">
                     <NavIcon>
                         <GeoAltFill color="black"></GeoAltFill>

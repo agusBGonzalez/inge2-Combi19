@@ -5,10 +5,10 @@ import SideNav, { Toggle, Nav, NavItem, NavIcon, NavText } from '@trendmicro/rea
 import '@trendmicro/react-sidenav/dist/react-sidenav.css';
 import './SideBar.css';
 
-import { ReceiptCutoff, CreditCardFill, GeoFill } from 'react-bootstrap-icons';
+import { ReceiptCutoff, CreditCardFill, GeoFill, HouseFill} from 'react-bootstrap-icons';
 
 
-function MenuOpcUsuario() {
+function MenuOpcUsuario(props) {
 
     return (
 
@@ -20,6 +20,14 @@ function MenuOpcUsuario() {
         >
             <SideNav.Toggle />
             <SideNav.Nav defaultSelected="">
+                <NavItem eventKey="usuarioCliente">
+                    <NavIcon>
+                        <HouseFill color="black"></HouseFill>
+                    </NavIcon>
+                    <NavText style={{color:"black"}}>
+                        Inicio
+                    </NavText>
+                </NavItem>
                 <NavItem eventKey="home">
                     <NavIcon>
                         <GeoFill color="black"></GeoFill>

@@ -15,7 +15,7 @@ function UsuarioPage() {
   return (
       <div>
         <MenuUsuario/>
-        <MenuOpcAdmin/>
+        <MenuOpcAdmin optionName="usuarioAdmin"/>
         <div style={subPageStyle}>
           <h1 className="text-center" >BIENVENIDO..</h1>
         </div>
