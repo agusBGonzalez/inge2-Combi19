@@ -5,7 +5,7 @@ import RegistrarPage from './pages/RegistrarPage';
 import LoginPage from './pages/LoginPage';
 import UsuarioPage from './pages/usuario/UsuarioPage';
 import ChoferPage from './pages/chofer/ChoferPage';
-import AdminPage from './pages/admin/AdminChoferPage';
+import AdminPage from './pages/admin/AdminPage';
 import AdminSitiosPage from './pages/admin/AdminSitiosPage';
 import AdminChoferPage from './pages/admin/AdminChoferPage';
 import AdminCombiPage from './pages/admin/AdminCombiPage';
