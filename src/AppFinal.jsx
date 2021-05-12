@@ -3,13 +3,13 @@ import {BrowserRouter as Router,Switch,Route} from 'react-router-dom';
 import InicioPage from './pages/InicioPage';
 import RegistrarPage from './pages/RegistrarPage';
 import LoginPage from './pages/LoginPage';
-import UsuarioPage from './pages/UsuarioPage';
-import ChoferPage from './pages/ChoferPage';
-import AdminPage from './pages/AdminPage';
-import AdminSitiosPage from './pages/AdminSitiosPage';
-import AdminChoferPage from './pages/AdminChoferPage';
-import AdminCombiPage from './pages/AdminCombiPage';
-import AdminProdPage from './pages/AdminProdPage';
+import UsuarioPage from './pages/usuario/UsuarioPage';
+import ChoferPage from './pages/chofer/ChoferPage';
+import AdminPage from './pages/admin/AdminChoferPage';
+import AdminSitiosPage from './pages/admin/AdminSitiosPage';
+import AdminChoferPage from './pages/admin/AdminChoferPage';
+import AdminCombiPage from './pages/admin/AdminCombiPage';
+import AdminProdPage from './pages/admin/AdminProdPage';
 
 
 
