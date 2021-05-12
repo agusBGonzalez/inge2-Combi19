@@ -1,8 +1,8 @@
   import React,{useState, useEffect} from 'react'
-  import MenuUsuario from '../components/menus/MenuUsuario'
-  import MenuOpcAdmin from '../components/menus/MenuOpcAdmin'
+  import MenuUsuario from '../../components/menus/MenuUsuario'
+  import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
   import {Table, Modal, Button, Alert} from 'react-bootstrap'
-  import { store } from '../firebaseconf'
+  import { store } from '../../firebaseconf'
   import { TrashFill, PencilFill} from 'react-bootstrap-icons';
   
   

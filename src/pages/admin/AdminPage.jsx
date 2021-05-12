@@ -1,6 +1,6 @@
 import React from 'react'
-import MenuUsuario from '../components/menus/MenuUsuario'
-import MenuOpcAdmin from '../components/menus/MenuOpcAdmin'
+import MenuUsuario from '../../components/menus/MenuUsuario'
+import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
 
 
 function UsuarioPage() {

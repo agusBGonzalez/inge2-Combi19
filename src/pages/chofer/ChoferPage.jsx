@@ -1,6 +1,6 @@
 import React from 'react'
-import MenuUsuario from '../components/menus/MenuUsuario'
-import MenuOpcChofer from '../components/menus/MenuOpcChofer'
+import MenuUsuario from '../../components/menus/MenuUsuario'
+import MenuOpcChofer from '../../components/menus/MenuOpcChofer'
 
 
 function ChoferPage() {
