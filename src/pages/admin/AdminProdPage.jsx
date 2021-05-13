@@ -300,9 +300,9 @@ function AdminProdPage() {
                                 value={tipo} onChange={(e) => { setTipo(e.target.value) }}
                                 onClick = {handleCloseAlert}
                                 className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
-                                <option disabled="disabled" value="">Seleccione Provincia</option>
+                                <option disabled="disabled" value="">Seleccione Tipo</option>
                                 <option value="Dulce">Dulce</option>
-                                <option value="Salado">Agridulce</option>
+                                <option value="Salado">Salado</option>
                                 <option value="Agridulce">Agridulce</option>
                             </select>
                             <input onChange={(e) => { setPrecio(e.target.value) }}

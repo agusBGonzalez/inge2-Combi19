@@ -23,6 +23,7 @@ const [sitios, setSitios] = useState ([])
       setError({ id: 'ciudad', dato: 'El campo ciudad esta vacio' })
       return
     }
+    
     sitios.map(s => {
       if (provincia === s.provincia) {
         if (ciudad === s.ciudad) {
