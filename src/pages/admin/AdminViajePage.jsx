@@ -20,7 +20,7 @@ function AdminViajePage() {
 
     //MODAL ELIMINAR
     const [showModal, setShowModal] = useState(false);
-    const [rutaEliminar, setRutaEliminar] = useState('');
+    const [viajeEliminar, setViajeEliminar] = useState('');
 
     const handleClose = () => setShowModal(false);
 
@@ -39,54 +39,55 @@ function AdminViajePage() {
 
     //MODAL REGISTRAR / MODIFICAR
     const [showModalEdit, setShowModalEdit] = useState(false)
-    const [rutaEditar, setRutaEditar] = useState('')
+    const [viajeEditar, setViajeEditar] = useState('')
     const [esEditar, setEsEditar] = useState(false)
-    const [esRutaRepetida, setEsRutaRepetida] = useState(false)
+    const [esViajeRepetida, setEsViajeRepetida] = useState(false)
     
 
     const handleCloseEdit = () => setShowModalEdit(false)
 
-    const [rutas, setRutas] = useState([])
+    const [viajes, setViajes] = useState([])
     
 
-    const [nombres, setNombres] = useState('')
-    const [apellido, setApellido] = useState('')
-    const [dni, setDni] = useState('')
-    const [email, setEmail] = useState('')
-    const [telefono, setTelefono] = useState('')
-    const [password, setPassword] = useState('')
+    const [fecha, setFecha] = useState('')
+    const [combi,setCombi] = useState('')
+    const [butacaDisponible, setButacaDisponible] = useState('')
+    const [precio,setPrecio] = useState('')
+    const [rutaSelect,setRutaSelect] = useState([])
+    const [ruta,setRuta] = useState('')
+    const [combiSelect,setCombiSelect] = useState([])
     
 
 
-    const getRutas =  () => {
-        store.collection('rutas').get()
+    const getViajes =  () => {
+        store.collection('viaje').get()
         .then(response => {
-            const fetchedRutas = [];
+            const fetchedViajes = [];
             response.docs.forEach(document => {
-            const fetchedRuta = {
+            const fetchedViaje = {
                 id: document.id,
                 ...document.data()
             };
-            fetchedRutas.push(fetchedRuta)
+            fetchedViajes.push(fetchedViaje)
             });
-            setRutas(fetchedRutas)
+            setViajes(fetchedViajes)
         })
     }    
  
 
     //CARGA LA LISTA CUANDO SE CARGA EL COMPONENTE
     useEffect(() => {
-        store.collection('rutas').get()
+        store.collection('viaje').get()
         .then(response => {
-            const fetchedRutas = [];
+            const fetchedViajes = [];
             response.docs.forEach(document => {
-            const fetchedRuta = {
+            const fetchedViaje = {
                 id: document.id,
                 ...document.data()
             };
-            fetchedRutas.push(fetchedRuta)
+            fetchedViajes.push(fetchedViaje)
             });
-            setRutas(fetchedRutas)
+            setViajes(fetchedViajes)
         })
         .catch(error => {
             setMsgError(error)
@@ -94,17 +95,17 @@ function AdminViajePage() {
         });
     }, []);    
 
-    const borrarRuta = async (id) => {
-        setRutaEliminar(id)
+    const borrarViaje = async (id) => {
+        setViajeEliminar(id)
         setShowModal(true);
     }    
 
     const confirmarEliminacion = async () => {
-        const { docs } = await store.collection('rutas').get()
+        const { docs } = await store.collection('viaje').get()
         const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
-        setRutas(nuevoArray)
-        await store.collection('rutas').doc(rutaEliminar).delete()
-        getRutas()
+        setViajes(nuevoArray)
+        await store.collection('viaje').doc(viajeEliminar).delete()
+        getViajes()
         setShowModal(false)
         setMsgSucc('Se elimino con exito! Click aqui para cerrar')
         setShowAlertSucc(true)
@@ -112,27 +113,25 @@ function AdminViajePage() {
     }
     
 
-    const crearModificarRuta = (oper, item) =>{
+    const crearModificarViaje = (oper, item) =>{
 
         if (oper === 'E') {
             setEsEditar(true)
-            setRutaEditar(item.id)
-            setNombres(item.nombres)
-            setApellido(item.apellido)
-            setDni(item.dni)
-            setEmail(item.email)
-            setTelefono(item.telefono)
-            setPassword(item.password)
+            setViajeEditar(item.id)
+            setFecha(item.fecha)
+            setRuta(item.ruta)
+            setCombi(item.combi)
+            setButacaDisponible(item.butacaDisponible)
+            setPrecio(item.precio)
 
         } else {
             setEsEditar(false)
-            setRutaEditar('')
-            setNombres('')
-            setApellido('')
-            setDni('')
-            setEmail('')
-            setTelefono('')
-            setPassword('')
+            setViajeEditar('')
+            setFecha('')
+            setRuta('')
+            setCombi('')
+            setButacaDisponible('')
+            setPrecio('')
         }
         setShowModalEdit(true)
     }
@@ -140,69 +139,91 @@ function AdminViajePage() {
 
     const confirmarEdicion = async (e) => {
         e.preventDefault()
-
-        if (!nombres.trim()) {
-            setMsgError('El campo Nombre esta vacio' )
+        let encontre = false
+        if (!fecha.trim()) {
+            setMsgError('El campo Fecha esta vacio' )
             setShowAlert(true)
             return
         }
-        if (!apellido.trim()) {
-          setMsgError('El campo Apellido esta vacio' )
+        if (!ruta.trim()) {
+          setMsgError('El campo Ruta esta vacio' )
           setShowAlert(true)
           return
         }
-        if (!dni.trim()) {
-              setMsgError('El campo DNI esta vacio' )
+        if (!combi.trim()) {
+              setMsgError('El campo Combi esta vacio' )
               setShowAlert(true)
               return
         }
-        if (!email.trim()) {
-          setMsgError('El campo Email esta vacio' )
+        if (!butacaDisponible.trim()) {
+          setMsgError('El campo Butacas disponibles esta vacio' )
           setShowAlert(true)
           return
        }
+       if (!precio.trim()) {
+        setMsgError('El campo Precio esta vacio' )
+        setShowAlert(true)
+        return
+        }
 
-       if (!password.trim() || (password.trim().length < 6)) {
-          setMsgError('El campo Password debe tener al menos 6 caracteres' )
-          setShowAlert(true)
-          return
-       }
 
-        store.collection('rutas').where("email", "==", email)
-            .get()
-            .then((querySnapshot) => {
-                let datosRepetidos = false
-                querySnapshot.forEach((doc) => {
-                    //COMO FILTRO POR PROVINCIA, QUEDA CHEQUEAR QUE NO HAYA UNA CIUDAD IGUAL
-                    const dniBusq = doc.data().dni           
-                    if (dniBusq === dni) {
-                        datosRepetidos = true
-                    }
-                });  
-                setEsRutaRepetida(datosRepetidos)                               
-            })
+        // store.collection('rutas').where("email", "==", email)
+        //     .get()
+        //     .then((querySnapshot) => {
+        //         let datosRepetidos = false
+        //         querySnapshot.forEach((doc) => {
+        //             //COMO FILTRO POR PROVINCIA, QUEDA CHEQUEAR QUE NO HAYA UNA CIUDAD IGUAL
+        //             const dniBusq = doc.data().dni           
+        //             if (dniBusq === dni) {
+        //                 datosRepetidos = true
+        //             }
+        //         });  
+        //         setEsRutaRepetida(datosRepetidos)                               
+        //     })
         
-        if (esRutaRepetida) {
-            setMsgError('Esta Ruta ya se encuentra cargada')
-            setShowAlert(true)
+        // if (esRutaRepetida) {
+        //     setMsgError('Esta Ruta ya se encuentra cargada')
+        //     setShowAlert(true)
+        //     return
+        // }
+        
+
+        combiSelect.map( itemcombi =>{
+            if(itemcombi.patente === combi ){
+                if(butacaDisponible > itemcombi.butaca ){
+                    setMsgError('La cantidad de butacas ingresadas es mayor a las que posee la combi')
+                    setShowAlert(true)
+                    encontre = true
+                    console.log('entro')
+                }
+            }
+        })
+
+        viajes.map (itemviaje =>{
+            if(combi === itemviaje.combi && fecha === itemviaje.fechaviaje  && ruta === itemviaje.ruta){
+                setMsgError('Se esta repitiendo el viaje para la misma fecha, combi y ruta')
+                setShowAlert(true)
+                encontre= true 
+            }
+        })
+
+        if(encontre){
             return
         }
-        
 
-        const rutaAct = {
-          nombres: nombres,
-          apellido: apellido,
-          dni: dni,
-          email: email,
-          telefono: telefono,
-          password: password
+        const regviaje= {
+            fechaviaje:fecha,
+            ruta:ruta,
+            combi:combi,
+            butacaDisponible:butacaDisponible,
+            precio:precio
         }
         
         if (esEditar){
             try{
                 //FALTA MOSTRAR MSJ DE SUCESS
-                await store.collection('rutas').doc(rutaEditar).set(rutaAct)
-                getRutas()
+                await store.collection('rutas').doc(viajeEditar).set(regviaje)
+                getViajes()
                 setMsgSucc('Actualizacion Exitosa! Click aqui para cerrar')
                 setShowAlertSucc(true)
                 setShowModalEdit(false)
@@ -215,8 +236,8 @@ function AdminViajePage() {
         } else {
             try{
                 //FALTA MOSTRAR MSJ DE SUCESS
-                await store.collection('rutas').add(rutaAct)
-                getRutas()
+                await store.collection('viaje').add(regviaje)
+                getViajes()
                 setMsgSucc('Registro Exitoso! Click aqui para cerrar')
                 setShowAlertSucc(true)
                 setShowModalEdit(false)
@@ -237,7 +258,7 @@ function AdminViajePage() {
         <MenuOpcAdmin optionName="listaViajes"/>
         <div>
             <h3 style={{top: 110, position: 'absolute', left: 80,width: "60%",}}> Listado de Viajes</h3>
-            <Button style={{top: 105, position: 'absolute', right:70, width: "150px", height: "40px"}} onClick={(e) => { crearModificarRuta('A', '') }} variant="secondary " > + Agregar Viaje</Button>
+            <Button style={{top: 105, position: 'absolute', right:70, width: "150px", height: "40px"}} onClick={(e) => { crearModificarViaje('A', '') }} variant="secondary " > + Agregar Viaje</Button>
             <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{bottom:0,zIndex:5, position: 'absolute', left: 75,width: "60%"}} >
                 {msgSucc}
             </Alert>
@@ -245,31 +266,31 @@ function AdminViajePage() {
                 <Table striped bordered hover variant="dark">
                     <thead>
                         <tr>
-                          <th>DNI</th>
-                          <th>Apellido</th>
-                          <th>Nombre</th>
-                          <th>Email</th>
-                          <th>Telefono</th>
+                          <th>Fecha</th>
+                          <th>Ruta</th>
+                          <th>Combi</th>
+                          <th>Butacas Disponibles</th>
+                          <th>Precio</th>
                           <th>Acciones</th>           
                         </tr>
                     </thead>
                     <tbody>
                         {
-                            rutas.length !== 0 ?
+                            viajes.length !== 0 ?
                                 (
-                                  rutas.map(item => (
+                                  viajes.map(item => (
                                         <tr key={item.id}>
-                                            <td>{item.dni}</td>
-                                            <td>{item.apellido}</td>
-                                            <td>{item.nombres}</td>
-                                            <td>{item.email}</td>
-                                            <td>{item.telefono}</td>
+                                            <td>{item.fechaviaje}</td>
+                                            <td>{item.ruta}</td>
+                                            <td>{item.combi}</td>
+                                            <td>{item.butacaDisponible}</td>
+                                            <td>{item.precio}</td>
                                             <td style={{width: "12%"}} >
                                                 <div className="d-flex justify-content-around">
-                                                  <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarRuta('E', item) }}>
+                                                  <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarViaje('E', item) }}>
                                                     <PencilFill color="white"></PencilFill>
                                                   </button>
-                                                  <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(id) => {borrarRuta(item.id) }}>
+                                                  <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(id) => {borrarViaje(item.id) }}>
                                                       <TrashFill color="white"></TrashFill>
                                                   </button>
                                                 </div>
@@ -284,15 +305,15 @@ function AdminViajePage() {
                     </tbody>
                 </Table>
                 {
-                    rutas.length === 0 ? <div className="alert alert-warning mt-19"> No se encontraron Viajes registrados, agregue nuevos para visualizar en la lista </div> : <div></div>
+                    viajes.length === 0 ? <div className="alert alert-warning mt-19"> No se encontraron Viajes registrados, agregue nuevos para visualizar en la lista </div> : <div></div>
                 }
             </div>
         </div>
         <Modal id="modalEliminar" show={showModal} onHide={handleClose}>
             <Modal.Header >
-                <Modal.Title>Eliminación de Ruta</Modal.Title>
+                <Modal.Title>Eliminación de Viaje</Modal.Title>
             </Modal.Header>
-            <Modal.Body>¿Está seguro que desea eliminar la ruta seleccionada?</Modal.Body>
+            <Modal.Body>¿Está seguro que desea eliminar el viaje seleccionado?</Modal.Body>
             <Modal.Footer>
                 <Button variant="primary" onClick={confirmarEliminacion}>
                     Confirmar
@@ -307,69 +328,65 @@ function AdminViajePage() {
             (
                 <Modal id="modalEditar" show={showModalEdit} onHide={handleCloseEdit}>
                     <Modal.Header >
-                        <Modal.Title>{esEditar ? "Editar Ruta" : "Agregar Ruta" }</Modal.Title>
+                        <Modal.Title>{esEditar ? "Editar Viaje" : "Agregar Viaje" }</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <form className='form-group'>
-                            <input onChange={(e) => { setDni(e.target.value) }}
+                            <input onChange={(e) => { setFecha(e.target.value) }}
                                 onClick = {handleCloseAlert}
                                 className='form-control mt-2'
-                                type="text"
+                                type="date"
                                 maxLength = '8'
-                                onKeyPress={(event) => {
-                                  if (!/[0-9]/.test(event.key)) {
-                                    event.preventDefault();
-                                  }
-                                }}
-                                placeholder='Ingrese DNI'
-                                id="dni"
-                                value={dni}
+                                placeholder='Fecha del viaje'
+                                id="fecha"
+                                value={fecha}
                             />
-                            <input onChange={(e) => { setNombres(e.target.value) }}
+                            <select
+                                value={ruta} onChange={(e) => { setRuta(e.target.value) }}
+                                onClick = {handleCloseAlert}
+                                className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
+                                <option disabled="disabled" value="">Seleccione una Ruta </option>
+                                {
+                                rutaSelect.map( item2=> (
+                                    <option  name ={item2.id}>Origen:{item2.origen} Destino:{item2.destino} Hora:{item2.hora}-{item2.kilometro}Km</option>
+                                )
+                                )
+                                 }
+                            </select>
+                            <select
+                                value={combi} onChange={(e) => { setCombi(e.target.value) }}
+                                onClick = {handleCloseAlert}
+                                className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
+                                <option disabled="disabled" value="">Seleccione una Combi </option>
+                                {
+                                combiSelect.map( item2=> (
+                                    <option name ={item2.id}>{item2.patente}</option>
+                                )
+                                )
+                                 }
+                            </select>
+                            
+                            <input onChange={(e) => { setButacaDisponible(e.target.value) }}
                                 onClick = {handleCloseAlert}
                                 className='form-control mt-2'
-                                type="text"
-                                placeholder='Ingrese Nombres'
-                                id="nomb"
-                                value={nombres}
-                            />
-                            <input onChange={(e) => { setApellido(e.target.value) }}
-                                onClick = {handleCloseAlert}
-                                className='form-control mt-2'
-                                type="text"
-                                placeholder='Ingrese Apellido'
-                                id="ape"
-                                value={apellido}
-                            />
-                            <input onChange={(e) => { setEmail(e.target.value) }}
-                                onClick = {handleCloseAlert}
-                                className='form-control mt-2'
-                                type="email"
-                                placeholder='Ingrese Email'
-                                id="email"
-                                value={email}
-                            />
-                            <input onChange={(e) => { setTelefono(e.target.value) }}
-                                onClick = {handleCloseAlert}
-                                className='form-control mt-2'
-                                type="text"
+                                type="int"
                                 maxLength = '14'
                                 onKeyPress={(event) => {
-                                  if (!/[0-9]/.test(event.key)) {
+                                  if (!/[0-1]/.test(event.key)) {
                                     event.preventDefault();
                                   }
                                 }}
-                                placeholder='Ingrese Telefono'
-                                id="tele"
-                                value={telefono}
+                                placeholder='Ingrese las Butacas Disponibles'
+                                id="butacas"
+                                value={butacaDisponible}
                             />
-                            <input onChange={(e) => { setPassword(e.target.value) }}
+                            <input onChange={(e) => { setPrecio(e.target.value) }}
                                 onClick = {handleCloseAlert}
                                 className='form-control mt-2'
-                                type="password"
-                                placeholder='Ingrese Password'
-                                id="pass"
-                                value={password}
+                                type="float"
+                                placeholder='Ingrese Precio'
+                                id="precio"
+                                value={precio}
                             />
                             
                         </form>

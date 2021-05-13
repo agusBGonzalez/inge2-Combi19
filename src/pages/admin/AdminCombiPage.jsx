@@ -75,6 +75,11 @@ const AdminCombiPage = () => {
 
     //CARGA LA LISTA CUANDO SE CARGA EL COMPONENTE
     useEffect(() => {
+        const datoschoferes = async() =>{
+            const {docs} = await store.collection('choferes').get()
+            const nuevoArray = docs.map( item => ({id:item.id, ...item.data()}))
+            setChoferSelect(nuevoArray)
+        }
         store.collection('combi').get()
         .then(response => {
             const fetchedCombis = [];
@@ -87,14 +92,14 @@ const AdminCombiPage = () => {
             });
             setCombi(fetchedCombis)
         })
-        // const {docs} = await store.collection('choferes').get()
-        // const nuevoArray = docs.map( item => ({id:item.id, ...item.data()}))
-        // setChoferSelect(nuevoArray)
         .catch(error => {
             setMsgError(error)
             setShowAlert(true)
         });
+        datoschoferes()
     }, []);    
+
+
 
     const borrarCombi = async (id) => {
         setCombiEliminar(id)
@@ -115,10 +120,9 @@ const AdminCombiPage = () => {
     
 
     const crearModificarCombi = (oper, item) =>{
-
+      
         if (oper === 'E') {
             setEsEditar(true)
-            //console.log("entra")
             setCombiEditar(item.id)
             setPatente(item.patente)
             setMarca(item.marca)
@@ -129,12 +133,14 @@ const AdminCombiPage = () => {
             setChofer(item.chofer)
         } else {
             setEsEditar(false)
-            console.log("entra2222")
             setCombiEditar('')
             setPatente('')
             setMarca('')
             setModelo('')
             setButaca('')
+            setAño('')
+            setTipo('')
+            setChofer('')
 
         }
         setShowModalEdit(true)
@@ -143,49 +149,44 @@ const AdminCombiPage = () => {
 
     const confirmarEdicion = async (e) => {
         e.preventDefault()
-
+        let encontre = false
         if(!patente.trim()){
             setMsgError('El campo patente esta vacio')
             setShowAlert(true)
+            return
         }else if(!marca.trim()){
             setMsgError('El campo marca esta vacio' )
             setShowAlert(true)
+            return
         }else if(!modelo.trim()){
             setMsgError('El campo modelo esta vacio' )
             setShowAlert(true)
+            return
         }else if(!año.trim()){
             setMsgError('El campo año esta vacio' )
             setShowAlert(true)
+            return
         }else if(!butaca.trim()){
             setMsgError('El campo butaca esta vacio' )
             setShowAlert(true)
+            return
         }else if(!tipo.trim()){
             setMsgError('El campo tipo esta vacio')
             setShowAlert(true)
+            return
         }else if(!chofer.trim()){
             setMsgError('El campo chofer esta vacio')
             setShowAlert(true)
+            return
         }
         
-
-
-        store.collection('combi').where("patente", "==", patente)
-            .get()
-            .then((querySnapshot) => {
-                let datosRepetidos = false
-                querySnapshot.forEach((doc) => {
-                    //COMO FILTRO POR PROVINCIA, QUEDA CHEQUEAR QUE NO HAYA UNA CIUDAD IGUAL
-                    const nropatente = doc.data().patente
-                    //console.log(nomCuidad)   
-                    //console.log(ciudad)             
-                    if ((!esEditar) && (nropatente === patente)) {
-                        datosRepetidos = true
-                    }
-                });
-                setEsCombiRepetido(datosRepetidos)                               
-            })
+        combi.map(item =>{
+            if(patente === item.patente){
+                encontre = true
+            }
+        })
         
-        if (esCombiRepetido) {
+        if(encontre){
             setMsgError('Esta patente ya se encuentra cargada')
             setShowAlert(true)
             return
@@ -319,6 +320,40 @@ const AdminCombiPage = () => {
                     </Modal.Header>
                     <Modal.Body>
                         <form className='form-group'>
+                        <input 
+                                onChange= {(e) => {setPatente(e.target.value)}} 
+                                onClick = {handleCloseAlert}
+                                className='form-control mt-5' 
+                                type="text" 
+                                placeholder= 'Patente'  
+                                value={patente}
+                            />
+                            <input 
+                                onChange= {(e) => {setMarca(e.target.value)}} 
+                                onClick = {handleCloseAlert}
+                                className='form-control mt-3'
+                                type="text" 
+                                placeholder='Marca'
+                                value={marca}
+                            />
+                            <input 
+                                onChange= {(e) => {setModelo(e.target.value)}} 
+                                onClick = {handleCloseAlert}
+                                className='form-control mt-3' 
+                                type="text" 
+                                placeholder='Modelo'
+                                value= {modelo}
+                            />
+                           
+                           <input 
+                                onChange= {(e) => {setButaca(e.target.value)}} 
+                                onClick = {handleCloseAlert}
+                                className='form-control mt-3' 
+                                type="int" 
+                                placeholder='Nro. de Butacas'
+                                value= {butaca}
+                            />
+                           
                             <select
                                 value={año} onChange={(e) => { setAño(e.target.value) }}
                                 onClick = {handleCloseAlert}
@@ -357,52 +392,20 @@ const AdminCombiPage = () => {
                                 <option value='Super Comoda'>Super Comoda</option>
                             </select>
 
-                            {/* <select
-                                value={tipo} onChange={(e) => { setTipo(e.target.value) }}
-                                onClick = {handleCloseAlert}
-                                className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
-                                <option disabled="disabled" value="">Seleccione un Tipo</option>
-                                <option value='Comoda'>Comoda</option>
-                                <option value='Super Comoda'>Super Comoda</option>
-                            </select> */}
-
                             <select
                                 value={chofer} onChange={(e) => { setChofer(e.target.value) }}
                                 onClick = {handleCloseAlert}
                                 className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
                                 <option disabled="disabled" value="">Seleccione un Chofer </option>
                                 {
-                                choferselect.map( item => (
-                                    <option name ={item.id}>{item.apellido} {item.nombre}</option>
+                                choferselect.map( item2=> (
+                                    <option name ={item2.id}>{item2.apellido} {item2.nombres}</option>
                                 )
                                 )
                                  }
                             </select>
                             
-                            <input 
-                                onChange= {(e) => {setPatente(e.target.value)}} 
-                                onClick = {handleCloseAlert}
-                                className='form-control mt-5' 
-                                type="text" 
-                                placeholder= 'Patente'  
-                                value={patente}
-                            />
-                            <input 
-                                onChange= {(e) => {setMarca(e.target.value)}} 
-                                onClick = {handleCloseAlert}
-                                className='form-control mt-3'
-                                type="text" 
-                                placeholder='Marca'
-                                value={marca}
-                            />
-                            <input 
-                                onChange= {(e) => {setModelo(e.target.value)}} 
-                                onClick = {handleCloseAlert}
-                                className='form-control mt-3' 
-                                type="text" 
-                                placeholder='Modelo'
-                                value= {modelo}
-                            />
+                            
                         </form>
                         <Alert className="mt-4" variant="danger" show={showAlert}>
 					        {msgError}
