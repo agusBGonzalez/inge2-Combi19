@@ -74,11 +74,26 @@ function AdminSitiosPage() {
                 setSitios(fetchedSitios)
             })
     }
+    const getViajes = () => {
+        store.collection('viajesAgus').get()
+            .then(response => {
+                const fetcheViajes = [];
+                response.docs.forEach(document => {
+                    const fetchedViaje = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetcheViajes.push(fetchedViaje)
+                });
+                setViajes(fetcheViajes)
+            })
+    }
 
     //CARGA LA LISTA CUANDO SE CARGA EL COMPONENTE
     useEffect(() => {
         store.collection('sitios').get()
             .then(response => {
+        getViajes()
                 const fetchedSitios = [];
                 response.docs.forEach(document => {
                     const fetchedSitio = {
@@ -94,35 +109,41 @@ function AdminSitiosPage() {
                 setShowAlert(true)
             });
     }, []);
+    
 
-    const borrarSitio = async (id) => {
-        setSitioEliminar(id)
+    const borrarSitio = async (sitio) => {
+        setSitioEliminar(sitio)
         setShowModal(true);
     }
 
+
     const confirmarEliminacion = async () => {
         let encontre = false
-        //sitios
-        const { docs } = await store.collection('viajesAgus').get()
-        const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
-        setViajes(nuevoArray)
         //viajes
+        getViajes()
+        console.log(viajes.length)
         if (viajes.length !== 0) {
             viajes.map(viaje => {
-                console.log(viaje.ruta.origen.provincia === provincia)
-                if (viaje.ruta.origen.provincia === provincia) {
-                    console.log(viaje.ruta.origen.ciudad === ciudad)
-                    if (viaje.ruta.origen.ciudad === ciudad) {
+                alert('si miras la consola en coidad y provincia quedan los ultimos datos cargados, osea no los que tiene el item en la tabla')
+                console.log('origen')
+                console.log(viaje.ruta.origen.provincia)
+                console.log(viaje.ruta.origen.ciudad)
+                console.log('destino')
+                console.log(viaje.ruta.destino.provincia)
+                console.log(viaje.ruta.destino.ciudad)
+                console.log('mis datos')
+                console.log(sitioEliminar.provincia)
+                console.log(sitioEliminar.ciudad)
+
+
+                if (viaje.ruta.origen.provincia === sitioEliminar.provincia) {
+                    if (viaje.ruta.origen.ciudad === sitioEliminar.ciudad) {
                         encontre = true
                         setShowModal(false)
-
                     }
                 }
-                console.log(viaje.ruta.destino.provincia === provincia)
-
-                if (viaje.ruta.destino.provincia === provincia) {
-                    console.log(viaje.ruta.destino.ciudad == ciudad)
-                    if (viaje.ruta.destino.ciudad == ciudad) {
+                if (viaje.ruta.destino.provincia === sitioEliminar.provincia) {
+                    if (viaje.ruta.destino.ciudad == sitioEliminar.ciudad) {
                         encontre = true
                         setShowModal(false)
 
@@ -136,7 +157,7 @@ function AdminSitiosPage() {
             }
         }
 
-        await store.collection('sitios').doc(sitioEliminar).delete()
+        await store.collection('sitios').doc(sitioEliminar.id).delete()
         getSitios()
         setShowModal(false)
         setMsgSucc('Se elimino con exito! Click aqui para cerrar')
@@ -150,13 +171,13 @@ function AdminSitiosPage() {
 
         if (oper === 'E') {
             setEsEditar(true)
-            console.log("entra")
-            setSitioEditar(item.id)
+            console.log("Editar")
+            setSitioEditar(item)
             setProvincia(item.provincia)
             setCiudad(item.ciudad)
         } else {
             setEsEditar(false)
-            console.log("entra2222")
+            console.log("Agregar")
             setSitioEditar('')
             setProvincia('')
             setCiudad('')
@@ -207,41 +228,48 @@ function AdminSitiosPage() {
         }
 
         if (esEditar) {
-            //FALTA MOSTRAR MSJ DE SUCESS
             let encontre = false
-            //sitios
-            const { docs } = await store.collection('viajesAgus').get()
-            const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
-            setViajes(nuevoArray)
             //viajes
-            //ESTO ESTA MAL, XQ NO ME DEJA MODIFICARLA Y PONERLE EL DATO QUE QUIERO
-            
+            getViajes()
+            console.log(viajes.length)
             if (viajes.length !== 0) {
                 viajes.map(viaje => {
-                    console.log(viaje.ruta.origen.provincia === provincia)
-                    if (viaje.ruta.origen.provincia === provincia) {
-                        if (viaje.ruta.origen.ciudad === ciudad) {
+                    alert('en mis datos tiene q decir los datos que ya estan, no los que agrego yo')
+                    console.log('origen')
+                    console.log(viaje.ruta.origen.provincia)
+                    console.log(viaje.ruta.origen.ciudad)
+                    console.log('destino')
+                    console.log(viaje.ruta.destino.provincia)
+                    console.log(viaje.ruta.destino.ciudad)
+                    console.log('mis datos')
+                    console.log(sitioEditar.provincia)
+                    console.log(sitioEditar.ciudad)
+    
+    
+                    if (viaje.ruta.origen.provincia === sitioEditar.provincia) {
+                        if (viaje.ruta.origen.ciudad === sitioEditar.ciudad) {
                             encontre = true
                             setShowModal(false)
                         }
                     }
-                    if (viaje.ruta.destino.provincia === provincia) {
-                        if (viaje.ruta.destino.ciudad == ciudad) {
+                    if (viaje.ruta.destino.provincia === sitioEditar.provincia) {
+                        if (viaje.ruta.destino.ciudad == sitioEditar.ciudad) {
                             encontre = true
                             setShowModal(false)
-
+    
                         }
                     }
                 })
                 if (encontre) {
-                    setMsgDanger('No se pudo modificar ya que tiene un viaje programado! Click aqui para cerrar')
+                    setMsgDanger('No se pudo Editar ya que tiene un viaje programado! Click aqui para cerrar')
                     setShowAlertDanger(true)
                     return
                 }
             }
             try {
-                await store.collection('sitios').doc(sitioEditar).set(sitioAct)
+                await store.collection('sitios').doc(sitioEditar.id).set(sitioAct)
                 getSitios()
+                getViajes()
                 setMsgSucc('Registro Exitoso! Click aqui para cerrar')
                 setShowAlertSucc(true)
                 setShowModalEdit(false)
@@ -306,7 +334,7 @@ function AdminSitiosPage() {
                                                         <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarSitio('E', item) }}>
                                                             <PencilFill color="white"></PencilFill>
                                                         </button>
-                                                        <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(id) => { borrarSitio(item.id) }}>
+                                                        <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(id) => { borrarSitio(item) }}>
                                                             <TrashFill color="white"></TrashFill>
                                                         </button>
                                                     </div>
