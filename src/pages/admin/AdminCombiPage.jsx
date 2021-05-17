@@ -54,7 +54,7 @@ const AdminCombiPage = () => {
     const [tipo,setTipo] = useState('')
     const [choferselect,setChoferSelect] = useState([])
     const [chofer,setChofer] = useState('')
-    
+    const [viaje,setViaje] = useState([])
 
 
     const getCombis =  () => {
@@ -79,6 +79,9 @@ const AdminCombiPage = () => {
             const {docs} = await store.collection('choferes').get()
             const nuevoArray = docs.map( item => ({id:item.id, ...item.data()}))
             setChoferSelect(nuevoArray)
+            const r = await store.collection('viaje').get()
+            const viajesArray = r.docs.map( item => ({id:item.id, ...item.data()}))
+            setViaje(viajesArray)
         }
         store.collection('combi').get()
         .then(response => {
@@ -107,9 +110,23 @@ const AdminCombiPage = () => {
     }    
 
     const confirmarEliminacion = async () => {
+        let encontre2 = false 
+       
         const { docs } = await store.collection('combi').get()
         const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
         setCombi(nuevoArray)
+        viaje.map( itemviaje =>{
+            combi.map (itemcombi =>{
+                if(itemcombi.patente == itemviaje.combi){
+                    setMsgError('La combi ya se encuentra asignada a un viaje')
+                    setShowAlert(true)
+                    encontre2 = true 
+                }
+           })
+        }) 
+        if (encontre2){
+            return
+        }
         await store.collection('combi').doc(combiEliminar).delete()
         getCombis()
         setShowModal(false)
@@ -150,6 +167,7 @@ const AdminCombiPage = () => {
     const confirmarEdicion = async (e) => {
         e.preventDefault()
         let encontre = false
+        let encontre2 = false
         if(!patente.trim()){
             setMsgError('El campo patente esta vacio')
             setShowAlert(true)
@@ -185,7 +203,18 @@ const AdminCombiPage = () => {
                 encontre = true
             }
         })
-        
+        viaje.map( itemviaje =>{
+            combi.map (itemcombi =>{
+                if(itemcombi.patente == itemviaje.combi){
+                    setMsgError('La combi ya se encuentra asignada a un viaje por lo tanto no se puede modificar')
+                    setShowAlert(true)
+                    encontre2 = true 
+                }
+           })
+        }) 
+        if (encontre2){
+            return
+        }
         if(encontre){
             setMsgError('Esta patente ya se encuentra cargada')
             setShowAlert(true)
@@ -301,7 +330,11 @@ const AdminCombiPage = () => {
 			<Modal.Header >
 				<Modal.Title>Eliminación de Combi</Modal.Title>
 			</Modal.Header>
-			<Modal.Body>¿Está seguro que desea eliminar la combi seleccionada?</Modal.Body>
+			<Modal.Body>¿Está seguro que desea eliminar la combi seleccionada?
+            <Alert className="mt-4" variant="danger" show={showAlert}>
+					        {msgError}
+			</Alert>
+            </Modal.Body>
 			<Modal.Footer>
                 <Button variant="primary" onClick={confirmarEliminacion}>
 					Confirmar
