@@ -93,7 +93,7 @@ function AdminSitiosPage() {
     useEffect(() => {
         store.collection('sitios').get()
             .then(response => {
-        getViajes()
+                getViajes()
                 const fetchedSitios = [];
                 response.docs.forEach(document => {
                     const fetchedSitio = {
@@ -109,7 +109,7 @@ function AdminSitiosPage() {
                 setShowAlert(true)
             });
     }, []);
-    
+
 
     const borrarSitio = async (sitio) => {
         setSitioEliminar(sitio)
@@ -124,7 +124,6 @@ function AdminSitiosPage() {
         console.log(viajes.length)
         if (viajes.length !== 0) {
             viajes.map(viaje => {
-                alert('si miras la consola en coidad y provincia quedan los ultimos datos cargados, osea no los que tiene el item en la tabla')
                 console.log('origen')
                 console.log(viaje.ruta.origen.provincia)
                 console.log(viaje.ruta.origen.ciudad)
@@ -146,7 +145,6 @@ function AdminSitiosPage() {
                     if (viaje.ruta.destino.ciudad == sitioEliminar.ciudad) {
                         encontre = true
                         setShowModal(false)
-
                     }
                 }
             })
@@ -173,8 +171,8 @@ function AdminSitiosPage() {
             setEsEditar(true)
             console.log("Editar")
             setSitioEditar(item)
-            setProvincia(item.provincia)
-            setCiudad(item.ciudad)
+            // setProvincia(item.provincia)
+            // setCiudad(item.ciudad)
         } else {
             setEsEditar(false)
             console.log("Agregar")
@@ -200,7 +198,7 @@ function AdminSitiosPage() {
             return
         }
 
-        store.collection('sitios').where("provincia", "==", provincia)
+        store.collection('sitios').where("provincia", "==",  provincia)
             .get()
             .then((querySnapshot) => {
                 let datosRepetidos = false
@@ -234,7 +232,6 @@ function AdminSitiosPage() {
             console.log(viajes.length)
             if (viajes.length !== 0) {
                 viajes.map(viaje => {
-                    alert('en mis datos tiene q decir los datos que ya estan, no los que agrego yo')
                     console.log('origen')
                     console.log(viaje.ruta.origen.provincia)
                     console.log(viaje.ruta.origen.ciudad)
@@ -244,8 +241,8 @@ function AdminSitiosPage() {
                     console.log('mis datos')
                     console.log(sitioEditar.provincia)
                     console.log(sitioEditar.ciudad)
-    
-    
+
+
                     if (viaje.ruta.origen.provincia === sitioEditar.provincia) {
                         if (viaje.ruta.origen.ciudad === sitioEditar.ciudad) {
                             encontre = true
@@ -256,13 +253,13 @@ function AdminSitiosPage() {
                         if (viaje.ruta.destino.ciudad == sitioEditar.ciudad) {
                             encontre = true
                             setShowModal(false)
-    
+
                         }
                     }
                 })
                 if (encontre) {
-                    setMsgDanger('No se pudo Editar ya que tiene un viaje programado! Click aqui para cerrar')
-                    setShowAlertDanger(true)
+                    setMsgError('No se puede editar el sitio ya que pertenece a un viaje programado')
+                    setShowAlert(true)
                     return
                 }
             }
@@ -360,10 +357,10 @@ function AdminSitiosPage() {
                 <Modal.Footer>
                     <Button variant="primary" onClick={confirmarEliminacion}>
                         Confirmar
-				</Button>
+				        </Button>
                     <Button variant="secondary" onClick={handleClose}>
                         Cancelar
-				</Button>
+				        </Button>
                 </Modal.Footer>
             </Modal>
             {
@@ -433,6 +430,7 @@ function AdminSitiosPage() {
 
             }
         </div>
+
 
     );
 }
