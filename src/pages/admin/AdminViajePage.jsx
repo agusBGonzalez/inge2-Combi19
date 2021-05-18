@@ -41,7 +41,6 @@ function AdminViajePage() {
     const [showModalEdit, setShowModalEdit] = useState(false)
     const [viajeEditar, setViajeEditar] = useState('')
     const [esEditar, setEsEditar] = useState(false)
-    const [esViajeRepetida, setEsViajeRepetida] = useState(false)
     
 
     const handleCloseEdit = () => setShowModalEdit(false)
@@ -56,7 +55,7 @@ function AdminViajePage() {
     const [rutaSelect,setRutaSelect] = useState([])
     const [ruta,setRuta] = useState('')
     const [combiSelect,setCombiSelect] = useState([])
-    
+    var hoy = new Date().toLocaleDateString()
 
 
     const getViajes =  () => {
@@ -77,6 +76,16 @@ function AdminViajePage() {
 
     //CARGA LA LISTA CUANDO SE CARGA EL COMPONENTE
     useEffect(() => {
+        const datos = async() =>{
+            const {docs} = await store.collection('combi').get()
+            const combiArray = docs.map( item => ({id:item.id, ...item.data()}))
+            setCombiSelect(combiArray)
+            const respuesta = await store.collection('ruta').get()
+            const rutaArray = respuesta.docs.map( item => ({id:item.id, ...item.data()}))
+            setRutaSelect(rutaArray)
+        }
+        
+        datos()
         store.collection('viaje').get()
         .then(response => {
             const fetchedViajes = [];
@@ -101,9 +110,28 @@ function AdminViajePage() {
     }    
 
     const confirmarEliminacion = async () => {
+        let ok = false
+        let fecha2
+        let dia = 1
+        let aux 
         const { docs } = await store.collection('viaje').get()
         const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
         setViajes(nuevoArray)
+        viajes.map(itemviaje =>{
+            fecha2 = new Date(itemviaje.fechaviaje)
+            aux = new Date(fecha2.setDate(fecha2.getDate() + dia))
+            if(itemviaje.id === viajeEliminar){
+                if(hoy === aux.toLocaleDateString()){
+                    setMsgError('El viaje esta en curso por lo cual no se puede eliminar')
+                    setShowAlert(true)
+                    ok = true  
+                }
+            }
+        })
+        if (ok){
+            return
+        }
+
         await store.collection('viaje').doc(viajeEliminar).delete()
         getViajes()
         setShowModal(false)
@@ -118,7 +146,7 @@ function AdminViajePage() {
         if (oper === 'E') {
             setEsEditar(true)
             setViajeEditar(item.id)
-            setFecha(item.fecha)
+            setFecha(item.fechaviaje)
             setRuta(item.ruta)
             setCombi(item.combi)
             setButacaDisponible(item.butacaDisponible)
@@ -140,6 +168,9 @@ function AdminViajePage() {
     const confirmarEdicion = async (e) => {
         e.preventDefault()
         let encontre = false
+        let fecha2
+        let dia = 1
+        let aux 
         if (!fecha.trim()) {
             setMsgError('El campo Fecha esta vacio' )
             setShowAlert(true)
@@ -165,36 +196,22 @@ function AdminViajePage() {
         setShowAlert(true)
         return
         }
-
-
-        // store.collection('rutas').where("email", "==", email)
-        //     .get()
-        //     .then((querySnapshot) => {
-        //         let datosRepetidos = false
-        //         querySnapshot.forEach((doc) => {
-        //             //COMO FILTRO POR PROVINCIA, QUEDA CHEQUEAR QUE NO HAYA UNA CIUDAD IGUAL
-        //             const dniBusq = doc.data().dni           
-        //             if (dniBusq === dni) {
-        //                 datosRepetidos = true
-        //             }
-        //         });  
-        //         setEsRutaRepetida(datosRepetidos)                               
-        //     })
-        
-        // if (esRutaRepetida) {
-        //     setMsgError('Esta Ruta ya se encuentra cargada')
-        //     setShowAlert(true)
-        //     return
-        // }
-        
+        console.log(precio)
+        if (precio < 0) {
+            setMsgError('El precio tiene que ser mayor que 0' )
+            setShowAlert(true)
+            return
+        }
 
         combiSelect.map( itemcombi =>{
             if(itemcombi.patente === combi ){
-                if(butacaDisponible > itemcombi.butaca ){
+                console.log(butacaDisponible)
+                console.log(itemcombi.butaca)
+                if(parseInt(butacaDisponible) > parseInt(itemcombi.butaca) ){
                     setMsgError('La cantidad de butacas ingresadas es mayor a las que posee la combi')
                     setShowAlert(true)
                     encontre = true
-                    console.log('entro')
+                    console.log('es mayor')
                 }
             }
         })
@@ -206,6 +223,18 @@ function AdminViajePage() {
                 encontre= true 
             }
         })
+        viajes.map(itemviaje =>{
+            fecha2 = new Date(itemviaje.fechaviaje)
+            aux = new Date(fecha2.setDate(fecha2.getDate() + dia))
+            if(itemviaje.id === viajeEliminar){
+                if(hoy === aux.toLocaleDateString()){
+                    setMsgError('El viaje esta en curso por lo cual no se puede modificar')
+                    setShowAlert(true)
+                    encontre = true  
+                }
+            }
+        })
+        
 
         if(encontre){
             return
@@ -222,7 +251,7 @@ function AdminViajePage() {
         if (esEditar){
             try{
                 //FALTA MOSTRAR MSJ DE SUCESS
-                await store.collection('rutas').doc(viajeEditar).set(regviaje)
+                await store.collection('viaje').doc(viajeEditar).set(regviaje)
                 getViajes()
                 setMsgSucc('Actualizacion Exitosa! Click aqui para cerrar')
                 setShowAlertSucc(true)
@@ -313,7 +342,11 @@ function AdminViajePage() {
             <Modal.Header >
                 <Modal.Title>Eliminación de Viaje</Modal.Title>
             </Modal.Header>
-            <Modal.Body>¿Está seguro que desea eliminar el viaje seleccionado?</Modal.Body>
+            <Modal.Body>¿Está seguro que desea eliminar el viaje seleccionado?
+            <Alert className="mt-4" variant="danger" show={showAlert}>
+					        {msgError}
+			</Alert>
+            </Modal.Body>
             <Modal.Footer>
                 <Button variant="primary" onClick={confirmarEliminacion}>
                     Confirmar
@@ -369,13 +402,8 @@ function AdminViajePage() {
                             <input onChange={(e) => { setButacaDisponible(e.target.value) }}
                                 onClick = {handleCloseAlert}
                                 className='form-control mt-2'
-                                type="int"
-                                maxLength = '14'
-                                onKeyPress={(event) => {
-                                  if (!/[0-1]/.test(event.key)) {
-                                    event.preventDefault();
-                                  }
-                                }}
+                                type="text"
+                                maxLength = '3'                       
                                 placeholder='Ingrese las Butacas Disponibles'
                                 id="butacas"
                                 value={butacaDisponible}
@@ -383,7 +411,7 @@ function AdminViajePage() {
                             <input onChange={(e) => { setPrecio(e.target.value) }}
                                 onClick = {handleCloseAlert}
                                 className='form-control mt-2'
-                                type="float"
+                                type="number"
                                 placeholder='Ingrese Precio'
                                 id="precio"
                                 value={precio}
