@@ -91,6 +91,7 @@ function AdminSitiosPage() {
 
     //CARGA LA LISTA CUANDO SE CARGA EL COMPONENTE
     useEffect(() => {
+
         store.collection('sitios').get()
             .then(response => {
                 getViajes()
@@ -124,16 +125,6 @@ function AdminSitiosPage() {
         console.log(viajes.length)
         if (viajes.length !== 0) {
             viajes.map(viaje => {
-                console.log('origen')
-                console.log(viaje.ruta.origen.provincia)
-                console.log(viaje.ruta.origen.ciudad)
-                console.log('destino')
-                console.log(viaje.ruta.destino.provincia)
-                console.log(viaje.ruta.destino.ciudad)
-                console.log('mis datos')
-                console.log(sitioEliminar.provincia)
-                console.log(sitioEliminar.ciudad)
-
 
                 if (viaje.ruta.origen.provincia === sitioEliminar.provincia) {
                     if (viaje.ruta.origen.ciudad === sitioEliminar.ciudad) {
@@ -186,7 +177,7 @@ function AdminSitiosPage() {
 
     const confirmarEdicion = async (e) => {
         e.preventDefault()
-
+        let sitioCargado=false
         if (provincia === "") {
             setMsgError('El campo provincia esta vacio')
             setShowAlert(true)
@@ -198,33 +189,25 @@ function AdminSitiosPage() {
             return
         }
 
-        store.collection('sitios').where("provincia", "==",  provincia)
-            .get()
-            .then((querySnapshot) => {
-                let datosRepetidos = false
-                querySnapshot.forEach((doc) => {
-                    //COMO FILTRO POR PROVINCIA, QUEDA CHEQUEAR QUE NO HAYA UNA CIUDAD IGUAL
-                    const nomCuidad = doc.data().ciudad
-                    console.log(nomCuidad)
-                    console.log(ciudad)
-                    if (nomCuidad === ciudad) {
-                        datosRepetidos = true
-                    }
-                });
-                setEsSitioRepetido(datosRepetidos)
-            })
+        sitios.map(s => {
+            if (provincia === s.provincia) {
+                if (ciudad === s.ciudad) {
+                    setMsgError('El sitio ya se encuentra cargado')
+                    setShowAlert(true)
+                    sitioCargado = true
+                }
+            }
+        })
 
-        if (esSitioRepetido) {
-            setMsgError('Este sitio ya se encuentra cargado')
-            setShowAlert(true)
+        if (sitioCargado) {
             return
-        }
-
+          }
         const sitioAct = {
             ciudad: ciudad,
             provincia: provincia
         }
-
+        getSitios()
+        console.log(sitios.length)
         if (esEditar) {
             let encontre = false
             //viajes

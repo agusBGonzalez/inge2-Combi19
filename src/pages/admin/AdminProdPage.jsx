@@ -150,27 +150,19 @@ function AdminProdPage() {
             setShowAlert(true)
             return
         }
-        store.collection('productos').where("nombre", "==", nombre)
-            .get()
-            .then((querySnapshot) => {                
-                let datosRepetidos = false
-                querySnapshot.forEach((doc) => {
-                    //COMO FILTRO POR PROVINCIA, QUEDA CHEQUEAR QUE NO HAYA UNA CIUDAD IGUAL
-                    const nropatente = doc.data().nombre
-                    //console.log(nomCuidad)   
-                    //console.log(ciudad)             
-                    if ((!esEditar) && (nropatente === nombre)) {
-                        datosRepetidos = true
-                    }
-                });
-                setEsProductoRepetido(datosRepetidos)
-            })
+        let productoRepetido=false
 
-        if (esProductoRepetido) {
+          productos.map(prod =>{
+            if(nombre === prod.nombre){
+                
             setMsgError('Este Prod ya se encuentra cargado')
             setShowAlert(true)
-            return
-        }
+              productoRepetido = true
+            }
+          })
+          if (productoRepetido){
+              return
+          }
 
         const prodAct = {
             nombre: nombre,
