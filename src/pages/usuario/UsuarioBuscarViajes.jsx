@@ -56,7 +56,9 @@ function UsuarioBuscarViajes() {
 
     const [fecha, setFecha] = useState('')
     const [combi, setCombi] = useState('')
-    const [sitio, setSitio] = useState('')
+    const [origen, setOrigen] = useState([])
+    const [destino, setDestino] = useState('')
+
 
 
     const [butacaDisponible, setButacaDisponible] = useState('')
@@ -70,7 +72,7 @@ function UsuarioBuscarViajes() {
 
 
     const getViajes = () => {
-        store.collection('buscarViajes').get()
+        store.collection('viaje').get()
             .then(response => {
                 const fetchedViajes = [];
                 response.docs.forEach(document => {
@@ -80,11 +82,18 @@ function UsuarioBuscarViajes() {
                     };
                     fetchedViajes.push(fetchedViaje)
                 });
-                setViajesFiltrados(fetchedViajes)
-
+                setViajes(fetchedViajes)
             })
     }
-    useEffect(async() => {
+    useEffect(() => {
+        const datosSitios = async() =>{
+            const {docs} = await store.collection('sitios').get()
+            const nuevoArray = docs.map( item => ({id:item.id, ...item.data()}))
+            setSitioSelect(nuevoArray)
+            const r = await store.collection('viaje').get()
+            const viajesArray = r.docs.map( item => ({id:item.id, ...item.data()}))
+            setViajes(viajesArray)
+        }
 
         store.collection('buscarViajes').get()
             .then(response => {
@@ -103,16 +112,50 @@ function UsuarioBuscarViajes() {
                 setMsgError(error)
                 setShowAlert(true)
             });
+            datosSitios()
     }, []);
     const filtarViajes = () => {
         setShowModalEdit(true)
     }
 
-    const confirmarBusqueda = () => {
+    const confirmarBusqueda = async () => {
+        if (origen === "") {
+            setMsgError('El campo nombre esta vacio')
+            setShowAlert(true)
+            return
+        }
+        if (destino === "") {
+            setMsgError('El campo tipo esta vacio')
+            setShowAlert(true)
+            return
+        }
+        if (fecha === "") {
+            setMsgError('El precio tipo esta vacio')
+            setShowAlert(true)
+            return
+        }
+        if (origen === destino){
+            setMsgError('Origen y destino deben ser diferentes')
+            setShowAlert(true)
+            return
+        }        
+        getViajes()
+        viajes.map(v=>{
+            console.log(v.origen)
+            console.log(origen)
+            if (v.origen === origen ){
+                if (v.destino === destino){
+                    if(v.fecha === fecha){
+                    }
+                }
+            }
+        })
 
     }
     const comprar = () => {
     }
+
+
     return (
         <div>
             <MenuUsuario />
@@ -171,7 +214,7 @@ function UsuarioBuscarViajes() {
                         </tbody>
                     </Table>
                     {
-                        // sitios.length === 0 ? <div className="alert alert-warning mt-19"> No hay elementos en la lista </div> : <div></div>
+                        viajesFiltrados.length === 0 ? <div className="alert alert-warning mt-19"> No hay elementos en la lista </div> : <div></div>
                     }
                 </div>
             </div>
@@ -189,25 +232,24 @@ function UsuarioBuscarViajes() {
                                     destino
                                     fecha*/}
                                     <select
-                                        value={sitio} onChange={(e) => { setSitio(e.target.value) }}
-                                        onClick={handleCloseAlert}
-                                        className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
-                                        <option disabled="disabled" value="">Seleccione El Origen </option>
+                                        value={origen} onChange={(e) => { setOrigen(e.target.value) }}
+                                        className="form-control form-select-lg mt-3" aria-label=".form-select-lg example"><option disabled="disabled" value="">Seleccione El Origen </option>
                                         {
-                                            sitioSelect.map(item2 => (
-                                                <option name={item2.id}>{item2.ciudad}</option>
+                                            sitioSelect.map(item => (
+                                                <option name={item.id}>{item.provincia}{' - '}{item.ciudad}</option>
                                             )
                                             )
                                         }
                                     </select>
                                     <select
-                                        value={sitio} onChange={(e) => { setSitio(e.target.value) }}
+                                        value={destino} onChange={(e) => { setDestino(e.target.value) }}
                                         onClick={handleCloseAlert}
                                         className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
                                         <option disabled="disabled" value="">Seleccione el Destino </option>
                                         {
-                                            sitioSelect.map(item2 => (
-                                                <option name={item2.id}>{item2.ciudad}</option>
+                                            sitioSelect.map(item => (
+                                                <option name={item.id}>{item.provincia}{' - '}{item.ciudad}</option>
+
                                             )
                                             )
                                         }
