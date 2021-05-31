@@ -52,72 +52,66 @@ function UsuarioBuscarViajes() {
     const [viajes, setViajes] = useState([])
     const [viajesFiltrados, setViajesFiltrados] = useState([])
 
-    
+
 
     const [fecha, setFecha] = useState('')
-    const [combi,setCombi] = useState('')
+    const [combi, setCombi] = useState('')
+    const [sitio, setSitio] = useState('')
+
+
     const [butacaDisponible, setButacaDisponible] = useState('')
-    const [precio,setPrecio] = useState('')
+    const [precio, setPrecio] = useState('')
 
     // select
-    const [rutaSelect,setRutaSelect] = useState([])
-    const [sitioSelect,setSitioSelect] = useState([])
-    const [combiSelect,setCombiSelect] = useState([])
+    const [rutaSelect, setRutaSelect] = useState([])
+    const [sitioSelect, setSitioSelect] = useState([])
+    const [combiSelect, setCombiSelect] = useState([])
     var hoy = new Date().toLocaleDateString()
 
 
-    const getViajes =  () => {
-        store.collection('viaje').get()
-        .then(response => {
-            const fetchedViajes = [];
-            response.docs.forEach(document => {
-            const fetchedViaje = {
-                id: document.id,
-                ...document.data()
-            };
-            fetchedViajes.push(fetchedViaje)
+    const getViajes = () => {
+        store.collection('buscarViajes').get()
+            .then(response => {
+                const fetchedViajes = [];
+                response.docs.forEach(document => {
+                    const fetchedViaje = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedViajes.push(fetchedViaje)
+                });
+                setViajesFiltrados(fetchedViajes)
+
+            })
+    }
+    useEffect(async() => {
+
+        store.collection('buscarViajes').get()
+            .then(response => {
+                const fetchedViajes = [];
+                response.docs.forEach(document => {
+                    const fetchedViaje = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedViajes.push(fetchedViaje)
+                });
+                setViajesFiltrados(fetchedViajes)
+
+            })
+            .catch(error => {
+                setMsgError(error)
+                setShowAlert(true)
             });
-            setViajes(fetchedViajes)
-        })
-    }   
-    
-    useEffect(() => {
-        const datos = async() =>{
-            const {docs} = await store.collection('sitio').get()
-            const sitioArray = docs.map( item => ({id:item.id, ...item.data()}))
-            setSitioSelect(sitioArray)
-            const {docs2} = await store.collection('combi').get()
-            const combiArray = docs2.map( item => ({id:item.id, ...item.data()}))
-            setCombiSelect(combiArray)
-            const respuesta = await store.collection('ruta').get()
-            const rutaArray = respuesta.docs.map( item => ({id:item.id, ...item.data()}))
-            setRutaSelect(rutaArray)
-        }
-        
-        datos()
-        store.collection('viaje').get()
-        .then(response => {
-            const fetchedViajes = [];
-            response.docs.forEach(document => {
-            const fetchedViaje = {
-                id: document.id,
-                ...document.data()
-            };
-            fetchedViajes.push(fetchedViaje)
-            });
-            setViajes(fetchedViajes)
-        })
-        .catch(error => {
-            setMsgError(error)
-            setShowAlert(true)
-        });
-    }, []);   
-    const filtarViajes =  () => {
+    }, []);
+    const filtarViajes = () => {
         setShowModalEdit(true)
     }
 
-    const confirmarBusqueda =  () => {
-        setShowModalEdit(true)
+    const confirmarBusqueda = () => {
+
+    }
+    const comprar = () => {
     }
     return (
         <div>
@@ -135,7 +129,7 @@ function UsuarioBuscarViajes() {
                 <div style={subPageStyle}>
                     <Table striped bordered hover variant="dark">
                         <thead>
-                            <tr>                           							
+                            <tr>
                                 <th>Origen</th>
                                 <th>Destino</th>
                                 <th>Fecha</th>
@@ -149,32 +143,35 @@ function UsuarioBuscarViajes() {
                         </thead>
                         <tbody>
                             {
-                                // sitios.length !== 0 ?
-                                //     (
-                                //         sitios.map(item => (
-                                //             <tr key={item.id}>
-                                //                 <td>{item.provincia}</td>
-                                //                 <td>{item.ciudad}</td>
-                                //                 <td style={{ width: "12%" }} >
-                                //                     <div className="d-flex justify-content-around">
-                                //                         <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarSitio('E', item) }}>
-                                //                             <PencilFill color="white"></PencilFill>
-                                //                         </button>
-                                //                         <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(id) => { borrarSitio(item) }}>
-                                //                             <TrashFill color="white"></TrashFill>
-                                //                         </button>
-                                //                     </div>
-                                //                 </td>
-                                //             </tr>
-                                //         ))
-                                //     ) : (
-                                //         <></>
-                                //     )
+                                viajesFiltrados.length !== 0 ?
+                                    (
+                                        viajesFiltrados.map(item => (
+                                            <tr key={item.id}>
+
+                                                <td>{item.origen.provincia}{' - '}{item.origen.ciudad}</td>
+                                                <td>{item.origen.provincia}{' - '}{item.destino.ciudad}</td>
+                                                <td>{item.fecha}</td>
+                                                <td>{item.horario}</td>
+                                                <td>{item.tipo}</td>
+                                                <td>{item.precio}</td>
+                                                <td>{item.butacas}</td>
+                                                <td style={{ width: "12%" }} >
+                                                    <div className="d-flex justify-content-around">
+                                                        <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { comprar() }}>
+                                                            <PencilFill color="white"></PencilFill>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <></>
+                                    )
                             }
                         </tbody>
                     </Table>
                     {
-                       // sitios.length === 0 ? <div className="alert alert-warning mt-19"> No hay elementos en la lista </div> : <div></div>
+                        // sitios.length === 0 ? <div className="alert alert-warning mt-19"> No hay elementos en la lista </div> : <div></div>
                     }
                 </div>
             </div>
@@ -191,6 +188,39 @@ function UsuarioBuscarViajes() {
                                     origen
                                     destino
                                     fecha*/}
+                                    <select
+                                        value={sitio} onChange={(e) => { setSitio(e.target.value) }}
+                                        onClick={handleCloseAlert}
+                                        className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
+                                        <option disabled="disabled" value="">Seleccione El Origen </option>
+                                        {
+                                            sitioSelect.map(item2 => (
+                                                <option name={item2.id}>{item2.ciudad}</option>
+                                            )
+                                            )
+                                        }
+                                    </select>
+                                    <select
+                                        value={sitio} onChange={(e) => { setSitio(e.target.value) }}
+                                        onClick={handleCloseAlert}
+                                        className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
+                                        <option disabled="disabled" value="">Seleccione el Destino </option>
+                                        {
+                                            sitioSelect.map(item2 => (
+                                                <option name={item2.id}>{item2.ciudad}</option>
+                                            )
+                                            )
+                                        }
+                                    </select>
+                                    <input onChange={(e) => { setFecha(e.target.value) }}
+                                        onClick={handleCloseAlert}
+                                        className='form-control mt-2'
+                                        type="date"
+                                        maxLength='8'
+                                        placeholder='Fecha del viaje'
+                                        id="fecha"
+                                        value={fecha}
+                                    />
                                 </form>
                                 <Alert className="mt-4" variant="danger" show={showAlert}>
                                     {msgError}
