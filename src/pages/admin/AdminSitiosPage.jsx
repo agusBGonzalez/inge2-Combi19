@@ -162,8 +162,8 @@ function AdminSitiosPage() {
             setEsEditar(true)
             console.log("Editar")
             setSitioEditar(item)
-            // setProvincia(item.provincia)
-            // setCiudad(item.ciudad)
+            setProvincia(item.provincia)
+            setCiudad(item.ciudad)
         } else {
             setEsEditar(false)
             console.log("Agregar")

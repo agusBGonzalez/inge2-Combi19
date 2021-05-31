@@ -53,8 +53,11 @@ function AdminViajePage() {
     const [butacaDisponible, setButacaDisponible] = useState('')
     const [precio,setPrecio] = useState('')
     const [rutaSelect,setRutaSelect] = useState([])
-    const [ruta,setRuta] = useState('')
+    const [rutas,setRutas] = useState('')
     const [combiSelect,setCombiSelect] = useState([])
+    //const [origen,setOrigen] = useState({ciudad:'',provincia:''})
+    //const [destino,setDestino] = useState({ciudad:'',provincia:''})
+    const [idRuta,setIdRuta] = useState('')
     var hoy = new Date().toLocaleDateString()
 
 
@@ -142,12 +145,11 @@ function AdminViajePage() {
     
 
     const crearModificarViaje = (oper, item) =>{
-
         if (oper === 'E') {
             setEsEditar(true)
             setViajeEditar(item.id)
             setFecha(item.fechaviaje)
-            setRuta(item.ruta)
+            setRutas(item.ruta_entera)
             setCombi(item.combi)
             setButacaDisponible(item.butacaDisponible)
             setPrecio(item.precio)
@@ -156,7 +158,8 @@ function AdminViajePage() {
             setEsEditar(false)
             setViajeEditar('')
             setFecha('')
-            setRuta('')
+            setRutas('')
+            setIdRuta('')
             setCombi('')
             setButacaDisponible('')
             setPrecio('')
@@ -171,12 +174,15 @@ function AdminViajePage() {
         let fecha2
         let dia = 1
         let aux 
+        console.log('ENTREEEEEEEEEEEEEE')
+        console.log(idRuta)
+        console.log(rutas)
         if (!fecha.trim()) {
             setMsgError('El campo Fecha esta vacio' )
             setShowAlert(true)
             return
         }
-        if (!ruta.trim()) {
+        if (!rutas.trim()) {
           setMsgError('El campo Ruta esta vacio' )
           setShowAlert(true)
           return
@@ -196,7 +202,6 @@ function AdminViajePage() {
         setShowAlert(true)
         return
         }
-        console.log(precio)
         if (precio < 0) {
             setMsgError('El precio tiene que ser mayor que 0' )
             setShowAlert(true)
@@ -205,8 +210,6 @@ function AdminViajePage() {
 
         combiSelect.map( itemcombi =>{
             if(itemcombi.patente === combi ){
-                console.log(butacaDisponible)
-                console.log(itemcombi.butaca)
                 if(parseInt(butacaDisponible) > parseInt(itemcombi.butaca) ){
                     setMsgError('La cantidad de butacas ingresadas es mayor a las que posee la combi')
                     setShowAlert(true)
@@ -217,7 +220,8 @@ function AdminViajePage() {
         })
 
         viajes.map (itemviaje =>{
-            if(combi === itemviaje.combi && fecha === itemviaje.fechaviaje  && ruta === itemviaje.ruta){
+
+            if(combi === itemviaje.combi && fecha === itemviaje.fechaviaje  && rutas === itemviaje.ruta_entera){
                 setMsgError('Se esta repitiendo el viaje para la misma fecha, combi y ruta')
                 setShowAlert(true)
                 encontre= true 
@@ -239,15 +243,27 @@ function AdminViajePage() {
         if(encontre){
             return
         }
+        
+        let destino_seleccionado,origen_seleccinado
+        let ruta_select
+        rutaSelect.map(item =>{
+            if(item.id === idRuta){
+                destino_seleccionado= {ciudad:item.destino.ciudad,provincia:item.destino.provincia}
+                origen_seleccinado = {ciudad:item.origen.ciudad,provincia:item.origen.provincia}
+                ruta_select = 'Origen: '+ item.origen.ciudad + ' Destino:'+ item.destino.ciudad +' Hora:'+ item.hora+' hs - '+item.kilometro+' Km'
+            }
+            
+        })
 
         const regviaje= {
             fechaviaje:fecha,
-            ruta:ruta,
+            ruta_entera:ruta_select,
             combi:combi,
             butacaDisponible:butacaDisponible,
-            precio:precio
+            precio:precio,
+            destino:destino_seleccionado,
+            origen:origen_seleccinado
         }
-        
         if (esEditar){
             try{
                 //FALTA MOSTRAR MSJ DE SUCESS
@@ -279,7 +295,9 @@ function AdminViajePage() {
         }
 
     }
-
+    const buscarIdRuta = (id) =>{
+        setIdRuta(id)
+    }
   
     return (
       <div>
@@ -310,7 +328,7 @@ function AdminViajePage() {
                                   viajes.map(item => (
                                         <tr key={item.id}>
                                             <td>{item.fechaviaje}</td>
-                                            <td>{item.ruta}</td>
+                                            <td>{item.ruta_entera}</td>
                                             <td>{item.combi}</td>
                                             <td>{item.butacaDisponible}</td>
                                             <td>{item.precio}</td>
@@ -375,13 +393,13 @@ function AdminViajePage() {
                                 value={fecha}
                             />
                             <select
-                                value={ruta} onChange={(e) => { setRuta(e.target.value) }}
-                                onClick = {handleCloseAlert}
+                                value={rutas} onChange={(e) => { setRutas(e.target.value)}}
+                                onClick = {handleCloseAlert,(e) => { buscarIdRuta(e.target.value)}}
                                 className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
                                 <option disabled="disabled" value="">Seleccione una Ruta </option>
                                 {
                                 rutaSelect.map( item2=> (
-                                    <option  name ={item2.id}>Origen:{item2.origen} Destino:{item2.destino} Hora:{item2.hora}-{item2.kilometro}Km</option>
+                                    <option value={item2.id} name ={item2.id}>Origen:{item2.origen.ciudad} Destino:{item2.destino.ciudad} Hora:{item2.hora}-{item2.kilometro}Km</option>
                                 )
                                 )
                                  }

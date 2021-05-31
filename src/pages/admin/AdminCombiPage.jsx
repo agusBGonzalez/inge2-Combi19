@@ -39,12 +39,10 @@ const AdminCombiPage = () => {
     const [showModalEdit, setShowModalEdit] = useState(false)
     const [combiEditar, setCombiEditar] = useState('')
     const [esEditar, setEsEditar] = useState(false)
-    const [esCombiRepetido, setEsCombiRepetido] = useState(false)
     const handleCloseEdit = () => setShowModalEdit(false)
 
 
     const [combi, setCombi] = useState([])
-    const [modal, setModal] = useState(false)
     
     const [patente, setPatente] = useState('')
     const [marca, setMarca] = useState('')
@@ -166,7 +164,6 @@ const AdminCombiPage = () => {
 
     const confirmarEdicion = async (e) => {
         e.preventDefault()
-        let encontre = false
         let encontre2 = false
         if(!patente.trim()){
             setMsgError('El campo patente esta vacio')
@@ -200,7 +197,9 @@ const AdminCombiPage = () => {
         
         combi.map(item =>{
             if(patente === item.patente){
-                encontre = true
+                setMsgError('Esta patente ya se encuentra cargada')
+                setShowAlert(true)
+                encontre2 = true
             }
         })
         viaje.map( itemviaje =>{
@@ -213,11 +212,6 @@ const AdminCombiPage = () => {
            })
         }) 
         if (encontre2){
-            return
-        }
-        if(encontre){
-            setMsgError('Esta patente ya se encuentra cargada')
-            setShowAlert(true)
             return
         }
 
