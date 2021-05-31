@@ -86,8 +86,8 @@ function UsuarioBuscarViajes() {
             const {docs} = await store.collection('sitio').get()
             const sitioArray = docs.map( item => ({id:item.id, ...item.data()}))
             setSitioSelect(sitioArray)
-            const {docs} = await store.collection('combi').get()
-            const combiArray = docs.map( item => ({id:item.id, ...item.data()}))
+            const {docs2} = await store.collection('combi').get()
+            const combiArray = docs2.map( item => ({id:item.id, ...item.data()}))
             setCombiSelect(combiArray)
             const respuesta = await store.collection('ruta').get()
             const rutaArray = respuesta.docs.map( item => ({id:item.id, ...item.data()}))
@@ -112,7 +112,7 @@ function UsuarioBuscarViajes() {
             setShowAlert(true)
         });
     }, []);   
-    const filtrarViajes =  () => {
+    const filtarViajes =  () => {
         setShowModalEdit(true)
     }
 
@@ -125,7 +125,7 @@ function UsuarioBuscarViajes() {
             <MenuOpcAdmin optionName="listaSitios" />
             <div>
                 <h3 style={{ top: 110, position: 'absolute', left: 80, width: "60%", }}> Listado de Viajes</h3>
-                <Button style={{ top: 105, position: 'absolute', right: 70, width: "150px", height: "40px" }} onClick={(e) => { filtaraViajes() }} variant="secondary " > Filtrar Viajes</Button>
+                <Button style={{ top: 105, position: 'absolute', right: 70, width: "150px", height: "40px" }} onClick={(e) => { filtarViajes() }} variant="secondary " > Filtrar Viajes</Button>
                 <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{ bottom: 0, zIndex: 5, position: 'absolute', left: 75, width: "60%" }} >
                     {msgSucc}
                 </Alert>
@@ -149,32 +149,32 @@ function UsuarioBuscarViajes() {
                         </thead>
                         <tbody>
                             {
-                                sitios.length !== 0 ?
-                                    (
-                                        sitios.map(item => (
-                                            <tr key={item.id}>
-                                                <td>{item.provincia}</td>
-                                                <td>{item.ciudad}</td>
-                                                <td style={{ width: "12%" }} >
-                                                    <div className="d-flex justify-content-around">
-                                                        <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarSitio('E', item) }}>
-                                                            <PencilFill color="white"></PencilFill>
-                                                        </button>
-                                                        <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(id) => { borrarSitio(item) }}>
-                                                            <TrashFill color="white"></TrashFill>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <></>
-                                    )
+                                // sitios.length !== 0 ?
+                                //     (
+                                //         sitios.map(item => (
+                                //             <tr key={item.id}>
+                                //                 <td>{item.provincia}</td>
+                                //                 <td>{item.ciudad}</td>
+                                //                 <td style={{ width: "12%" }} >
+                                //                     <div className="d-flex justify-content-around">
+                                //                         <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarSitio('E', item) }}>
+                                //                             <PencilFill color="white"></PencilFill>
+                                //                         </button>
+                                //                         <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(id) => { borrarSitio(item) }}>
+                                //                             <TrashFill color="white"></TrashFill>
+                                //                         </button>
+                                //                     </div>
+                                //                 </td>
+                                //             </tr>
+                                //         ))
+                                //     ) : (
+                                //         <></>
+                                //     )
                             }
                         </tbody>
                     </Table>
                     {
-                        sitios.length === 0 ? <div className="alert alert-warning mt-19"> No hay elementos en la lista </div> : <div></div>
+                       // sitios.length === 0 ? <div className="alert alert-warning mt-19"> No hay elementos en la lista </div> : <div></div>
                     }
                 </div>
             </div>

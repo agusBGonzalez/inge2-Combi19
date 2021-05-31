@@ -12,6 +12,7 @@ import AdminCombiPage from './pages/admin/AdminCombiPage';
 import AdminProdPage from './pages/admin/AdminProdPage';
 import AdminRutaPage from './pages/admin/AdminRutaPage';
 import AdminViajePage from './pages/admin/AdminViajePage';
+import UsuarioBuscarViajes from './pages/usuario/UsuarioBuscarViajes';
 
 
 
@@ -35,6 +36,7 @@ function AppFinal() {
           <Route path='/listaProductos' component={AdminProdPage}></Route>
           <Route path='/listaRutas' component={AdminRutaPage}></Route>
           <Route path='/listaViajes' component={AdminViajePage}></Route>
+          <Route path='/filtrarViajes' component={UsuarioBuscarViajes}></Route>
         </Switch>
       </Router>
 
