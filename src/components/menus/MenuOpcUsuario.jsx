@@ -1,4 +1,5 @@
 import React from 'react'
+import { useHistory } from "react-router-dom"
 import SideNav, { Toggle, Nav, NavItem, NavIcon, NavText } from '@trendmicro/react-sidenav';
 
 // Be sure to include styles at some point, probably during your bootstraping
@@ -10,16 +11,19 @@ import { ReceiptCutoff, CreditCardFill, GeoFill, HouseFill} from 'react-bootstra
 
 function MenuOpcUsuario(props) {
 
+    const historial = useHistory()
+
     return (
 
         <SideNav
             onSelect={(selected) => {
-                // Add your code here
+                const to = '/' + selected;
+                historial.push(to);
             }}
             style={{ backgroundColor: "#7CA0AF",top: "99px"}}
         >
             <SideNav.Toggle />
-            <SideNav.Nav defaultSelected="">
+            <SideNav.Nav defaultSelected={props.optionName} >
                 <NavItem eventKey="usuarioCliente">
                     <NavIcon>
                         <HouseFill color="black"></HouseFill>
@@ -28,7 +32,7 @@ function MenuOpcUsuario(props) {
                         Inicio
                     </NavText>
                 </NavItem>
-                <NavItem eventKey="home">
+                <NavItem eventKey="filtrarViajes">
                     <NavIcon>
                         <GeoFill color="black"></GeoFill>
                     </NavIcon>
