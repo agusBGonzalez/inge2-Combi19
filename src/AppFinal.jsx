@@ -13,6 +13,8 @@ import AdminProdPage from './pages/admin/AdminProdPage';
 import AdminRutaPage from './pages/admin/AdminRutaPage';
 import AdminViajePage from './pages/admin/AdminViajePage';
 import UsuarioBuscarViajes from './pages/usuario/UsuarioBuscarViajes';
+import UsuarioViajesComprados from './pages/usuario/UsuarioViajesComprados';
+
 
 
 
@@ -37,6 +39,9 @@ function AppFinal() {
           <Route path='/listaRutas' component={AdminRutaPage}></Route>
           <Route path='/listaViajes' component={AdminViajePage}></Route>
           <Route path='/filtrarViajes' component={UsuarioBuscarViajes}></Route>
+          <Route path='/detalleViajes' component={UsuarioViajesComprados}></Route>
+
+
         </Switch>
       </Router>
 

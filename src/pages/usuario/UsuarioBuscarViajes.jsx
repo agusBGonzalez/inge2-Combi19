@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import MenuUsuario from '../../components/menus/MenuUsuario'
-import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
+import MenuOpcUsuario from '../../components/menus/MenuOpcUsuario'
 import { Table, Modal, Button, Alert } from 'react-bootstrap'
 import { store } from '../../firebaseconf'
 import { TrashFill, PencilFill } from 'react-bootstrap-icons';
@@ -56,8 +56,11 @@ function UsuarioBuscarViajes() {
 
     const [fecha, setFecha] = useState('')
     const [combi, setCombi] = useState('')
-    const [origen, setOrigen] = useState([])
+    const [origen, setOrigen] = useState('')
+    const [idOrigen, setIdOrigen] = useState('')
     const [destino, setDestino] = useState('')
+    const [idDestino, setIdDestino] = useState('')
+
 
 
 
@@ -86,12 +89,12 @@ function UsuarioBuscarViajes() {
             })
     }
     useEffect(() => {
-        const datosSitios = async() =>{
-            const {docs} = await store.collection('sitios').get()
-            const nuevoArray = docs.map( item => ({id:item.id, ...item.data()}))
+        const datosSitios = async () => {
+            const { docs } = await store.collection('sitios').get()
+            const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
             setSitioSelect(nuevoArray)
             const r = await store.collection('viaje').get()
-            const viajesArray = r.docs.map( item => ({id:item.id, ...item.data()}))
+            const viajesArray = r.docs.map(item => ({ id: item.id, ...item.data() }))
             setViajes(viajesArray)
         }
 
@@ -112,7 +115,7 @@ function UsuarioBuscarViajes() {
                 setMsgError(error)
                 setShowAlert(true)
             });
-            datosSitios()
+        datosSitios()
     }, []);
     const filtarViajes = () => {
         setShowModalEdit(true)
@@ -134,32 +137,53 @@ function UsuarioBuscarViajes() {
             setShowAlert(true)
             return
         }
-        if (origen === destino){
+        if (origen === destino) {
             setMsgError('Origen y destino deben ser diferentes')
             setShowAlert(true)
             return
-        }        
+        }
         getViajes()
-        viajes.map(v=>{
-            console.log(v.origen)
-            console.log(origen)
-            if (v.origen === origen ){
-                if (v.destino === destino){
-                    if(v.fecha === fecha){
-                    }
-                }
+
+        // aca lo que hago es guardar cual sera el origen y destino
+        let origen_seleccinado
+        let destino_seleccinado
+        sitioSelect.map(s => {
+            // console.log('id sitio', s.id)
+            // console.log('id Origen', idOrigen)
+            // console.log('id Destino', idDestino)
+            if (s.id === idOrigen) {
+                origen_seleccinado = s
+            }
+            if (s.id === idDestino) {
+                destino_seleccinado = s
             }
         })
+        // console.log(' el origen es :', origen_seleccinado)
+        // console.log(' el Destino es :', destino_seleccinado)
 
+        viajes.map(v => {
+            if (v.origen.provincia === origen_seleccinado.provincia && v.origen.ciudad === origen_seleccinado.ciudad) {
+                if (v.destino.provincia === destino_seleccinado.provincia && v.destino.ciudad === destino_seleccinado.ciudad) {
+                    // falta poner la fecha
+                    console.log('agrego')
+
+                }
+            }
+
+        })
     }
     const comprar = () => {
     }
-
-
+    const buscarIdOrigen = (id) => {
+        setIdOrigen(id)
+    }
+    const buscarIdDestino = (id) => {
+        setIdDestino(id)
+    }
     return (
         <div>
             <MenuUsuario />
-            <MenuOpcAdmin optionName="listaSitios" />
+            <MenuOpcUsuario optionName="filtrarViajes" />
             <div>
                 <h3 style={{ top: 110, position: 'absolute', left: 80, width: "60%", }}> Listado de Viajes</h3>
                 <Button style={{ top: 105, position: 'absolute', right: 70, width: "150px", height: "40px" }} onClick={(e) => { filtarViajes() }} variant="secondary " > Filtrar Viajes</Button>
@@ -233,23 +257,24 @@ function UsuarioBuscarViajes() {
                                     fecha*/}
                                     <select
                                         value={origen} onChange={(e) => { setOrigen(e.target.value) }}
-                                        className="form-control form-select-lg mt-3" aria-label=".form-select-lg example"><option disabled="disabled" value="">Seleccione El Origen </option>
+                                        onClick={handleCloseAlert, (e) => { buscarIdOrigen(e.target.value) }}
+                                        className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
+                                        <option disabled="disabled" value="">Seleccione una Origen </option>
                                         {
-                                            sitioSelect.map(item => (
-                                                <option name={item.id}>{item.provincia}{' - '}{item.ciudad}</option>
+                                            sitioSelect.map(item2 => (
+                                                <option value={item2.id} name={item2.id}> provincia:{item2.provincia} ciudad:{item2.ciudad} </option>
                                             )
                                             )
                                         }
                                     </select>
                                     <select
                                         value={destino} onChange={(e) => { setDestino(e.target.value) }}
-                                        onClick={handleCloseAlert}
+                                        onClick={handleCloseAlert, (e) => { buscarIdDestino(e.target.value) }}
                                         className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
-                                        <option disabled="disabled" value="">Seleccione el Destino </option>
+                                        <option disabled="disabled" value="">Seleccione una Destino </option>
                                         {
                                             sitioSelect.map(item => (
-                                                <option name={item.id}>{item.provincia}{' - '}{item.ciudad}</option>
-
+                                                <option value={item.id} name={item.id}> provincia:{item.provincia} ciudad:{item.ciudad} </option>
                                             )
                                             )
                                         }

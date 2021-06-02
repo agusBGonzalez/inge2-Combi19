@@ -40,7 +40,7 @@ function MenuOpcUsuario(props) {
                         Viajes
                     </NavText>
                 </NavItem>
-                <NavItem eventKey="home">
+                <NavItem eventKey="detalleViajes">
                     <NavIcon>
                         <ReceiptCutoff color="black"></ReceiptCutoff>
                     </NavIcon>
