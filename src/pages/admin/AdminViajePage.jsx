@@ -4,6 +4,8 @@ import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
 import {Table, Modal, Button, Alert} from 'react-bootstrap'
 import { store } from '../../firebaseconf'
 import { TrashFill, PencilFill} from 'react-bootstrap-icons';
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 
 
 function AdminViajePage() {
@@ -47,6 +49,7 @@ function AdminViajePage() {
 
     const [viajes, setViajes] = useState([])
     
+    const [startDate,setStartDate] = useState(null)
 
     const [fecha, setFecha] = useState('')
     const [combi,setCombi] = useState('')
@@ -105,7 +108,7 @@ function AdminViajePage() {
             setMsgError(error)
             setShowAlert(true)
         });
-    }, []);    
+    },[]);    
 
     const borrarViaje = async (id) => {
         setViajeEliminar(id)
@@ -174,9 +177,6 @@ function AdminViajePage() {
         let fecha2
         let dia = 1
         let aux 
-        console.log('ENTREEEEEEEEEEEEEE')
-        console.log(idRuta)
-        console.log(rutas)
         if (!fecha.trim()) {
             setMsgError('El campo Fecha esta vacio' )
             setShowAlert(true)
@@ -192,7 +192,7 @@ function AdminViajePage() {
               setShowAlert(true)
               return
         }
-        if (!butacaDisponible.trim()) {
+        if (butacaDisponible === '') {
           setMsgError('El campo Butacas disponibles esta vacio' )
           setShowAlert(true)
           return
@@ -299,6 +299,11 @@ function AdminViajePage() {
         setIdRuta(id)
     }
   
+    // const filtrarfecha = (date) => {
+    //     const day = date;
+    //     return day >= new Date();
+    //   }
+
     return (
       <div>
         <MenuUsuario/>
@@ -309,7 +314,7 @@ function AdminViajePage() {
             <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{bottom:0,zIndex:5, position: 'absolute', left: 75,width: "60%"}} >
                 {msgSucc}
             </Alert>
-            <div style={subPageStyle}>
+            <div style={subPageStyle} >
                 <Table striped bordered hover variant="dark">
                     <thead>
                         <tr>
@@ -383,6 +388,15 @@ function AdminViajePage() {
                     </Modal.Header>
                     <Modal.Body>
                         <form className='form-group'>
+                            {/* <DatePicker
+                            onClick = {handleCloseAlert}
+                            className='form-control mt-2'
+                            selected={fecha}
+                            onChange={(date) => setFecha(date)}
+                            filterDate={filtrarfecha}
+                            placeholderText="Fecha Viaje"
+                            dateFormat="dd/MM/yyyy"
+                            /> */}
                             <input onChange={(e) => { setFecha(e.target.value) }}
                                 onClick = {handleCloseAlert}
                                 className='form-control mt-2'

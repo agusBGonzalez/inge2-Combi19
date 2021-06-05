@@ -14,7 +14,7 @@ import AdminRutaPage from './pages/admin/AdminRutaPage';
 import AdminViajePage from './pages/admin/AdminViajePage';
 import UsuarioBuscarViajes from './pages/usuario/UsuarioBuscarViajes';
 import UsuarioViajesComprados from './pages/usuario/UsuarioViajesComprados';
-
+import Opiniones from './components/Comentarios/Opiniones'
 
 
 

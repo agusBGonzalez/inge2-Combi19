@@ -1,7 +1,7 @@
 import React from 'react'
 import MenuUsuario from '../../components/menus/MenuUsuario'
 import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
-
+import Opiniones from '../../components/Comentarios/Opiniones'
 
 function UsuarioPage() {
 
@@ -17,11 +17,12 @@ function UsuarioPage() {
         <MenuUsuario/>
         <MenuOpcAdmin optionName="usuarioAdmin"/>
         <div style={subPageStyle}>
-          <h1 className="text-center" >BIENVENIDO..</h1>
+          <Opiniones/>
         </div>
       </div>
 
   );
+
 }
   
   export default UsuarioPage;
