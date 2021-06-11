@@ -45,6 +45,12 @@ function UsuarioViajesComprados() {
     const handleCloseEdit = () => setShowModalEdit(false)
 
     const [pasajesComprados, setPasajesComprados] = useState([])
+    const [origen, setOrigen] = useState('')
+    const [destino, setDestino] = useState('')
+    const [fecha, setFecha] = useState('')
+    const [cantidadPasajes, setCantPasajes] = useState('')
+
+
 
     // select
     var hoy = new Date().toLocaleDateString()
@@ -66,28 +72,31 @@ function UsuarioViajesComprados() {
     }
     useEffect(() => {
         store.collection('pasajesComprados').get()
-        .then(response => {
-            const fetchedViajes = [];
-            response.docs.forEach(document => {
-                const fetchedViaje = {
-                    id: document.id,
-                    ...document.data()
-                };
-                fetchedViajes.push(fetchedViaje)
-            });
-            setPasajesComprados(fetchedViajes)
-        })
+            .then(response => {
+                const fetchedViajes = [];
+                response.docs.forEach(document => {
+                    const fetchedViaje = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedViajes.push(fetchedViaje)
+                });
+                setPasajesComprados(fetchedViajes)
+            })
     }, []);
-    const verDetalle = () => {
+    const verDetalle = (itemOrigen, itemDestino, itemFecha, itemCantidadPasajes) => {
+        setOrigen("Provincia: " + itemOrigen.provincia + " Ciudad: " + itemOrigen.ciudad)
+        setDestino("Provincia: " + itemDestino.provincia + " Ciudad: " + itemDestino.ciudad)
+        setFecha(itemFecha.data)
+        setCantPasajes(itemCantidadPasajes)
         setShowModalEdit(true)
     }
-
     return (
         <div>
             <MenuUsuario />
             <MenuOpcUsuario optionName="filtrarViajes" />
             <div>
-                <h3 style={{ top: 110, position: 'absolute', left: 80, width: "60%", }}> Listado de Pasajes comprados</h3>                
+                <h3 style={{ top: 110, position: 'absolute', left: 80, width: "60%", }}> Listado de Pasajes comprados</h3>
                 <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{ bottom: 0, zIndex: 5, position: 'absolute', left: 75, width: "60%" }} >
                     {msgSucc}
                 </Alert>
@@ -119,7 +128,7 @@ function UsuarioViajesComprados() {
                                                 <td>{item.estado}</td>
                                                 <td style={{ width: "12%" }} >
                                                     <div className="d-flex justify-content-around">
-                                                        <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { verDetalle() }}>
+                                                        <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { verDetalle(item.origen, item.destino, item.fecha, item.cantidadPasajes) }}>
                                                             <PencilFill color="white"></PencilFill>
                                                         </button>
                                                     </div>
@@ -146,7 +155,43 @@ function UsuarioViajesComprados() {
                             </Modal.Header>
                             <Modal.Body>
                                 <form className='form-group'>
-                                    <p>hola</p>
+                                    <p>Origen:</p>
+                                    <input
+                                        className='form-control mt-2'
+                                        type="text"
+                                        placeholder={origen}
+                                        id="origen"
+                                        value={origen}
+                                        disabled
+                                    />
+                                    <p>Destino:</p>
+                                    <input
+                                        className='form-control mt-2'
+                                        type="text"
+                                        placeholder={destino}
+                                        id="destino"
+                                        value={destino}
+                                        disabled
+                                    />
+                                    <p>Fecha del Pasaje:</p>
+
+                                    <input
+                                        className='form-control mt-2'
+                                        type="data"
+                                        placeholder={fecha}
+                                        id="fecha"
+                                        value={fecha}
+                                        disabled
+                                    />
+                                    <p>Cantidad de Pasajes:</p>
+                                    <input
+                                        className='form-control mt-2'
+                                        type="number"
+                                        placeholder={cantidadPasajes}
+                                        id="destino"
+                                        value={cantidadPasajes}
+                                        disabled
+                                    />
                                 </form>
                                 <Alert className="mt-4" variant="danger" show={showAlert}>
                                     {msgError}
