@@ -25,7 +25,8 @@ const AdminCombiPage = () => {
     //ALERT ERROR
     const [showAlert, setShowAlert] = useState(false);
     const handleCloseAlert = () => setShowAlert(false);
-
+    const [showAlertDanger, setShowAlertDanger] = useState(false)
+    const handleCloseAlertDanger = () => setShowAlertDanger(false)
     const [msgError, setMsgError] = useState (null)
 
     //ALERT SUCESS
@@ -33,7 +34,7 @@ const AdminCombiPage = () => {
     const handleCloseAlertSucc = () => setShowAlertSucc(false)
 
     const [msgSucc, setMsgSucc] = useState (null)
-
+    const [msgDanger, setMsgDanger] = useState(null)
 
     //MODAL REGISTRAR / MODIFICAR
     const [showModalEdit, setShowModalEdit] = useState(false)
@@ -48,7 +49,7 @@ const AdminCombiPage = () => {
     const [marca, setMarca] = useState('')
     const [modelo, setModelo] = useState('')
     const [año, setAño] = useState('')
-    const [butaca, setButaca] = useState('')
+    const [butacas, setButacas] = useState('')
     const [tipo,setTipo] = useState('')
     const [choferselect,setChoferSelect] = useState([])
     const [chofer,setChofer] = useState('')
@@ -116,13 +117,14 @@ const AdminCombiPage = () => {
         viaje.map( itemviaje =>{
             combi.map (itemcombi =>{
                 if(itemcombi.patente == itemviaje.combi){
-                    setMsgError('La combi ya se encuentra asignada a un viaje')
-                    setShowAlert(true)
                     encontre2 = true 
+                    setShowModal(false)
                 }
            })
         }) 
         if (encontre2){
+            setMsgDanger('No se pudo eliminar ya que la combi ya se encuentra asignada a un viaje! Click aqui para cerrar')
+            setShowAlertDanger(true)
             return
         }
         await store.collection('combi').doc(combiEliminar).delete()
@@ -144,7 +146,7 @@ const AdminCombiPage = () => {
             setMarca(item.marca)
             setModelo(item.modelo)
             setAño(item.año)
-            setButaca(item.butaca)
+            setButacas(item.butaca)
             setTipo(item.tipocombi)
             setChofer(item.chofer)
         } else {
@@ -153,7 +155,7 @@ const AdminCombiPage = () => {
             setPatente('')
             setMarca('')
             setModelo('')
-            setButaca('')
+            setButacas('')
             setAño('')
             setTipo('')
             setChofer('')
@@ -167,31 +169,40 @@ const AdminCombiPage = () => {
         e.preventDefault()
         let encontre2 = false
         let ok = false
+
         if(!patente.trim()){
             setMsgError('El campo patente esta vacio')
             setShowAlert(true)
             return
-        }else if(!marca.trim()){
+        }
+        if(!marca.trim()){
             setMsgError('El campo marca esta vacio' )
             setShowAlert(true)
             return
-        }else if(!modelo.trim()){
+        }
+        if(!modelo.trim()){
             setMsgError('El campo modelo esta vacio' )
             setShowAlert(true)
             return
-        }else if(!año.trim()){
+        }
+        
+        if (butacas === ""){
+            setMsgError('El campo butaca esta vacios')
+            setShowAlert(true)
+            return
+        }
+        if(!año.trim()){
             setMsgError('El campo año esta vacio' )
             setShowAlert(true)
             return
-        }else if(!butaca.trim()){
-            setMsgError('El campo butaca esta vacio' )
-            setShowAlert(true)
-            return
-        }else if(!tipo.trim()){
+        }
+        
+        if(!tipo.trim()){
             setMsgError('El campo tipo esta vacio')
             setShowAlert(true)
             return
-        }else if(!chofer.trim()){
+        }
+        if(!chofer.trim()){
             setMsgError('El campo chofer esta vacio')
             setShowAlert(true)
             return
@@ -214,12 +225,10 @@ const AdminCombiPage = () => {
             viaje.map(itemviaje =>{
                 if(itemviaje.combi === auxiliar.patente){
                     if(itemviaje.combi === patente){
-                        console.log('ENTRO AL IF DE IGUALES')
                         setMsgError('La combi que desea modificar ya se encuentra en un viaje')
                         setShowAlert(true)
                         encontre2 = true 
                     }else{
-                        console.log('ENTRO AL ELSE')
                         setMsgError('La combi que desea modificar ya se encuentra en un viaje')
                         setShowAlert(true)
                         encontre2 = true
@@ -249,7 +258,7 @@ const AdminCombiPage = () => {
             marca:marca,
             modelo:modelo,
             año:año,
-            butaca:butaca,
+            butaca:butacas,
             tipocombi:tipo,
             chofer:chofer
 
@@ -299,6 +308,9 @@ const AdminCombiPage = () => {
             <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{bottom:0,zIndex:5, position: 'absolute', left: 75,width: "60%"}} >
 				{msgSucc}
 			</Alert>
+            <Alert id="danger" className="" variant="danger" show={showAlertDanger} onClick={handleCloseAlertDanger} style={{ bottom: 0, zIndex: 5, position: 'absolute', left: 75, width: "60%" }} >
+                    {msgDanger}
+            </Alert>
             <div style={subPageStyle}>
                 <Table striped bordered hover variant="dark">
                     <thead>
@@ -401,14 +413,14 @@ const AdminCombiPage = () => {
                                 value= {modelo}
                             />
                            
-                           <input 
-                                onChange= {(e) => {setButaca(e.target.value)}} 
+                           <input onChange={(e) => { setButacas(e.target.value) }}
                                 onClick = {handleCloseAlert}
-                                className='form-control mt-3' 
-                                type="int" 
-                                placeholder='Nro. de Butacas'
-                                maxLength = '3' 
-                                value= {butaca}
+                                className='form-control mt-2'
+                                type="text"
+                                maxLength = '2'                       
+                                placeholder='Ingrese las Butacas'
+                                id="butacasCombi"
+                                value={butacas}
                             />
                            
                             <select

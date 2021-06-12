@@ -28,9 +28,10 @@ function AdminViajePage() {
     //ALERT ERROR
     const [showAlert, setShowAlert] = useState(false);
     const handleCloseAlert = () => setShowAlert(false);
-
+    const [showAlertDanger, setShowAlertDanger] = useState(false)
+    const handleCloseAlertDanger = () => setShowAlertDanger(false)
     const [msgError, setMsgError] = useState (null)
-
+    const [msgDanger, setMsgDanger] = useState(null)
     //ALERT SUCESS
     const [showAlertSucc, setShowAlertSucc] = useState(false)
     const handleCloseAlertSucc = () => setShowAlertSucc(false)
@@ -124,13 +125,14 @@ function AdminViajePage() {
             aux = new Date(fecha2.setDate(fecha2.getDate() + dia))
             if(itemviaje.id === viajeEliminar){
                 if(hoy === aux.toLocaleDateString()){
-                    setMsgError('El viaje esta en curso por lo cual no se puede eliminar')
-                    setShowAlert(true)
-                    ok = true  
+                    ok = true 
+                    setShowModal(false) 
                 }
             }
         })
         if (ok){
+            setMsgDanger('No se pudo eliminar ya que el viaje esta en curso! Click aqui para cerrar')
+            setShowAlertDanger(true)
             return
         }
 
@@ -204,14 +206,19 @@ function AdminViajePage() {
             setShowAlert(true)
             return
         }
-
+        fecha2 = new Date(fecha)
+        aux = new Date(fecha2.setDate(fecha2.getDate() + dia)).toLocaleDateString()
+        if(hoy > aux){
+            setMsgError('No se puede cargar fechas anteriores a la de hoy' )
+            setShowAlert(true)
+            return
+        }
         combiSelect.map( itemcombi =>{
             if(itemcombi.patente === combi ){
                 if(parseInt(butacaDisponible) > parseInt(itemcombi.butaca) ){
                     setMsgError('La cantidad de butacas ingresadas es mayor a las que posee la combi')
                     setShowAlert(true)
                     encontre = true
-                    console.log('es mayor')
                 }
             }
         })
@@ -317,6 +324,9 @@ function AdminViajePage() {
             <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{bottom:0,zIndex:5, position: 'absolute', left: 75,width: "60%"}} >
                 {msgSucc}
             </Alert>
+            <Alert id="danger" className="" variant="danger" show={showAlertDanger} onClick={handleCloseAlertDanger} style={{ bottom: 0, zIndex: 5, position: 'absolute', left: 75, width: "60%" }} >
+                    {msgDanger}
+            </Alert>
             <div style={subPageStyle} >
                 <Table striped bordered hover variant="dark">
                     <thead>
@@ -397,8 +407,7 @@ function AdminViajePage() {
                                 type="date"
                                 placeholder='Fecha del viaje'
                                 id="fecha"
-                                value={fecha}
-                                
+                                value={fecha}   
                             />
                             <select
                                 value={rutas} onChange={(e) => { setRutas(e.target.value)}}
@@ -429,7 +438,7 @@ function AdminViajePage() {
                                 onClick = {handleCloseAlert}
                                 className='form-control mt-2'
                                 type="text"
-                                maxLength = '3'                       
+                                maxLength = '2'                       
                                 placeholder='Ingrese las Butacas Disponibles'
                                 id="butacas"
                                 value={butacaDisponible}
