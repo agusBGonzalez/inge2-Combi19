@@ -3,7 +3,8 @@ import MenuUsuario from '../../components/menus/MenuUsuario'
 import MenuOpcUsuario from '../../components/menus/MenuOpcUsuario'
 import { Table, Modal, Button, Alert } from 'react-bootstrap'
 import { store } from '../../firebaseconf'
-import { TrashFill, PencilFill } from 'react-bootstrap-icons';
+import { FileEarmarkSlidesFill } from 'react-bootstrap-icons'
+
 
 
 function UsuarioBuscarViajes() {
@@ -44,10 +45,9 @@ function UsuarioBuscarViajes() {
 
     //MODAL REGISTRAR / MODIFICAR
     const [showModalEdit, setShowModalEdit] = useState(false)
-    const [sitioEditar, setSitioEditar] = useState('')
-    const [esEditar, setEsEditar] = useState(false)
-    const [esSitioRepetido, setEsSitioRepetido] = useState(false)
     const handleCloseEdit = () => setShowModalEdit(false)
+
+
 
     const [viajes, setViajes] = useState([])
     const [viajesFiltrados, setViajesFiltrados] = useState([])
@@ -55,7 +55,7 @@ function UsuarioBuscarViajes() {
 
 
     const [fecha, setFecha] = useState('')
-    const [combi, setCombi] = useState('')
+    const [combi, setCombi] = useState([])
     const [origen, setOrigen] = useState('')
     const [idOrigen, setIdOrigen] = useState('')
     const [destino, setDestino] = useState('')
@@ -88,6 +88,37 @@ function UsuarioBuscarViajes() {
                 setViajes(fetchedViajes)
             })
     }
+
+    const getViajesFiltrados = () => {
+        store.collection('buscarViajes').get()
+            .then(response => {
+                const fetchedViajes = [];
+                response.docs.forEach(document => {
+                    const fetchedViaje = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedViajes.push(fetchedViaje)
+                });
+                setViajesFiltrados(fetchedViajes)
+
+            })
+    }
+
+    const getCombis = () => {
+        store.collection('combi').get()
+            .then(response => {
+                const fetchedCombis = [];
+                response.docs.forEach(document => {
+                    const fetchedCombi = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedCombis.push(fetchedCombi)
+                });
+                setCombi(fetchedCombis)
+            })
+    }
     useEffect(() => {
         const datosSitios = async () => {
             const { docs } = await store.collection('sitios').get()
@@ -96,6 +127,7 @@ function UsuarioBuscarViajes() {
             const r = await store.collection('viaje').get()
             const viajesArray = r.docs.map(item => ({ id: item.id, ...item.data() }))
             setViajes(viajesArray)
+            getCombis()
         }
 
         store.collection('buscarViajes').get()
@@ -117,23 +149,21 @@ function UsuarioBuscarViajes() {
             });
         datosSitios()
     }, []);
-    const filtarViajes = () => {
-        setShowModalEdit(true)
-    }
 
     const confirmarBusqueda = async () => {
+
         if (origen === "") {
-            setMsgError('El campo nombre esta vacio')
+            setMsgError('El campo Origen esta vacio')
             setShowAlert(true)
             return
         }
         if (destino === "") {
-            setMsgError('El campo tipo esta vacio')
+            setMsgError('El campo Destino esta vacio')
             setShowAlert(true)
             return
         }
         if (fecha === "") {
-            setMsgError('El precio tipo esta vacio')
+            setMsgError('El campo fecha esta vacio')
             setShowAlert(true)
             return
         }
@@ -147,6 +177,7 @@ function UsuarioBuscarViajes() {
         // aca lo que hago es guardar cual sera el origen y destino
         let origen_seleccinado
         let destino_seleccinado
+        let combiViaje
         sitioSelect.map(s => {
             // console.log('id sitio', s.id)
             // console.log('id Origen', idOrigen)
@@ -158,22 +189,50 @@ function UsuarioBuscarViajes() {
                 destino_seleccinado = s
             }
         })
-        // console.log(' el origen es :', origen_seleccinado)
-        // console.log(' el Destino es :', destino_seleccinado)
-
         viajes.map(v => {
             if (v.origen.provincia === origen_seleccinado.provincia && v.origen.ciudad === origen_seleccinado.ciudad) {
                 if (v.destino.provincia === destino_seleccinado.provincia && v.destino.ciudad === destino_seleccinado.ciudad) {
-                    // falta poner la fecha
-                    console.log('agrego')
+                    if (v.fecha === fecha) {
+                        combi.map(c => {
+                            if (c.patente === v.combi) {
+                                combiViaje = c
+                            }
+                        })
+                        const agregarViaje = {
+                            origen: origen_seleccinado,
+                            destino: destino_seleccinado,
+                            fecha: fecha,
+                            horario: (v.ruta_entera).substr(43, 5),
+                            tipoCombi: combiViaje.tipocombi,
+                            precio: v.precio,
+                            butacas: v.butacaDisponible
+                        }
+                        console.log(agregarViaje)
+                        store.collection('buscarViajes').add(agregarViaje)
+                    }
 
                 }
             }
 
         })
+        try {
+            //FALTA MOSTRAR MSJ DE SUCESS
+            getViajesFiltrados()
+            setShowModalEdit(false)
+        } catch (err) {
+            console.log(err)
+            setMsgError(err)
+            setShowAlert(true)
+        }
+    }
+
+
+    const filtarViajes = () => {
+        setShowModalEdit(true)
     }
     const comprar = () => {
     }
+
     const buscarIdOrigen = (id) => {
         setIdOrigen(id)
     }
@@ -219,13 +278,13 @@ function UsuarioBuscarViajes() {
                                                 <td>{item.origen.provincia}{' - '}{item.destino.ciudad}</td>
                                                 <td>{item.fecha}</td>
                                                 <td>{item.horario}</td>
-                                                <td>{item.tipo}</td>
+                                                <td>{item.tipoCombi}</td>
                                                 <td>{item.precio}</td>
                                                 <td>{item.butacas}</td>
                                                 <td style={{ width: "12%" }} >
                                                     <div className="d-flex justify-content-around">
                                                         <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { comprar() }}>
-                                                            <PencilFill color="white"></PencilFill>
+                                                            <FileEarmarkSlidesFill color="white"></FileEarmarkSlidesFill>
                                                         </button>
                                                     </div>
                                                 </td>
@@ -243,6 +302,7 @@ function UsuarioBuscarViajes() {
                 </div>
             </div>
             {
+
                 showModalEdit ?
                     (
                         <Modal id="modalEditar" show={showModalEdit} onHide={handleCloseEdit}>
@@ -297,16 +357,13 @@ function UsuarioBuscarViajes() {
                             <Modal.Footer>
                                 <Button variant="primary" onClick={confirmarBusqueda}>
                                     Confirmar
-                        </Button>
+                                        </Button>
                                 <Button variant="secondary" onClick={() => { setShowModalEdit(false); setMsgError(null); setShowAlert(false); }}>
                                     Cancelar
-                        </Button>
+                                        </Button>
                             </Modal.Footer>
                         </Modal>
-                    ) : (
-                        <></>
-                    )
-
+                    ) : (<></>) 
             }
         </div>
 
