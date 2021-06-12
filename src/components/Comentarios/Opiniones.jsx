@@ -1,18 +1,18 @@
 import React, {useState,useEffect} from 'react'
 import { store } from '../../firebaseconf'
-import {Table, Modal, Button, Alert} from 'react-bootstrap'
+import { Modal, Button, Alert} from 'react-bootstrap'
 import { TrashFill, PencilFill} from 'react-bootstrap-icons'
-import MenuUsuario from '../../components/menus/MenuUsuario'
-import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
+
+
 
 const Opiniones = () => {
 
     const subPageStyle = {
         top: 150,
         position: 'absolute',
-        left: 80,
-        width: "92%",
-        height: "77%",
+        //left: 180,
+        width: "105%",
+        //height: "77%",
         overflowY: 'scroll'
         
     };
@@ -117,7 +117,7 @@ const Opiniones = () => {
 
     const confirmarEdicion = async (e) => {
         e.preventDefault()
-        console.log(comentarios)
+
         if (!opinion.trim()) {
             setMsgError('El campo Comentario esta vacio' )
             setShowAlert(true)
@@ -158,63 +158,44 @@ const Opiniones = () => {
 
     }
 
+
     return (
       <div>
-        {/* <MenuUsuario/>
-        <MenuOpcAdmin optionName="comentarios"/> */}
         <div>
-            <h3 style={{top: -40, position: 'absolute', left: 30,width: "60%",}}>Comentarios</h3>
-            <Button style={{top: -40, position: 'absolute', right:-50, width: "200px", height: "50px"}} onClick={(e) => { crearModificarComentario('A', '') }} variant="danger" > Agregar Comentario</Button>
-            <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{bottom:0,zIndex:5, position: 'absolute', left: 75,width: "60%"}} >
-                {msgSucc}
-            </Alert>
+            <h3 style={{top: -50, left: 30,width: "60%"}}>Comentarios</h3>
+            <Button style={{float:'right',width: "200px", height: "50px"}} onClick={(e) => { crearModificarComentario('A', '') }} variant="danger" > Agregar Comentario</Button>
+           
             <div style={subPageStyle}>
-                <Table striped bordered hover variant="dark">
-                    <thead>
-                        <tr>
-                          <th>Comentario</th>  
-                        </tr>
-                    </thead>
-                    <tbody>
+                  <div className="container " >
+                    <div className ="row">
                         {
-                            comentarios.length !== 0 ?
-                                (
-                                  comentarios.map(item => (
-                                        <tr key={item.id}>
-                                            <td>{item.texto}</td>
-                                            <td style={{width: "12%"}} >
-                                                <div className="d-flex justify-content-around">
-                                                  <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarComentario('E', item) }}>
-                                                    <PencilFill color="white"></PencilFill>
-                                                  </button>
-                                                  <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(id) => {borrarComentario(item.id) }}>
-                                                      <TrashFill color="white"></TrashFill>
-                                                  </button>
-                                                </div>
-                                            </td> 
-    
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <></>
-                                )
+                            comentarios.map(item =>(
+                                <div className ="col-md-4" key={item.id}>
+                                    <div className="card  animate__animated animate__fadeInUp" style={{ width: '18rem' }}>
+                                        <div className="card-body rounded">
+                                            <h4 className ="card-title text-center ">TITULO</h4>
+                                            <p className="card-text text-dark text-center">{item.texto}</p>
+                                            <a href="#!" style={{float:'right',marginRight:30 ,marginBottom:-15}} className="btn btn-outline-dark" onClick={(e) => { crearModificarComentario('E', item) }}>
+                                            <PencilFill color="dark"></PencilFill>
+                                            </a>
+                                            <a href="#!" style={{marginLeft:30,marginBottom:-15}} className="btn btn-outline-dark float" onClick={(id) => {borrarComentario(item.id) }}>
+                                            <TrashFill color="dark"></TrashFill>
+                                            </a>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
                         }
-                    </tbody>
-                </Table>
-                {/* {
-                   comentarios.length !== 0 ?
-                   (
-                     comentarios.map(item => (
-                           <span>{item.texto}</span>
-                       ))
-                   ) : (
-                       <></>
-                   ) 
-                } */}
+                    </div>
+                </div>
                 {
                     comentarios.length === 0 ? <div className="alert alert-warning mt-19"> No se encontraron Comentarios</div> : <div></div>
                 }
             </div>
+            <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{bottom:0,zIndex:5, left: 75,width: "60%"}} >
+                {msgSucc}
+            </Alert>
         </div>
         <Modal id="modalEliminar" show={showModal} onHide={handleClose}>
             <Modal.Header >

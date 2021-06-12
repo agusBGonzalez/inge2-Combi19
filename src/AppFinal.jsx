@@ -14,7 +14,7 @@ import AdminRutaPage from './pages/admin/AdminRutaPage';
 import AdminViajePage from './pages/admin/AdminViajePage';
 import UsuarioBuscarViajes from './pages/usuario/UsuarioBuscarViajes';
 import UsuarioViajesComprados from './pages/usuario/UsuarioViajesComprados';
-import Opiniones from './components/Comentarios/Opiniones'
+import ComprarSnacks from '../src/pages/usuario/ComprarSnacks'
 
 
 
@@ -40,7 +40,7 @@ function AppFinal() {
           <Route path='/listaViajes' component={AdminViajePage}></Route>
           <Route path='/filtrarViajes' component={UsuarioBuscarViajes}></Route>
           <Route path='/detalleViajes' component={UsuarioViajesComprados}></Route>
-
+          <Route path='/comprarsnacks' component={ComprarSnacks}></Route>
 
         </Switch>
       </Router>

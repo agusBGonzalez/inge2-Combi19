@@ -53,7 +53,7 @@ const AdminCombiPage = () => {
     const [choferselect,setChoferSelect] = useState([])
     const [chofer,setChofer] = useState('')
     const [viaje,setViaje] = useState([])
-
+    const [auxiliar,setAuxiliar] = useState([])
 
     const getCombis =  () => {
         store.collection('combi').get()
@@ -138,6 +138,7 @@ const AdminCombiPage = () => {
       
         if (oper === 'E') {
             setEsEditar(true)
+            setAuxiliar(item)
             setCombiEditar(item.id)
             setPatente(item.patente)
             setMarca(item.marca)
@@ -165,6 +166,7 @@ const AdminCombiPage = () => {
     const confirmarEdicion = async (e) => {
         e.preventDefault()
         let encontre2 = false
+        let ok = false
         if(!patente.trim()){
             setMsgError('El campo patente esta vacio')
             setShowAlert(true)
@@ -195,22 +197,49 @@ const AdminCombiPage = () => {
             return
         }
         
-        combi.map(item =>{
-            if(patente === item.patente){
-                setMsgError('Esta patente ya se encuentra cargada')
-                setShowAlert(true)
-                encontre2 = true
+        
+
+        if (esEditar) {
+            if (auxiliar.patente !== patente) {
+                combi.map(item =>{
+                    if(patente === item.patente){
+                        setMsgError('Esta patente ya se encuentra cargada')
+                        setShowAlert(true)
+                        encontre2 = true
+                    }
+                })
+                
+
             }
-        })
-        viaje.map( itemviaje =>{
-            combi.map (itemcombi =>{
-                if(itemcombi.patente == itemviaje.combi){
-                    setMsgError('La combi ya se encuentra asignada a un viaje por lo tanto no se puede modificar')
-                    setShowAlert(true)
-                    encontre2 = true 
+            viaje.map(itemviaje =>{
+                if(itemviaje.combi === auxiliar.patente){
+                    if(itemviaje.combi === patente){
+                        console.log('ENTRO AL IF DE IGUALES')
+                        setMsgError('La combi que desea modificar ya se encuentra en un viaje')
+                        setShowAlert(true)
+                        encontre2 = true 
+                    }else{
+                        console.log('ENTRO AL ELSE')
+                        setMsgError('La combi que desea modificar ya se encuentra en un viaje')
+                        setShowAlert(true)
+                        encontre2 = true
+                    }
                 }
-           })
-        }) 
+            })
+        
+        }else{
+            if (!encontre2) {
+                combi.map(item =>{
+                    if(patente === item.patente){
+                        setMsgError('Esta patente ya se encuentra cargada')
+                        setShowAlert(true)
+                        encontre2 = true
+                    }
+                })  
+            }
+            
+        }
+        
         if (encontre2){
             return
         }
@@ -378,6 +407,7 @@ const AdminCombiPage = () => {
                                 className='form-control mt-3' 
                                 type="int" 
                                 placeholder='Nro. de Butacas'
+                                maxLength = '3' 
                                 value= {butaca}
                             />
                            

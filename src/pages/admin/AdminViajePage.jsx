@@ -3,10 +3,9 @@ import MenuUsuario from '../../components/menus/MenuUsuario'
 import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
 import {Table, Modal, Button, Alert} from 'react-bootstrap'
 import { store } from '../../firebaseconf'
-import { TrashFill, PencilFill} from 'react-bootstrap-icons';
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
-
+import { TrashFill, PencilFill, CloudHazeFill} from 'react-bootstrap-icons';
+// import es from 'date-fns/locale/es'
+// registerLocale("es",es)
 
 function AdminViajePage() {
 
@@ -49,8 +48,6 @@ function AdminViajePage() {
 
     const [viajes, setViajes] = useState([])
     
-    const [startDate,setStartDate] = useState(null)
-
     const [fecha, setFecha] = useState('')
     const [combi,setCombi] = useState('')
     const [butacaDisponible, setButacaDisponible] = useState('')
@@ -58,8 +55,7 @@ function AdminViajePage() {
     const [rutaSelect,setRutaSelect] = useState([])
     const [rutas,setRutas] = useState('')
     const [combiSelect,setCombiSelect] = useState([])
-    //const [origen,setOrigen] = useState({ciudad:'',provincia:''})
-    //const [destino,setDestino] = useState({ciudad:'',provincia:''})
+    const [auxiliar,setAuxiliar] = useState([])
     const [idRuta,setIdRuta] = useState('')
     var hoy = new Date().toLocaleDateString()
 
@@ -150,6 +146,7 @@ function AdminViajePage() {
     const crearModificarViaje = (oper, item) =>{
         if (oper === 'E') {
             setEsEditar(true)
+            setAuxiliar(item)
             setViajeEditar(item.id)
             setFecha(item.fechaviaje)
             setRutas(item.ruta_entera)
@@ -219,31 +216,7 @@ function AdminViajePage() {
             }
         })
 
-        viajes.map (itemviaje =>{
-
-            if(combi === itemviaje.combi && fecha === itemviaje.fechaviaje  && rutas === itemviaje.ruta_entera){
-                setMsgError('Se esta repitiendo el viaje para la misma fecha, combi y ruta')
-                setShowAlert(true)
-                encontre= true 
-            }
-        })
-        viajes.map(itemviaje =>{
-            fecha2 = new Date(itemviaje.fechaviaje)
-            aux = new Date(fecha2.setDate(fecha2.getDate() + dia))
-            if(itemviaje.id === viajeEliminar){
-                if(hoy === aux.toLocaleDateString()){
-                    setMsgError('El viaje esta en curso por lo cual no se puede modificar')
-                    setShowAlert(true)
-                    encontre = true  
-                }
-            }
-        })
-        
-
-        if(encontre){
-            return
-        }
-        
+       
         let destino_seleccionado,origen_seleccinado
         let ruta_select
         rutaSelect.map(item =>{
@@ -255,6 +228,41 @@ function AdminViajePage() {
             
         })
 
+        if (esEditar) {
+            if (auxiliar.fechaviaje !== fecha) {
+                viajes.map (itemviaje =>{
+                    if(combi === itemviaje.combi && fecha === itemviaje.fechaviaje  && ruta_select === itemviaje.ruta_entera){
+                        setMsgError('Se esta repitiendo el viaje para la misma fecha, combi y ruta')
+                        setShowAlert(true)
+                        encontre= true 
+                    }
+                })
+            }
+            viajes.map(itemviaje =>{
+                fecha2 = new Date(itemviaje.fechaviaje)
+                aux = new Date(fecha2.setDate(fecha2.getDate() + dia))
+                if(itemviaje.id === auxiliar.id){
+                    if(hoy === aux.toLocaleDateString()){
+                        console.log('entre')
+                        setMsgError('El viaje esta en curso por lo cual no se puede modificar')
+                        setShowAlert(true)
+                        encontre = true  
+                    }
+                }
+            })
+        }else{
+            viajes.map (itemviaje =>{
+                if(combi === itemviaje.combi && fecha === itemviaje.fechaviaje  && ruta_select === itemviaje.ruta_entera){
+                    setMsgError('Se esta repitiendo el viaje para la misma fecha, combi y ruta')
+                    setShowAlert(true)
+                    encontre= true 
+                }
+            })
+        }
+
+        if(encontre){
+            return
+        }
         const regviaje= {
             fechaviaje:fecha,
             ruta_entera:ruta_select,
@@ -298,11 +306,6 @@ function AdminViajePage() {
     const buscarIdRuta = (id) =>{
         setIdRuta(id)
     }
-  
-    // const filtrarfecha = (date) => {
-    //     const day = date;
-    //     return day >= new Date();
-    //   }
 
     return (
       <div>
@@ -339,7 +342,7 @@ function AdminViajePage() {
                                             <td>{item.precio}</td>
                                             <td style={{width: "12%"}} >
                                                 <div className="d-flex justify-content-around">
-                                                  <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarViaje('E', item) }}>
+                                                  <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarViaje('E', item) }} >
                                                     <PencilFill color="white"></PencilFill>
                                                   </button>
                                                   <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(id) => {borrarViaje(item.id) }}>
@@ -388,23 +391,14 @@ function AdminViajePage() {
                     </Modal.Header>
                     <Modal.Body>
                         <form className='form-group'>
-                            {/* <DatePicker
-                            onClick = {handleCloseAlert}
-                            className='form-control mt-2'
-                            selected={fecha}
-                            onChange={(date) => setFecha(date)}
-                            filterDate={filtrarfecha}
-                            placeholderText="Fecha Viaje"
-                            dateFormat="dd/MM/yyyy"
-                            /> */}
                             <input onChange={(e) => { setFecha(e.target.value) }}
                                 onClick = {handleCloseAlert}
                                 className='form-control mt-2'
                                 type="date"
-                                maxLength = '8'
                                 placeholder='Fecha del viaje'
                                 id="fecha"
                                 value={fecha}
+                                
                             />
                             <select
                                 value={rutas} onChange={(e) => { setRutas(e.target.value)}}
