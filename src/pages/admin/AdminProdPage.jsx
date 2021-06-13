@@ -3,7 +3,7 @@ import MenuUsuario from '../../components/menus/MenuUsuario'
 import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
 import { Table, Modal, Button, Alert } from 'react-bootstrap'
 import { store } from '../../firebaseconf'
-import { TrashFill, PencilFill} from 'react-bootstrap-icons';
+import { TrashFill, PencilFill } from 'react-bootstrap-icons';
 
 
 function AdminProdPage() {
@@ -120,10 +120,10 @@ function AdminProdPage() {
         } else {
 
             setEsEditar(false)
-        alert('else')
+            alert('else')
 
             console.log("entra2222")
-            setProductoEditar('') 
+            setProductoEditar('')
             setNombre('')
             setTipo('')
             setPrecio('')
@@ -150,19 +150,21 @@ function AdminProdPage() {
             setShowAlert(true)
             return
         }
-        let productoRepetido=false
+        let productoRepetido = false
 
-          productos.map(prod =>{
-            if(nombre === prod.nombre){
-                
-            setMsgError('Este Prod ya se encuentra cargado')
-            setShowAlert(true)
-              productoRepetido = true
+        productos.map(prod => {
+            if (prod.id !== productoEditar) {
+                if (nombre === prod.nombre) {
+
+                    setMsgError('Este Prod ya se encuentra cargado')
+                    setShowAlert(true)
+                    productoRepetido = true
+                }
             }
-          })
-          if (productoRepetido){
-              return
-          }
+        })
+        if (productoRepetido) {
+            return
+        }
 
         const prodAct = {
             nombre: nombre,
@@ -207,7 +209,7 @@ function AdminProdPage() {
     return (
         <div>
             <MenuUsuario />
-            <MenuOpcAdmin optionName="listaProductos"/>
+            <MenuOpcAdmin optionName="listaProductos" />
             <div>
                 <h3 style={{ top: 110, position: 'absolute', left: 80, width: "60%", }}> Listado de Productos</h3>
                 <Button style={{ top: 105, position: 'absolute', right: 70, width: "200px", height: "40px" }} onClick={(e) => { crearModificarProd('A', '') }} variant="secondary " > + Agregar Producto</Button>
@@ -234,16 +236,16 @@ function AdminProdPage() {
                                                 <td>{item.tipo}</td>
                                                 <td>{item.precio}</td>
 
-                                                <td style={{width: "12%"}} >
-                                                  <div className="d-flex justify-content-around">
-                                                    <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarProd('E', item) }}>
-                                                      <PencilFill color="white"></PencilFill>
-                                                    </button>
-                                                    <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(id) => {borrarProducto(item.id) }}>
-                                                        <TrashFill color="white"></TrashFill>
-                                                    </button>
-                                                  </div>
-                                              </td>
+                                                <td style={{ width: "12%" }} >
+                                                    <div className="d-flex justify-content-around">
+                                                        <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarProd('E', item) }}>
+                                                            <PencilFill color="white"></PencilFill>
+                                                        </button>
+                                                        <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(id) => { borrarProducto(item.id) }}>
+                                                            <TrashFill color="white"></TrashFill>
+                                                        </button>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         ))
                                     ) : (
@@ -265,64 +267,64 @@ function AdminProdPage() {
                 <Modal.Footer>
                     <Button variant="primary" onClick={confirmarEliminacion}>
                         Confirmar
-				</Button>
+                    </Button>
                     <Button variant="secondary" onClick={handleClose}>
                         Cancelar
-				</Button>
+                    </Button>
                 </Modal.Footer>
             </Modal>
             {
-            showModalEdit ?
-            (
-                <Modal id="modalEditar" show={showModalEdit} onHide={handleCloseEdit}>
-                    <Modal.Header >
-                        <Modal.Title>{esEditar ? "Editar Producto" : "Agregar Producto" }</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <form className='form-group'>
-                            <input onChange={(e) => { setNombre(e.target.value) }}
-                                onClick = {handleCloseAlert}
-                                className='form-control mt-5'
-                                type="text"
-                                placeholder='nombre'
-                                id="nombre"
-                                value={nombre}
-                            />
-                            <select
-                                value={tipo} onChange={(e) => { setTipo(e.target.value) }}
-                                onClick = {handleCloseAlert}
-                                className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
-                                <option disabled="disabled" value="">Seleccione Tipo</option>
-                                <option value="Dulce">Dulce</option>
-                                <option value="Salado">Salado</option>
-                                <option value="Agridulce">Agridulce</option>
-                            </select>
-                            <input onChange={(e) => { setPrecio(e.target.value) }}
-                                onClick = {handleCloseAlert}
-                                className='form-control mt-5'
-                                type="number"
-                                placeholder='precio'
-                                id="precio"
-                                value={precio}
-                            />
-                        </form>
-                        <Alert className="mt-4" variant="danger" show={showAlert}>
-					        {msgError}
-				        </Alert>
-                    </Modal.Body>
-                    
-                    <Modal.Footer>
-                        <Button variant="primary" onClick={confirmarEdicion}>
-                            Confirmar
-                        </Button>
-                        <Button variant="secondary" onClick={() => {setShowModalEdit(false); setMsgError(null); setShowAlert(false);}}>
-                            Cancelar
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-            ) : (
-                <></>
-            )
+                showModalEdit ?
+                    (
+                        <Modal id="modalEditar" show={showModalEdit} onHide={handleCloseEdit}>
+                            <Modal.Header >
+                                <Modal.Title>{esEditar ? "Editar Producto" : "Agregar Producto"}</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <form className='form-group'>
+                                    <input onChange={(e) => { setNombre(e.target.value) }}
+                                        onClick={handleCloseAlert}
+                                        className='form-control mt-5'
+                                        type="text"
+                                        placeholder='nombre'
+                                        id="nombre"
+                                        value={nombre}
+                                    />
+                                    <select
+                                        value={tipo} onChange={(e) => { setTipo(e.target.value) }}
+                                        onClick={handleCloseAlert}
+                                        className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
+                                        <option disabled="disabled" value="">Seleccione Tipo</option>
+                                        <option value="Dulce">Dulce</option>
+                                        <option value="Salado">Salado</option>
+                                        <option value="Agridulce">Agridulce</option>
+                                    </select>
+                                    <input onChange={(e) => { setPrecio(e.target.value) }}
+                                        onClick={handleCloseAlert}
+                                        className='form-control mt-5'
+                                        type="number"
+                                        placeholder='precio'
+                                        id="precio"
+                                        value={precio}
+                                    />
+                                </form>
+                                <Alert className="mt-4" variant="danger" show={showAlert}>
+                                    {msgError}
+                                </Alert>
+                            </Modal.Body>
+
+                            <Modal.Footer>
+                                <Button variant="primary" onClick={confirmarEdicion}>
+                                    Confirmar
+                                </Button>
+                                <Button variant="secondary" onClick={() => { setShowModalEdit(false); setMsgError(null); setShowAlert(false); }}>
+                                    Cancelar
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
+                    ) : (
+                        <></>
+                    )
 
             }
         </div>

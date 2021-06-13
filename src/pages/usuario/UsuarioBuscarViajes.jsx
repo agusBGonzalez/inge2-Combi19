@@ -150,8 +150,47 @@ function UsuarioBuscarViajes() {
         datosSitios()
     }, []);
 
-    const confirmarBusqueda = async () => {
+        async function deleteCollection(db, collectionPath, batchSize) {
+            const collectionRef = db.collection(collectionPath);
+            const query = collectionRef.orderBy('__name__').limit(batchSize);
 
+            return new Promise((resolve, reject) => {
+                deleteQueryBatch(db, query, resolve).catch(reject);
+            });
+        }
+
+        async function deleteQueryBatch(db, query, resolve) {
+            const snapshot = await query.get();
+
+            const batchSize = snapshot.size;
+            if (batchSize === 0) {
+                // When there are no documents left, we are done
+                resolve();
+                return;
+            }
+
+            // Delete documents in a batch
+            const batch = db.batch();
+            snapshot.docs.forEach((doc) => {
+                batch.delete(doc.ref);
+            });
+            await batch.commit();
+
+            // Recurse on the next process tick, to avoid
+            // exploding the stack.
+            process.nextTick(() => {
+                deleteQueryBatch(db, query, resolve);
+            });
+            alert("hola")
+        }
+
+  
+
+    const confirmarBusqueda = async () => {
+        deleteCollection(store, 'buscarViajes', 10);
+        let fecha2
+        let dia = 1
+        let aux
         if (origen === "") {
             setMsgError('El campo Origen esta vacio')
             setShowAlert(true)
@@ -166,6 +205,15 @@ function UsuarioBuscarViajes() {
             setMsgError('El campo fecha esta vacio')
             setShowAlert(true)
             return
+        } else {
+            fecha2 = new Date(fecha)
+            aux = new Date(fecha2.setDate(fecha2.getDate() + dia))
+            if (hoy > aux.toLocaleDateString()) {
+                setMsgError('La fecha no puede ser posterior a la fecha actual')
+                setShowAlert(true)
+                return
+            }
+
         }
         if (origen === destino) {
             setMsgError('Origen y destino deben ser diferentes')
@@ -179,20 +227,20 @@ function UsuarioBuscarViajes() {
         let destino_seleccinado
         let combiViaje
         sitioSelect.map(s => {
-            // console.log('id sitio', s.id)
-            // console.log('id Origen', idOrigen)
-            // console.log('id Destino', idDestino)
             if (s.id === idOrigen) {
                 origen_seleccinado = s
             }
             if (s.id === idDestino) {
                 destino_seleccinado = s
             }
+
         })
+        console.log("Origen", origen_seleccinado, "destino", destino_seleccinado)
         viajes.map(v => {
             if (v.origen.provincia === origen_seleccinado.provincia && v.origen.ciudad === origen_seleccinado.ciudad) {
                 if (v.destino.provincia === destino_seleccinado.provincia && v.destino.ciudad === destino_seleccinado.ciudad) {
-                    if (v.fecha === fecha) {
+                    console.log("fecha viaje", v.fechaviaje)
+                    if (v.fechaviaje === fecha) {
                         combi.map(c => {
                             if (c.patente === v.combi) {
                                 combiViaje = c
@@ -357,13 +405,13 @@ function UsuarioBuscarViajes() {
                             <Modal.Footer>
                                 <Button variant="primary" onClick={confirmarBusqueda}>
                                     Confirmar
-                                        </Button>
+                                </Button>
                                 <Button variant="secondary" onClick={() => { setShowModalEdit(false); setMsgError(null); setShowAlert(false); }}>
                                     Cancelar
-                                        </Button>
+                                </Button>
                             </Modal.Footer>
                         </Modal>
-                    ) : (<></>) 
+                    ) : (<></>)
             }
         </div>
 
