@@ -5,22 +5,22 @@ import Opiniones from '../../components/Comentarios/Opiniones'
 import "../../components/Comentarios/Card.css"
 import image1 from '../../images/combifondo.jpg'
 
-function UsuarioPage() {
+function AdminPage() {
 
   const subPageStyle = {
     top: 150,
-    position: 'absolute',
     left: 80,
     width: "90%"
-};
+  };
   
   return (
       <div>
-         <img src={image1} alt="" style={{alignItems:'center', width:'100%'}} />
+         {/* <img src={image1} alt="" style={{alignItems:'center', width:'100%'}} /> */}
         <MenuUsuario/>
         <MenuOpcAdmin optionName="usuarioAdmin"/>
         <div style={subPageStyle}>
-           <Opiniones/> 
+          {/* <img src={image1} alt="" style={{alignItems:'center', width:'100%',height:'100%'}} /> */}
+          <Opiniones/>
         </div>
         
       </div>
@@ -29,4 +29,4 @@ function UsuarioPage() {
 
 }
   
-  export default UsuarioPage;
+  export default AdminPage;

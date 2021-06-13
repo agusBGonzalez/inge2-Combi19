@@ -4,20 +4,21 @@ import MenuUsuario from '../../components/menus/MenuUsuario'
 import Opiniones from '../../components/Comentarios/Opiniones'
 import "../../components/Comentarios/Card.css"
 import image1 from '../../images/combifondo.jpg'
+
 function UsuarioPage() {
   const subPageStyle = {
     top: 150,
-    position: 'absolute',
     left: 80,
     width: "90%"
 };
   return (
       <div >
-        <img src={image1} alt="" style={{alignItems:'center', width:'100%'}} />
+        
         <MenuUsuario/>
         <MenuOpcUsuario/>
         <div style={subPageStyle}>
-           <Opiniones/> 
+          {/* <img src={image1} alt="" style={{alignItems:'center', width:'800px',height:'600px'}} /> */}
+          <Opiniones/> 
         </div>
       </div>
 

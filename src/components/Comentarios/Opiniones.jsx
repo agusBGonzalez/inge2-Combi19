@@ -8,11 +8,10 @@ import { TrashFill, PencilFill} from 'react-bootstrap-icons'
 const Opiniones = () => {
 
     const subPageStyle = {
-        top: 150,
+        top: 170,
+        left:180,
         position: 'absolute',
-        //left: 180,
-        width: "105%",
-        //height: "77%",
+        height: "73%",
         overflowY: 'scroll'
         
     };
@@ -162,9 +161,10 @@ const Opiniones = () => {
     return (
       <div>
         <div>
-            <h3 style={{top: -50, left: 30,width: "60%"}}>Comentarios</h3>
-            <Button style={{float:'right',width: "200px", height: "50px"}} onClick={(e) => { crearModificarComentario('A', '') }} variant="danger" > Agregar Comentario</Button>
-           
+            <div style={{marginBottom:'20px'}} >
+                <h3 style={{top: 110, position: 'absolute', left: 80,width: "60%",}}>Comentarios</h3>
+                <Button style={{top: 105,  position: 'absolute', right:70, width: "250px", height: "40px"}} onClick={(e) => { crearModificarComentario('A', '') }} variant="danger" > Agregar Comentario</Button>  
+            </div>
             <div style={subPageStyle}>
                   <div className="container " >
                     <div className ="row">
