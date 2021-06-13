@@ -45,6 +45,7 @@ function UsuarioViajesComprados() {
     const handleCloseEdit = () => setShowModalEdit(false)
 
     const [pasajesComprados, setPasajesComprados] = useState([])
+    const [productos, setProductos] = useState([])
     const [origen, setOrigen] = useState('')
     const [destino, setDestino] = useState('')
     const [fecha, setFecha] = useState('')
@@ -84,13 +85,27 @@ function UsuarioViajesComprados() {
                 setPasajesComprados(fetchedViajes)
             })
     }, []);
-    const verDetalle = (itemOrigen, itemDestino, itemFecha, itemCantidadPasajes) => {
+    const verDetalle = (itemOrigen, itemDestino, itemFecha, itemCantidadPasajes, itemProductos) => {
         setOrigen("Provincia: " + itemOrigen.provincia + " Ciudad: " + itemOrigen.ciudad)
         setDestino("Provincia: " + itemDestino.provincia + " Ciudad: " + itemDestino.ciudad)
-        setFecha(itemFecha.data)
+        setFecha(itemFecha)
         setCantPasajes(itemCantidadPasajes)
+        store.collection('prodComprados').get()
+            .then(response => {
+                const fetchedViajes = [];
+                response.docs.forEach(document => {
+                    const fetchedViaje = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedViajes.push(fetchedViaje)
+                });
+                setProductos(fetchedViajes)
+            })
         setShowModalEdit(true)
     }
+
+
     return (
         <div>
             <MenuUsuario />
@@ -128,7 +143,7 @@ function UsuarioViajesComprados() {
                                                 <td>{item.estado}</td>
                                                 <td style={{ width: "12%" }} >
                                                     <div className="d-flex justify-content-around">
-                                                        <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { verDetalle(item.origen, item.destino, item.fecha, item.cantidadPasajes) }}>
+                                                        <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { verDetalle(item.origen, item.destino, item.fecha, item.cantidadPasajes, item.productos) }}>
                                                             <PencilFill color="white"></PencilFill>
                                                         </button>
                                                     </div>
@@ -183,6 +198,7 @@ function UsuarioViajesComprados() {
                                         value={fecha}
                                         disabled
                                     />
+
                                     <p>Cantidad de Pasajes:</p>
                                     <input
                                         className='form-control mt-2'
@@ -192,6 +208,7 @@ function UsuarioViajesComprados() {
                                         value={cantidadPasajes}
                                         disabled
                                     />
+
                                 </form>
                                 <Alert className="mt-4" variant="danger" show={showAlert}>
                                     {msgError}
