@@ -41,12 +41,13 @@
       const [showModalEdit, setShowModalEdit] = useState(false)
       const [choferEditar, setChoferEditar] = useState('')
       const [esEditar, setEsEditar] = useState(false)
-      const [esChoferRepetido, setEsChoferRepetido] = useState(false)
       
 
       const handleCloseEdit = () => setShowModalEdit(false)
 
       const [choferes, setChoferes] = useState([])
+      const [combisCargadas,setCombisCargadas] = useState([])
+      const [viajesCargados,setViajesCargados] = useState([])
       
 
       const [nombres, setNombres] = useState('')
@@ -56,7 +57,39 @@
       const [telefono, setTelefono] = useState('')
       const [password, setPassword] = useState('')
       
-  
+      
+
+    const getViajesCargados =  () => {
+        store.collection('sitios').get()
+        .then(response => {
+            const fetchedViajes = [];
+            response.docs.forEach(document => {
+            const fetchedViaje = {
+                id: document.id,
+                ...document.data()
+            };
+            fetchedViajes.push(fetchedViaje)
+            });
+            setViajesCargados(fetchedViajes)
+        })
+    }
+
+    const getCombisCargadas =  () => {
+        store.collection('sitios').get()
+        .then(response => {
+            const fetchedCombis = [];
+            response.docs.forEach(document => {
+            const fetchedCombi = {
+                id: document.id,
+                ...document.data()
+            };
+            fetchedCombis.push(fetchedCombi)
+            });
+            setCombisCargadas(fetchedCombis)
+        })
+    }
+    
+    
   
       const getChoferes =  () => {
           store.collection('choferes').get()
@@ -76,6 +109,8 @@
   
       //CARGA LA LISTA CUANDO SE CARGA EL COMPONENTE
       useEffect(() => {
+          getCombisCargadas()
+          getViajesCargados()
           store.collection('choferes').get()
           .then(response => {
               const fetchedChoferes = [];
@@ -168,21 +203,13 @@
             setShowAlert(true)
             return
          }
-  
-          store.collection('choferes').where("email", "==", email)
-              .get()
-              .then((querySnapshot) => {
-                  let datosRepetidos = false
-                  querySnapshot.forEach((doc) => {
-                      //COMO FILTRO POR PROVINCIA, QUEDA CHEQUEAR QUE NO HAYA UNA CIUDAD IGUAL
-                      const dniBusq = doc.data().dni           
-                      if (dniBusq === dni) {
-                          datosRepetidos = true
-                      }
-                  });  
-                  setEsChoferRepetido(datosRepetidos)                               
-              })
-          
+
+         const esChoferRepetido = choferes.find((chofer) => {
+            console.log((((chofer.dni === dni) || (chofer.email === email)) && (chofer.nombres === nombres) && (chofer.apellido === apellido)))
+            return (((chofer.dni === dni) || (chofer.email === email)) && (chofer.nombres === nombres) && (chofer.apellido === apellido))
+        })
+
+             
           if (esChoferRepetido) {
               setMsgError('Este Chofer ya se encuentra cargado')
               setShowAlert(true)

@@ -1,7 +1,7 @@
 import React,{useState, useEffect} from 'react'
 import MenuUsuario from '../../components/menus/MenuUsuario'
 import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
-import {Table, Modal, Button, Alert} from 'react-bootstrap'
+import {Table, Modal, Button, Alert, Form} from 'react-bootstrap'
 import { store } from '../../firebaseconf'
 import { TrashFill, PencilFill} from 'react-bootstrap-icons';
 
@@ -41,25 +41,25 @@ function AdminRutaPage() {
     const [showModalEdit, setShowModalEdit] = useState(false)
     const [rutaEditar, setRutaEditar] = useState('')
     const [esEditar, setEsEditar] = useState(false)
-    const [esRutaRepetida, setEsRutaRepetida] = useState(false)
+    
     
 
     const handleCloseEdit = () => setShowModalEdit(false)
 
     const [rutas, setRutas] = useState([])
     
+    const [sitiosCargados, setSitiosCargados] = useState([])
 
-    const [nombres, setNombres] = useState('')
-    const [apellido, setApellido] = useState('')
-    const [dni, setDni] = useState('')
-    const [email, setEmail] = useState('')
-    const [telefono, setTelefono] = useState('')
-    const [password, setPassword] = useState('')
+
+    const [idOrigen, setIdOrigen] = useState('')
+    const [idDestino, setIdDestino] = useState('')
+    const [horario, setHorario] = useState('')
+    const [km, setKm] = useState('')
     
 
 
     const getRutas =  () => {
-        store.collection('rutas').get()
+        store.collection('rutasZaca').get()
         .then(response => {
             const fetchedRutas = [];
             response.docs.forEach(document => {
@@ -71,12 +71,28 @@ function AdminRutaPage() {
             });
             setRutas(fetchedRutas)
         })
-    }    
- 
+    }
+    
+    const getSitiosCargados =  () => {
+        store.collection('sitios').get()
+        .then(response => {
+            const fetchedSitios = [];
+            response.docs.forEach(document => {
+            const fetchedSitio = {
+                id: document.id,
+                ...document.data()
+            };
+            fetchedSitios.push(fetchedSitio)
+            });
+            setSitiosCargados(fetchedSitios)
+        })
+    } 
+     
 
     //CARGA LA LISTA CUANDO SE CARGA EL COMPONENTE
     useEffect(() => {
-        store.collection('rutas').get()
+        getSitiosCargados()
+        store.collection('rutasZaca').get()
         .then(response => {
             const fetchedRutas = [];
             response.docs.forEach(document => {
@@ -100,10 +116,10 @@ function AdminRutaPage() {
     }    
 
     const confirmarEliminacion = async () => {
-        const { docs } = await store.collection('rutas').get()
+        const { docs } = await store.collection('rutasZaca').get()
         const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
         setRutas(nuevoArray)
-        await store.collection('rutas').doc(rutaEliminar).delete()
+        await store.collection('rutasZaca').doc(rutaEliminar).delete()
         getRutas()
         setShowModal(false)
         setMsgSucc('Se elimino con exito! Click aqui para cerrar')
@@ -116,23 +132,19 @@ function AdminRutaPage() {
 
         if (oper === 'E') {
             setEsEditar(true)
+            setIdOrigen(item.idOrigen)
+            setIdDestino(item.idDestino)
+            setHorario(item.horario)
+            setKm(item.km)
             setRutaEditar(item.id)
-            setNombres(item.nombres)
-            setApellido(item.apellido)
-            setDni(item.dni)
-            setEmail(item.email)
-            setTelefono(item.telefono)
-            setPassword(item.password)
 
         } else {
             setEsEditar(false)
+            setIdOrigen('')
+            setIdDestino('')
+            setHorario('')
+            setKm('')
             setRutaEditar('')
-            setNombres('')
-            setApellido('')
-            setDni('')
-            setEmail('')
-            setTelefono('')
-            setPassword('')
         }
         setShowModalEdit(true)
     }
@@ -141,67 +153,74 @@ function AdminRutaPage() {
     const confirmarEdicion = async (e) => {
         e.preventDefault()
 
-        if (!nombres.trim()) {
-            setMsgError('El campo Nombre esta vacio' )
+        if (!idOrigen.trim()) {
+            setMsgError('El campo Origen esta vacio' )
             setShowAlert(true)
             return
         }
-        if (!apellido.trim()) {
-          setMsgError('El campo Apellido esta vacio' )
+        if (!idDestino.trim()) {
+          setMsgError('El campo Destino esta vacio' )
           setShowAlert(true)
           return
         }
-        if (!dni.trim()) {
-              setMsgError('El campo DNI esta vacio' )
+        if (!horario.trim()) {
+              setMsgError('El campo Horario esta vacio' )
               setShowAlert(true)
               return
         }
-        if (!email.trim()) {
-          setMsgError('El campo Email esta vacio' )
+        if (!km.trim()) {
+          setMsgError('El campo Kilómetros esta vacio' )
           setShowAlert(true)
           return
-       }
+        }
 
-       if (!password.trim() || (password.trim().length < 6)) {
-          setMsgError('El campo Password debe tener al menos 6 caracteres' )
-          setShowAlert(true)
-          return
-       }
 
-        store.collection('rutas').where("email", "==", email)
-            .get()
-            .then((querySnapshot) => {
-                let datosRepetidos = false
-                querySnapshot.forEach((doc) => {
-                    //COMO FILTRO POR PROVINCIA, QUEDA CHEQUEAR QUE NO HAYA UNA CIUDAD IGUAL
-                    const dniBusq = doc.data().dni           
-                    if (dniBusq === dni) {
-                        datosRepetidos = true
-                    }
-                });  
-                setEsRutaRepetida(datosRepetidos)                               
-            })
+        if (idDestino === idOrigen) {
+            setMsgError('Los campos Origen y Destino no pueden tener el mismo Sitio asociado' )
+            setShowAlert(true)
+            return
+          }
+
+        const esRutaRepetida =  rutas.find((ruta) => {
+            return ((ruta.idOrigen === idOrigen) && (ruta.idDestino === idDestino) && (ruta.horario === horario))
+        })
         
+
         if (esRutaRepetida) {
             setMsgError('Esta Ruta ya se encuentra cargada')
             setShowAlert(true)
             return
         }
+
+        // Me traigo los datos del origen
+        const origen = sitiosCargados.find((element) => {
+            return element.id === idOrigen;
+        })
+        // Me traigo los datos del destino
+        const destino = sitiosCargados.find((element) => {
+            return element.id === idDestino;
+        })
         
+        const infoViaje = "Origen: " + origen.provincia + " - " + origen.ciudad  + " Destino: " + destino.provincia + " - " + destino.ciudad  + " Hora: " + horario + " hs - " + km + " Km" 
 
         const rutaAct = {
-          nombres: nombres,
-          apellido: apellido,
-          dni: dni,
-          email: email,
-          telefono: telefono,
-          password: password
+          idOrigen: idOrigen,
+          provOrigen: origen.provincia,
+          ciudadOrigen: origen.ciudad,
+          origen: origen.provincia + " - " + origen.ciudad,
+          idDestino: idDestino,
+          provDest: destino.provincia,
+          ciudadDest: destino.ciudad,
+          destino: destino.provincia + " - " + destino.ciudad,
+          horario: horario,
+          km: km,
+          infoViaje: infoViaje
         }
         
         if (esEditar){
             try{
-                //FALTA MOSTRAR MSJ DE SUCESS
-                await store.collection('rutas').doc(rutaEditar).set(rutaAct)
+                //
+                await store.collection('rutasZaca').doc(rutaEditar).set(rutaAct)
                 getRutas()
                 setMsgSucc('Actualizacion Exitosa! Click aqui para cerrar')
                 setShowAlertSucc(true)
@@ -214,8 +233,8 @@ function AdminRutaPage() {
 
         } else {
             try{
-                //FALTA MOSTRAR MSJ DE SUCESS
-                await store.collection('rutas').add(rutaAct)
+                //
+                await store.collection('rutasZaca').add(rutaAct)
                 getRutas()
                 setMsgSucc('Registro Exitoso! Click aqui para cerrar')
                 setShowAlertSucc(true)
@@ -245,11 +264,10 @@ function AdminRutaPage() {
                 <Table striped bordered hover variant="dark">
                     <thead>
                         <tr>
-                          <th>DNI</th>
-                          <th>Apellido</th>
-                          <th>Nombre</th>
-                          <th>Email</th>
-                          <th>Telefono</th>
+                          <th>Origen</th>
+                          <th>Destino</th>
+                          <th>Horario</th>
+                          <th>Km</th>
                           <th>Acciones</th>           
                         </tr>
                     </thead>
@@ -259,11 +277,10 @@ function AdminRutaPage() {
                                 (
                                   rutas.map(item => (
                                         <tr key={item.id}>
-                                            <td>{item.dni}</td>
-                                            <td>{item.apellido}</td>
-                                            <td>{item.nombres}</td>
-                                            <td>{item.email}</td>
-                                            <td>{item.telefono}</td>
+                                            <td>{item.origen}</td>
+                                            <td>{item.destino}</td>
+                                            <td>{item.horario}</td>
+                                            <td>{item.km}</td>
                                             <td style={{width: "12%"}} >
                                                 <div className="d-flex justify-content-around">
                                                   <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { crearModificarRuta('E', item) }}>
@@ -310,69 +327,74 @@ function AdminRutaPage() {
                         <Modal.Title>{esEditar ? "Editar Ruta" : "Agregar Ruta" }</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <form className='form-group'>
-                            <input onChange={(e) => { setDni(e.target.value) }}
+                        <Form inline>
+                            <Form.Label htmlFor="inlineFormCustomSelect">
+                                Origen:
+                            </Form.Label>
+                            <Form.Control
+                                as="select"
+                                style = {{width:"80%", marginLeft:"15px"}}
+                                id="origenInput"
+                                onChange={(e) => { setIdOrigen(e.target.value) }}
                                 onClick = {handleCloseAlert}
-                                className='form-control mt-2'
-                                type="text"
-                                maxLength = '8'
-                                onKeyPress={(event) => {
-                                  if (!/[0-9]/.test(event.key)) {
-                                    event.preventDefault();
-                                  }
-                                }}
-                                placeholder='Ingrese DNI'
-                                id="dni"
-                                value={dni}
-                            />
-                            <input onChange={(e) => { setNombres(e.target.value) }}
+                                value = {idOrigen}
+                                custom
+                            >
+                            {<option key= "0" value="">Seleccione un sitio de Origen..</option>}
+                            {sitiosCargados.map((e, key) => {
+                                return <option key={e.id} value={e.id}>{e.provincia} - {e.ciudad}</option>;
+                            })}
+                            </Form.Control>
+                            <br/>
+                            <Form.Label htmlFor="inlineFormCustomSelect">
+                                Destino:
+                            </Form.Label>
+                            <Form.Control
+                                as="select"
+                                style = {{width:"80%", marginLeft:"10px"}}
+                                id="destinoInput"
+                                onChange={(e) => {  setIdDestino(e.target.value) }}
                                 onClick = {handleCloseAlert}
-                                className='form-control mt-2'
-                                type="text"
-                                placeholder='Ingrese Nombres'
-                                id="nomb"
-                                value={nombres}
-                            />
-                            <input onChange={(e) => { setApellido(e.target.value) }}
-                                onClick = {handleCloseAlert}
-                                className='form-control mt-2'
-                                type="text"
-                                placeholder='Ingrese Apellido'
-                                id="ape"
-                                value={apellido}
-                            />
-                            <input onChange={(e) => { setEmail(e.target.value) }}
-                                onClick = {handleCloseAlert}
-                                className='form-control mt-2'
-                                type="email"
-                                placeholder='Ingrese Email'
-                                id="email"
-                                value={email}
-                            />
-                            <input onChange={(e) => { setTelefono(e.target.value) }}
-                                onClick = {handleCloseAlert}
-                                className='form-control mt-2'
-                                type="text"
-                                maxLength = '14'
-                                onKeyPress={(event) => {
-                                  if (!/[0-9]/.test(event.key)) {
-                                    event.preventDefault();
-                                  }
-                                }}
-                                placeholder='Ingrese Telefono'
-                                id="tele"
-                                value={telefono}
-                            />
-                            <input onChange={(e) => { setPassword(e.target.value) }}
-                                onClick = {handleCloseAlert}
-                                className='form-control mt-2'
-                                type="password"
-                                placeholder='Ingrese Password'
-                                id="pass"
-                                value={password}
-                            />
-                            
-                        </form>
+                                value = {idDestino}
+                                custom
+                            >
+                            {<option key= "0" value="">Seleccione un sitio de Destino..</option>}
+                            {sitiosCargados.map((e, key) => {
+                                return <option key={e.id} value={e.id}>{e.provincia} - {e.ciudad}</option>;
+                            })}
+                            </Form.Control>
+                            <br/>
+                            <Form.Label htmlFor="inlineFormCustomSelect">
+                                Horario:
+                            </Form.Label>
+                            <input  onChange={(e) => { setHorario(e.target.value); console.log(e.target.value) }}
+                                    onClick = {handleCloseAlert}
+                                    type="time" 
+                                    id="appt" 
+                                    name="appt"
+                                    value={horario}
+                                    style = {{ marginLeft:"10px"}} 
+                                    required/>
+                            <br/>
+                            <Form.Label htmlFor="inlineFormCustomSelect">
+                                KM:
+                            </Form.Label>
+                            <input onChange={(e) => { setKm(e.target.value); console.log(e.target.value)  }}
+                                  onClick = {handleCloseAlert}
+                                  type="text"
+                                  maxLength = '5'
+                                  onKeyPress={(event) => {
+                                    if (!/[0-9]/.test(event.key)) {
+                                      event.preventDefault();
+                                    }
+                                  }}
+                                  id="totKm"
+                                  value={km}
+                                  style = {{marginLeft:"40px", width:"50%"}} 
+                              />
+
+                        </Form>
+                
                         <Alert className="mt-4" variant="danger" show={showAlert}>
                             {msgError}
                         </Alert>
@@ -382,7 +404,7 @@ function AdminRutaPage() {
                         <Button variant="primary" onClick={confirmarEdicion}>
                             Confirmar
                         </Button>
-                        <Button variant="secondary" onClick={() => {setShowModalEdit(false); setMsgError(null); setShowAlert(false);}}>
+                        <Button variant="secondary" onClick={() => { setShowModalEdit(false); setMsgError(null); setShowAlert(false); }}>
                             Cancelar
                         </Button>
                     </Modal.Footer>

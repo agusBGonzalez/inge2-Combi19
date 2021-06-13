@@ -8,12 +8,13 @@ function MenuUsuario() {
 
     const historial = useHistory()
     const[usuario,setUsuario] = useState(null)
+    const[idUsuarioLogueado,setIdUsuarioLogueado] = useState('')
 
     useEffect( () =>{
         auth.onAuthStateChanged( (user) => {
            if(user){
               setUsuario(user.email)
-              console.log(user.email)
+              setIdUsuarioLogueado(user.uid)
            } 
         })
         return () => {setUsuario(null)}
@@ -22,6 +23,7 @@ function MenuUsuario() {
     const CerrarSesion = () => {
         auth.signOut()
         setUsuario(null)
+        setIdUsuarioLogueado('')
         historial.push('/')
     }
 
