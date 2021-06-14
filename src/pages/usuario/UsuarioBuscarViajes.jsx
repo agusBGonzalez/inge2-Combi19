@@ -290,17 +290,20 @@ function UsuarioBuscarViajes() {
                                 combiViaje = c
                             }
                         })
-                        const agregarViaje = {
-                            origen: sitioOrigen.provincia + " - "+sitioOrigen.ciudad,
-                            destino: sitioDest.provincia+ " - "+sitioDest.ciudad,
-                            fecha: fecha,
-                            horario: element.horario,
-                            tipoCombi: combiViaje.tipocombi,
-                            precio: v.precio,
-                            butacas: v.butacaDisponible
-                        }
-                        console.log(agregarViaje)
-                        store.collection('buscarViajes').add(agregarViaje)
+                        console.log(v.butacaDisponible)
+                        if (v.butacaDisponible >= 1 ) {
+                            const agregarViaje = {
+                                origen: sitioOrigen.provincia + " - "+sitioOrigen.ciudad,
+                                destino: sitioDest.provincia+ " - "+sitioDest.ciudad,
+                                fecha: fecha,
+                                horario: element.horario,
+                                tipoCombi: combiViaje.tipocombi,
+                                precio: v.precio,
+                                butacas: v.butacaDisponible
+                            }
+                            console.log(agregarViaje)
+                            store.collection('buscarViajes').add(agregarViaje)
+                        }                      
                     }
                 } 
             });
