@@ -76,13 +76,28 @@ const Opiniones = () => {
             const userArray = docs.map( item => ({id:item.id, ...item.data()}))
             setUserConfig(userArray)
         }
-        auth.onAuthStateChanged( (user) => {
-            if(user){
-               setUsuario(user.email)
-               setIdUsuarioLogueado(user.uid)
-            } 
-         })
-         
+        
+           auth.onAuthStateChanged( (user) => {
+                if(user){
+                   setUsuario(user.email)
+                   setIdUsuarioLogueado(user.uid)
+                   console.log('FUERA DEL IF')
+                   userConfig.map(item =>{
+                    if(user.uid  === 'QQc6vciuwNPp1U0t7AStYzOimPg2'){
+                        console.log('ENTRO al IF')
+                       setEsAdmin(true)
+
+                    }else{
+                        if(user.uid === item.idUser){
+                            setEsUsuarioLog(true)
+                        }
+                    } 
+                 })
+                } 
+             })
+        
+        
+    
         
         datos()
         store.collection('opiniones').get()
@@ -104,18 +119,6 @@ const Opiniones = () => {
         
     },[]);    
 
-    const verificarUsuario = ()=>{
-        userConfig.map(item =>{
-            if(idUsuarioLogueado === 'QQc6vciuwNPp1U0t7AStYzOimPg2'){
-               setEsAdmin(true)     
-            }else{
-                if(idUsuarioLogueado === item.idUser){
-                    setEsUsuarioLog(true)
-                }
-            } 
-         })
-        
-    }
     
     const borrarComentario = async (id) => {
         setComentarioEliminar(id)
@@ -164,6 +167,7 @@ const Opiniones = () => {
            } 
         })
         const regComentario= {
+            idUsuario:idUsuarioLogueado,
             nombre:nombrecompleto,
             texto:opinion
         }
@@ -217,15 +221,30 @@ const Opiniones = () => {
                                         <div className="card-body rounded">
                                             <h4 className ="card-title text-center ">{item.nombre}</h4>
                                             <p className="card-text text-dark text-center">{item.texto}</p>
-                                            <a href="#!" style={{float:'right',marginRight:30 ,marginBottom:-15}} className="btn btn-outline-dark" onClick={(e) => { crearModificarComentario('E', item) }}>
-                                            <PencilFill color="dark"></PencilFill>
-                                            </a>
-                                            <a href="#!" style={{marginLeft:30,marginBottom:-15}} className="btn btn-outline-dark float" onClick={(id) => {borrarComentario(item.id) }}>
-                                            <TrashFill color="dark"></TrashFill>
-                                            </a>
                                             {
-
+                                                idUsuarioLogueado === "QQc6vciuwNPp1U0t7AStYzOimPg2" ?
+                                                (
+                                                    <a href="#!" style={{marginLeft:120,marginBottom:-15}} className="btn btn-outline-dark" onClick={(id) => {borrarComentario(item.id) }}>
+                                                    <TrashFill color="dark"></TrashFill>
+                                                    </a> 
+                                                ):
+                                                (
+                                                    idUsuarioLogueado === item.idUsuario?
+                                                    (
+                                                        <div>
+                                                        <a href="#!" style={{float:'right',marginRight:30 ,marginBottom:-15}} className="btn btn-outline-dark" onClick={(e) => { crearModificarComentario('E', item) }}>
+                                                        <PencilFill color="dark"></PencilFill>
+                                                        </a>
+                                                        <a href="#!" style={{marginLeft:30,marginBottom:-15}} className="btn btn-outline-dark float" onClick={(id) => {borrarComentario(item.id) }}>
+                                                        <TrashFill color="dark"></TrashFill>
+                                                        </a>
+                                                            </div>
+                                                    ):(
+                                                        <></>
+                                                    )
+                                                )
                                             }
+                                           
                                         </div>
                                     </div>
                                 </div>

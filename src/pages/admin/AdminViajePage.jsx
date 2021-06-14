@@ -57,6 +57,7 @@ function AdminViajePage() {
     const [combiSelect,setCombiSelect] = useState([])
     const [auxiliar,setAuxiliar] = useState([])
     var hoy = new Date().toLocaleDateString()
+    const fechaHoy = hoy.substr(0, hoy.indexOf(','))
 
 
     const getViajes =  () => {
@@ -173,7 +174,6 @@ function AdminViajePage() {
         let fecha2
         let dia = 1
         let aux
-
         if (!fecha.trim()) {
             setMsgError('El campo Fecha esta vacio' )
             setShowAlert(true)
@@ -212,6 +212,7 @@ function AdminViajePage() {
 
         fecha2 = new Date(fecha)
         aux = new Date(fecha2.setDate(fecha2.getDate() + dia)).toLocaleDateString()
+
         if(hoy > aux){
             setMsgError('No se puede cargar fechas anteriores a la de hoy' )
             setShowAlert(true)
@@ -336,7 +337,7 @@ function AdminViajePage() {
             <Alert id="danger" className="" variant="danger" show={showAlertDanger} onClick={handleCloseAlertDanger} style={{ bottom: 0, zIndex: 5, position: 'absolute', left: 75, width: "60%" }} >
                     {msgDanger}
             </Alert>
-            <div style={subPageStyle} >
+            <div style={subPageStyle}>
                 <Table striped bordered hover variant="dark">
                     <thead>
                         <tr>
@@ -348,7 +349,7 @@ function AdminViajePage() {
                           <th>Acciones</th>           
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className ="animate__animated animate__slideInUp">
                         {
                             viajes.length !== 0 ?
                                 (

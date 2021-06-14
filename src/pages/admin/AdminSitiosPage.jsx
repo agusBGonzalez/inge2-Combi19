@@ -301,7 +301,7 @@ function AdminSitiosPage() {
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className ="animate__animated animate__slideInUp">
                             {
                                 sitios.length !== 0 ?
                                     (

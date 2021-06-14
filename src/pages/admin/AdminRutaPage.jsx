@@ -271,7 +271,7 @@ function AdminRutaPage() {
                           <th>Acciones</th>           
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className ="animate__animated animate__slideInUp">
                         {
                             rutas.length !== 0 ?
                                 (

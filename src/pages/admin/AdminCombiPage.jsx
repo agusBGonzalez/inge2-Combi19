@@ -337,7 +337,7 @@ const AdminCombiPage = () => {
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className ="animate__animated animate__slideInUp">
                         {
                             combi.length !== 0 ?
                                 (

@@ -226,7 +226,7 @@ function AdminProdPage() {
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className ="animate__animated animate__slideInUp">
                             {
                                 productos.length !== 0 ?
                                     (
