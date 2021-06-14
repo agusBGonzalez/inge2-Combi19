@@ -148,13 +148,13 @@
             return itemCombi.idChofer === choferEliminar
           })
 
-          let encontre = false
-
           const tieneViajesCombiAsigChofer = viajesCargados.find((itemViaje) => {
-            return itemViaje.idChofer === choferEliminar
+            return itemViaje.idCombi === tieneCombiAsig.id
           })
           
-          if(tieneViajesCombiAsigChofer !== null){
+          //PREGUNTO POR "UNDEFINED" PORQUE EL FIND SI NO ENCUENTRA NADA DEVUELVE ESO
+          // SI NO TIENE VIAJES ASIGNADOS === UNDEFINED
+          if(tieneViajesCombiAsigChofer !== undefined){
             setMsgErrorDelete('El Chofer no se puede eliminar porque se encuentra en una Combi con un viaje asignado')
             setShowAlertDelete(true)
             return
