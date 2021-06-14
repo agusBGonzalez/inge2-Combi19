@@ -5,11 +5,11 @@ import SideNav, { Toggle, Nav, NavItem, NavIcon, NavText } from '@trendmicro/rea
 import '@trendmicro/react-sidenav/dist/react-sidenav.css';
 import './SideBar.css';
 
-import { ListCheck, Truck, PeopleFill, GeoFill } from 'react-bootstrap-icons';
+import { ListCheck, Truck, PeopleFill, GeoFill, HouseFill} from 'react-bootstrap-icons';
 
 
 
-function MenuOpcChofer() {
+function MenuOpcChofer(props) {
 
     return (
 
@@ -21,6 +21,14 @@ function MenuOpcChofer() {
         >
             <SideNav.Toggle style={{color:"black"}}/>
             <SideNav.Nav defaultSelected="">
+                <NavItem eventKey="usuarioChofer">
+                    <NavIcon>
+                        <HouseFill color="black"></HouseFill>
+                    </NavIcon>
+                    <NavText style={{color:"black"}}>
+                        Inicio
+                    </NavText>
+                </NavItem>
                 <NavItem eventKey="home">
                     <NavIcon>
                         <GeoFill color="black"></GeoFill>

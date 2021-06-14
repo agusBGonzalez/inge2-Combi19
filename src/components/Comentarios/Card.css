@@ -1,0 +1,27 @@
+.card{
+    margin-bottom: 10px;
+    background-color: cyan ;
+}
+
+.card:hover{
+    box-shadow: 5px 10px 20px 1px rgba(0, 0, 0, 0.959)!important;
+    transition: all 0.7s linear;
+}
+
+.card-body{
+    padding: 2rem 0 !important;
+    background: #7CA0AF;
+    
+}
+
+.card-text{
+    padding: 0.3rem 1rem;
+    font-size: 1.1rem;
+}
+
+.fondo{
+
+    height: 100vh;
+    background: rgb(124,160,175);
+    background: linear-gradient(158deg, rgba(124,160,175,1) 13%, rgba(69,216,231,1) 38%, rgba(69,157,231,1) 66%, rgba(34,126,237,1) 80%);
+}

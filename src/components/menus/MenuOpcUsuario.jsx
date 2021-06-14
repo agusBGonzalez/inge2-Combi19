@@ -1,26 +1,38 @@
 import React from 'react'
+import { useHistory } from "react-router-dom"
 import SideNav, { Toggle, Nav, NavItem, NavIcon, NavText } from '@trendmicro/react-sidenav';
 
 // Be sure to include styles at some point, probably during your bootstraping
 import '@trendmicro/react-sidenav/dist/react-sidenav.css';
 import './SideBar.css';
 
-import { ReceiptCutoff, CreditCardFill, GeoFill } from 'react-bootstrap-icons';
+import { ReceiptCutoff, CreditCardFill, GeoFill, HouseFill} from 'react-bootstrap-icons';
 
 
-function MenuOpcUsuario() {
+function MenuOpcUsuario(props) {
+
+    const historial = useHistory()
 
     return (
 
         <SideNav
             onSelect={(selected) => {
-                // Add your code here
+                const to = '/' + selected;
+                historial.push(to);
             }}
             style={{ backgroundColor: "#7CA0AF",top: "99px"}}
         >
             <SideNav.Toggle />
-            <SideNav.Nav defaultSelected="">
-                <NavItem eventKey="home">
+            <SideNav.Nav defaultSelected={props.optionName ? props.optionName : ''} >
+                <NavItem eventKey="usuarioCliente">
+                    <NavIcon>
+                        <HouseFill color="black"></HouseFill>
+                    </NavIcon>
+                    <NavText style={{color:"black"}}>
+                        Inicio
+                    </NavText>
+                </NavItem>
+                <NavItem eventKey="filtrarViajes">
                     <NavIcon>
                         <GeoFill color="black"></GeoFill>
                     </NavIcon>
@@ -28,7 +40,7 @@ function MenuOpcUsuario() {
                         Viajes
                     </NavText>
                 </NavItem>
-                <NavItem eventKey="home">
+                <NavItem eventKey="detalleViajes">
                     <NavIcon>
                         <ReceiptCutoff color="black"></ReceiptCutoff>
                     </NavIcon>
@@ -36,7 +48,7 @@ function MenuOpcUsuario() {
                         Mis Pasajes
                     </NavText>
                 </NavItem>
-                <NavItem eventKey="home">
+                <NavItem eventKey="usuarioCliente">
                     <NavIcon>
                         <CreditCardFill color="black"></CreditCardFill>
                     </NavIcon>

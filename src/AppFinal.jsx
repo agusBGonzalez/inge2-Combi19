@@ -3,9 +3,22 @@ import {BrowserRouter as Router,Switch,Route} from 'react-router-dom';
 import InicioPage from './pages/InicioPage';
 import RegistrarPage from './pages/RegistrarPage';
 import LoginPage from './pages/LoginPage';
-import UsuarioPage from './pages/UsuarioPage';
-import ChoferPage from './pages/ChoferPage';
-import AdminPage from './pages/AdminPage';
+import MisDatosUsuarioPage from './pages/MisDatosUsuarioPage';
+import UsuarioPage from './pages/usuario/UsuarioPage';
+import ChoferPage from './pages/chofer/ChoferPage';
+import AdminPage from './pages/admin/AdminPage';
+import AdminSitiosPage from './pages/admin/AdminSitiosPage';
+import AdminChoferPage from './pages/admin/AdminChoferPage';
+import AdminCombiPage from './pages/admin/AdminCombiPage';
+import AdminProdPage from './pages/admin/AdminProdPage';
+import AdminRutaPage from './pages/admin/AdminRutaPage';
+import AdminViajePage from './pages/admin/AdminViajePage';
+import UsuarioBuscarViajes from './pages/usuario/UsuarioBuscarViajes';
+import UsuarioViajesComprados from './pages/usuario/UsuarioViajesComprados';
+import ComprarSnacks from '../src/pages/usuario/ComprarSnacks'
+
+
+
 
 
 
@@ -20,6 +33,17 @@ function AppFinal() {
           <Route path='/usuarioAdmin' component={AdminPage}></Route>
           <Route path='/usuarioChofer' component={ChoferPage}></Route>
           <Route path='/usuarioCliente' component={UsuarioPage}></Route>
+          <Route path='/listaSitios' component={AdminSitiosPage}></Route>
+          <Route path='/listaChoferes' component={AdminChoferPage}></Route>
+          <Route path='/listaCombis' component={AdminCombiPage}></Route>
+          <Route path='/listaProductos' component={AdminProdPage}></Route>
+          <Route path='/listaRutas' component={AdminRutaPage}></Route>
+          <Route path='/listaViajes' component={AdminViajePage}></Route>
+          <Route path='/filtrarViajes' component={UsuarioBuscarViajes}></Route>
+          <Route path='/detalleViajes' component={UsuarioViajesComprados}></Route>
+          <Route path='/comprarsnacks' component={ComprarSnacks}></Route>
+          <Route path='/misDatosUsuario' component={MisDatosUsuarioPage}></Route>
+
         </Switch>
       </Router>
 

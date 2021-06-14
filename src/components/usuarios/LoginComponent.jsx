@@ -62,7 +62,11 @@ function LoginComponent() {
                                 setEmail('')
                                 setPassword('')
                                 setMsgError(null)
-                                historial.push(userRuta)
+                                //historial.push(userRuta)
+                                historial.push({
+                                    pathname: userRuta,
+                                    customNameData: r.user.uid,
+                                  });
                             })
                 
             })
