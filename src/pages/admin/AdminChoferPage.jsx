@@ -22,14 +22,19 @@
       const [showModal, setShowModal] = useState(false);
       const [choferEliminar, setChoferEliminar] = useState('');
 
-      const handleClose = () => setShowModal(false);
+      const handleClose = () => {setShowModal(false);setShowAlertDelete(false);setMsgErrorDelete(null)};
   
-      //ALERT ERROR
+      //ALERT ERROR EDITAR
       const [showAlert, setShowAlert] = useState(false);
       const handleCloseAlert = () => setShowAlert(false);
   
       const [msgError, setMsgError] = useState (null)
-  
+      
+      //ALERT ERROR ELIMINAR
+      const [showAlertDelete, setShowAlertDelete] = useState(false);
+      const handleCloseAlertDelete = () => setShowAlertDelete(false);
+      const [msgErrorDelete, setMsgErrorDelete] = useState (null)
+
       //ALERT SUCESS
       const [showAlertSucc, setShowAlertSucc] = useState(false)
       const handleCloseAlertSucc = () => setShowAlertSucc(false)
@@ -60,7 +65,7 @@
       
 
     const getViajesCargados =  () => {
-        store.collection('sitios').get()
+        store.collection('viaje').get()
         .then(response => {
             const fetchedViajes = [];
             response.docs.forEach(document => {
@@ -75,7 +80,7 @@
     }
 
     const getCombisCargadas =  () => {
-        store.collection('sitios').get()
+        store.collection('combi').get()
         .then(response => {
             const fetchedCombis = [];
             response.docs.forEach(document => {
@@ -138,12 +143,31 @@
           const { docs } = await store.collection('choferes').get()
           const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
           setChoferes(nuevoArray)
+
+          const tieneCombiAsig = combisCargadas.find((itemCombi) => {
+            return itemCombi.idChofer === choferEliminar
+          })
+
+          let encontre = false
+
+          const tieneViajesCombiAsigChofer = viajesCargados.find((itemViaje) => {
+            return itemViaje.idChofer === choferEliminar
+          })
+          
+          if(tieneViajesCombiAsigChofer !== null){
+            setMsgErrorDelete('El Chofer no se puede eliminar porque se encuentra en una Combi con un viaje asignado')
+            setShowAlertDelete(true)
+            return
+          }
+
+          console.log("hace el eliminar")
           await store.collection('choferes').doc(choferEliminar).delete()
           getChoferes()
           setShowModal(false)
           setMsgSucc('Se elimino con exito! Click aqui para cerrar')
           setShowAlertSucc(true)
           setShowModalEdit(false)
+          
       }
       
   
@@ -161,7 +185,6 @@
 
           } else {
               setEsEditar(false)
-             
               setChoferEditar('')
               setNombres('')
               setApellido('')
@@ -204,14 +227,16 @@
             return
          }
 
-         const esChoferRepetido = choferes.find((chofer) => {
-            console.log((((chofer.dni === dni) || (chofer.email === email)) && (chofer.nombres === nombres) && (chofer.apellido === apellido)))
-            return (((chofer.dni === dni) || (chofer.email === email)) && (chofer.nombres === nombres) && (chofer.apellido === apellido))
+        const esChoferRepetido = choferes.find((chofer) => {
+            let dniMailRep =  ((chofer.dni === dni) || (chofer.email === email))
+            let nombApeDniRep = ((chofer.nombres === nombres) && (chofer.apellido === apellido) && (chofer.dni === dni))
+            let nombApeEmailRep = ((chofer.nombres === nombres) && (chofer.apellido === apellido) && (chofer.email === email))
+            return (dniMailRep || nombApeDniRep || nombApeEmailRep)
         })
 
              
           if (esChoferRepetido) {
-              setMsgError('Este Chofer ya se encuentra cargado')
+              setMsgError('Los datos ingresados corresponden a un Chofer ya registrado')
               setShowAlert(true)
               return
           }
@@ -320,7 +345,11 @@
               <Modal.Header >
                   <Modal.Title>Eliminación de Chofer</Modal.Title>
               </Modal.Header>
-              <Modal.Body>¿Está seguro que desea eliminar el chofer seleccionado?</Modal.Body>
+              <Modal.Body>¿Está seguro que desea eliminar el chofer seleccionado?
+                <Alert className="mt-4" variant="danger" show={showAlertDelete} onClick = {handleCloseAlertDelete}>
+                    {msgErrorDelete}
+                </Alert>
+              </Modal.Body>
               <Modal.Footer>
                   <Button variant="primary" onClick={confirmarEliminacion}>
                       Confirmar

@@ -4,8 +4,7 @@ import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
 import {Table, Modal, Button, Alert} from 'react-bootstrap'
 import { store } from '../../firebaseconf'
 import { TrashFill, PencilFill, CloudHazeFill} from 'react-bootstrap-icons';
-// import es from 'date-fns/locale/es'
-// registerLocale("es",es)
+
 
 function AdminViajePage() {
 
@@ -57,7 +56,6 @@ function AdminViajePage() {
     const [rutas,setRutas] = useState('')
     const [combiSelect,setCombiSelect] = useState([])
     const [auxiliar,setAuxiliar] = useState([])
-    const [idRuta,setIdRuta] = useState('')
     var hoy = new Date().toLocaleDateString()
 
 
@@ -83,7 +81,7 @@ function AdminViajePage() {
             const {docs} = await store.collection('combi').get()
             const combiArray = docs.map( item => ({id:item.id, ...item.data()}))
             setCombiSelect(combiArray)
-            const respuesta = await store.collection('ruta').get()
+            const respuesta = await store.collection('rutasZaca').get()
             const rutaArray = respuesta.docs.map( item => ({id:item.id, ...item.data()}))
             setRutaSelect(rutaArray)
         }
@@ -151,8 +149,8 @@ function AdminViajePage() {
             setAuxiliar(item)
             setViajeEditar(item.id)
             setFecha(item.fechaviaje)
-            setRutas(item.ruta_entera)
-            setCombi(item.combi)
+            setRutas(item.idRuta)
+            setCombi(item.idCombi)
             setButacaDisponible(item.butacaDisponible)
             setPrecio(item.precio)
 
@@ -161,7 +159,6 @@ function AdminViajePage() {
             setViajeEditar('')
             setFecha('')
             setRutas('')
-            setIdRuta('')
             setCombi('')
             setButacaDisponible('')
             setPrecio('')
@@ -175,37 +172,44 @@ function AdminViajePage() {
         let encontre = false
         let fecha2
         let dia = 1
-        let aux 
+        let aux
+
         if (!fecha.trim()) {
             setMsgError('El campo Fecha esta vacio' )
             setShowAlert(true)
             return
         }
+
         if (!rutas.trim()) {
           setMsgError('El campo Ruta esta vacio' )
           setShowAlert(true)
           return
         }
+
         if (!combi.trim()) {
               setMsgError('El campo Combi esta vacio' )
               setShowAlert(true)
               return
         }
+
         if (butacaDisponible === '') {
           setMsgError('El campo Butacas disponibles esta vacio' )
           setShowAlert(true)
           return
        }
+
        if (!precio.trim()) {
         setMsgError('El campo Precio esta vacio' )
         setShowAlert(true)
         return
         }
+
         if (precio < 0) {
             setMsgError('El precio tiene que ser mayor que 0' )
             setShowAlert(true)
             return
         }
+
         fecha2 = new Date(fecha)
         aux = new Date(fecha2.setDate(fecha2.getDate() + dia)).toLocaleDateString()
         if(hoy > aux){
@@ -213,8 +217,9 @@ function AdminViajePage() {
             setShowAlert(true)
             return
         }
+
         combiSelect.map( itemcombi =>{
-            if(itemcombi.patente === combi ){
+            if(itemcombi.id === combi ){
                 if(parseInt(butacaDisponible) > parseInt(itemcombi.butaca) ){
                     setMsgError('La cantidad de butacas ingresadas es mayor a las que posee la combi')
                     setShowAlert(true)
@@ -223,14 +228,19 @@ function AdminViajePage() {
             }
         })
 
+        // ME GUARDO TODOS LOS DATOS DE LA COMBI ELEGIDA EN EL SELECT
+        const datosCombi = combiSelect.find((item) => {
+            return item.id === combi
+        })
+
        
         let destino_seleccionado,origen_seleccinado
         let ruta_select
         rutaSelect.map(item =>{
-            if(item.id === idRuta){
-                destino_seleccionado= {ciudad:item.destino.ciudad,provincia:item.destino.provincia}
-                origen_seleccinado = {ciudad:item.origen.ciudad,provincia:item.origen.provincia}
-                ruta_select = 'Origen: '+ item.origen.ciudad + ' Destino:'+ item.destino.ciudad +' Hora:'+ item.hora+' hs - '+item.kilometro+' Km'
+            if(item.id === rutas){
+                destino_seleccionado= item.provDest+'-'+item.ciudadDest
+                origen_seleccinado = item.provOrigen+'-'+item.ciudadOrigen
+                ruta_select = 'Origen: '+ origen_seleccinado + ' Destino: '+ destino_seleccionado +' Hora:'+ item.horario+' hs - '+item.km+' Km'
             }
             
         })
@@ -238,7 +248,7 @@ function AdminViajePage() {
         if (esEditar) {
             if (auxiliar.fechaviaje !== fecha) {
                 viajes.map (itemviaje =>{
-                    if(combi === itemviaje.combi && fecha === itemviaje.fechaviaje  && ruta_select === itemviaje.ruta_entera){
+                    if(datosCombi.id === itemviaje.idCombi && fecha === itemviaje.fechaviaje  && ruta_select === itemviaje.ruta_entera){
                         setMsgError('Se esta repitiendo el viaje para la misma fecha, combi y ruta')
                         setShowAlert(true)
                         encontre= true 
@@ -259,7 +269,7 @@ function AdminViajePage() {
             })
         }else{
             viajes.map (itemviaje =>{
-                if(combi === itemviaje.combi && fecha === itemviaje.fechaviaje  && ruta_select === itemviaje.ruta_entera){
+                if(datosCombi.id === itemviaje.idCombi && fecha === itemviaje.fechaviaje  && ruta_select === itemviaje.ruta_entera){
                     setMsgError('Se esta repitiendo el viaje para la misma fecha, combi y ruta')
                     setShowAlert(true)
                     encontre= true 
@@ -273,7 +283,9 @@ function AdminViajePage() {
         const regviaje= {
             fechaviaje:fecha,
             ruta_entera:ruta_select,
-            combi:combi,
+            idRuta:rutas,
+            idCombi:datosCombi.id,
+            combi:datosCombi.patente,
             butacaDisponible:butacaDisponible,
             precio:precio,
             destino:destino_seleccionado,
@@ -309,9 +321,6 @@ function AdminViajePage() {
             
         }
 
-    }
-    const buscarIdRuta = (id) =>{
-        setIdRuta(id)
     }
 
     return (
@@ -411,12 +420,12 @@ function AdminViajePage() {
                             />
                             <select
                                 value={rutas} onChange={(e) => { setRutas(e.target.value)}}
-                                onClick = {handleCloseAlert,(e) => { buscarIdRuta(e.target.value)}}
+                                onClick = {handleCloseAlert}
                                 className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
                                 <option disabled="disabled" value="">Seleccione una Ruta </option>
                                 {
                                 rutaSelect.map( item2=> (
-                                    <option value={item2.id} name ={item2.id}>Origen:{item2.origen.ciudad} Destino:{item2.destino.ciudad} Hora:{item2.hora}-{item2.kilometro}Km</option>
+                                    <option value={item2.id} key ={item2.id}>Origen: {item2.provOrigen}-{item2.ciudadOrigen} Destino: {item2.provDest}-{item2.ciudadDest} Hora:{item2.horario} HS - {item2.km} Km</option>
                                 )
                                 )
                                  }
@@ -428,7 +437,7 @@ function AdminViajePage() {
                                 <option disabled="disabled" value="">Seleccione una Combi </option>
                                 {
                                 combiSelect.map( item2=> (
-                                    <option name ={item2.id}>{item2.patente}</option>
+                                    <option key ={item2.id} value={item2.id}>{item2.patente}</option>
                                 )
                                 )
                                  }
