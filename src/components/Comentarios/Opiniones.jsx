@@ -1,5 +1,5 @@
 import React, {useState,useEffect} from 'react'
-import { store } from '../../firebaseconf'
+import { store,auth } from '../../firebaseconf'
 import { Modal, Button, Alert} from 'react-bootstrap'
 import { TrashFill, PencilFill} from 'react-bootstrap-icons'
 
@@ -8,11 +8,10 @@ import { TrashFill, PencilFill} from 'react-bootstrap-icons'
 const Opiniones = () => {
 
     const subPageStyle = {
-        top: 150,
+        top: 170,
+        left:180,
         position: 'absolute',
-        //left: 180,
-        width: "105%",
-        //height: "77%",
+        height: "73%",
         overflowY: 'scroll'
         
     };
@@ -41,12 +40,18 @@ const Opiniones = () => {
     const [comentarioEditar, setComentarioEditar] = useState('')
     const [esEditar, setEsEditar] = useState(false)
     
-
+    const [usuario,setUsuario] = useState ('')
+    const [idUsuarioLogueado,setIdUsuarioLogueado] = useState('')
+    const [userConfig,setUserConfig] = useState ([])
     const handleCloseEdit = () => setShowModalEdit(false)
 
     const [comentarios, setComentarios] = useState([])
     
     const [opinion, setOpinion] = useState('')
+    const [esAdmin,setEsAdmin] = useState(false)
+    const [esUsuarioLog,setEsUsuarioLog] = useState(false)
+
+
 
     const getComentarios =  () => {
         store.collection('opiniones').get()
@@ -66,6 +71,35 @@ const Opiniones = () => {
 
     //CARGA LA LISTA CUANDO SE CARGA EL COMPONENTE
     useEffect(() => {
+        const datos = async() =>{
+            const {docs} = await store.collection('usuariosConfig').get()
+            const userArray = docs.map( item => ({id:item.id, ...item.data()}))
+            setUserConfig(userArray)
+        }
+        
+           auth.onAuthStateChanged( (user) => {
+                if(user){
+                   setUsuario(user.email)
+                   setIdUsuarioLogueado(user.uid)
+                   console.log('FUERA DEL IF')
+                   userConfig.map(item =>{
+                    if(user.uid  === 'QQc6vciuwNPp1U0t7AStYzOimPg2'){
+                        console.log('ENTRO al IF')
+                       setEsAdmin(true)
+
+                    }else{
+                        if(user.uid === item.idUser){
+                            setEsUsuarioLog(true)
+                        }
+                    } 
+                 })
+                } 
+             })
+        
+        
+    
+        
+        datos()
         store.collection('opiniones').get()
         .then(response => {
             const fetchedComentarios = [];
@@ -82,8 +116,10 @@ const Opiniones = () => {
             setMsgError(error)
             setShowAlert(true)
         });
+        
     },[]);    
 
+    
     const borrarComentario = async (id) => {
         setComentarioEliminar(id)
         setShowModal(true);
@@ -117,13 +153,22 @@ const Opiniones = () => {
 
     const confirmarEdicion = async (e) => {
         e.preventDefault()
-
+        console.log('es admin', esAdmin)
         if (!opinion.trim()) {
             setMsgError('El campo Comentario esta vacio' )
             setShowAlert(true)
             return
         }
+        let nombrecompleto
+        userConfig.map(item =>{
+           if(idUsuarioLogueado === item.idUser){
+               console.log('entro a este if de igual ID')
+                nombrecompleto = item.apellido + " "+ item.nombres
+           } 
+        })
         const regComentario= {
+            idUsuario:idUsuarioLogueado,
+            nombre:nombrecompleto,
             texto:opinion
         }
         if (esEditar){
@@ -160,11 +205,12 @@ const Opiniones = () => {
 
 
     return (
-      <div>
-        <div>
-            <h3 style={{top: -50, left: 30,width: "60%"}}>Comentarios</h3>
-            <Button style={{float:'right',width: "200px", height: "50px"}} onClick={(e) => { crearModificarComentario('A', '') }} variant="danger" > Agregar Comentario</Button>
-           
+      <div >
+        <div >
+            <div style={{marginBottom:'20px'}} >
+                <h3 style={{top: 110, position: 'absolute', left: 80,width: "60%",}}>Comentarios</h3>
+                <Button style={{top: 105,  position: 'absolute', right:70, width: "250px", height: "40px"}} onClick={(e) => { crearModificarComentario('A', '') }} variant="danger" > Agregar Comentario</Button>  
+            </div>
             <div style={subPageStyle}>
                   <div className="container " >
                     <div className ="row">
@@ -173,15 +219,32 @@ const Opiniones = () => {
                                 <div className ="col-md-4" key={item.id}>
                                     <div className="card  animate__animated animate__fadeInUp" style={{ width: '18rem' }}>
                                         <div className="card-body rounded">
-                                            <h4 className ="card-title text-center ">TITULO</h4>
+                                            <h4 className ="card-title text-center ">{item.nombre}</h4>
                                             <p className="card-text text-dark text-center">{item.texto}</p>
-                                            <a href="#!" style={{float:'right',marginRight:30 ,marginBottom:-15}} className="btn btn-outline-dark" onClick={(e) => { crearModificarComentario('E', item) }}>
-                                            <PencilFill color="dark"></PencilFill>
-                                            </a>
-                                            <a href="#!" style={{marginLeft:30,marginBottom:-15}} className="btn btn-outline-dark float" onClick={(id) => {borrarComentario(item.id) }}>
-                                            <TrashFill color="dark"></TrashFill>
-                                            </a>
-                                            
+                                            {
+                                                idUsuarioLogueado === "QQc6vciuwNPp1U0t7AStYzOimPg2" ?
+                                                (
+                                                    <a href="#!" style={{marginLeft:120,marginBottom:-15}} className="btn btn-outline-dark" onClick={(id) => {borrarComentario(item.id) }}>
+                                                    <TrashFill color="dark"></TrashFill>
+                                                    </a> 
+                                                ):
+                                                (
+                                                    idUsuarioLogueado === item.idUsuario?
+                                                    (
+                                                        <div>
+                                                        <a href="#!" style={{float:'right',marginRight:30 ,marginBottom:-15}} className="btn btn-outline-dark" onClick={(e) => { crearModificarComentario('E', item) }}>
+                                                        <PencilFill color="dark"></PencilFill>
+                                                        </a>
+                                                        <a href="#!" style={{marginLeft:30,marginBottom:-15}} className="btn btn-outline-dark float" onClick={(id) => {borrarComentario(item.id) }}>
+                                                        <TrashFill color="dark"></TrashFill>
+                                                        </a>
+                                                            </div>
+                                                    ):(
+                                                        <></>
+                                                    )
+                                                )
+                                            }
+                                           
                                         </div>
                                     </div>
                                 </div>

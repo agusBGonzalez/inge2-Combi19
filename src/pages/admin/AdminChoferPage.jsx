@@ -22,14 +22,19 @@
       const [showModal, setShowModal] = useState(false);
       const [choferEliminar, setChoferEliminar] = useState('');
 
-      const handleClose = () => setShowModal(false);
+      const handleClose = () => {setShowModal(false);setShowAlertDelete(false);setMsgErrorDelete(null)};
   
-      //ALERT ERROR
+      //ALERT ERROR EDITAR
       const [showAlert, setShowAlert] = useState(false);
       const handleCloseAlert = () => setShowAlert(false);
   
       const [msgError, setMsgError] = useState (null)
-  
+      
+      //ALERT ERROR ELIMINAR
+      const [showAlertDelete, setShowAlertDelete] = useState(false);
+      const handleCloseAlertDelete = () => setShowAlertDelete(false);
+      const [msgErrorDelete, setMsgErrorDelete] = useState (null)
+
       //ALERT SUCESS
       const [showAlertSucc, setShowAlertSucc] = useState(false)
       const handleCloseAlertSucc = () => setShowAlertSucc(false)
@@ -41,12 +46,13 @@
       const [showModalEdit, setShowModalEdit] = useState(false)
       const [choferEditar, setChoferEditar] = useState('')
       const [esEditar, setEsEditar] = useState(false)
-      const [esChoferRepetido, setEsChoferRepetido] = useState(false)
       
 
       const handleCloseEdit = () => setShowModalEdit(false)
 
       const [choferes, setChoferes] = useState([])
+      const [combisCargadas,setCombisCargadas] = useState([])
+      const [viajesCargados,setViajesCargados] = useState([])
       
 
       const [nombres, setNombres] = useState('')
@@ -56,7 +62,39 @@
       const [telefono, setTelefono] = useState('')
       const [password, setPassword] = useState('')
       
-  
+      
+
+    const getViajesCargados =  () => {
+        store.collection('viaje').get()
+        .then(response => {
+            const fetchedViajes = [];
+            response.docs.forEach(document => {
+            const fetchedViaje = {
+                id: document.id,
+                ...document.data()
+            };
+            fetchedViajes.push(fetchedViaje)
+            });
+            setViajesCargados(fetchedViajes)
+        })
+    }
+
+    const getCombisCargadas =  () => {
+        store.collection('combi').get()
+        .then(response => {
+            const fetchedCombis = [];
+            response.docs.forEach(document => {
+            const fetchedCombi = {
+                id: document.id,
+                ...document.data()
+            };
+            fetchedCombis.push(fetchedCombi)
+            });
+            setCombisCargadas(fetchedCombis)
+        })
+    }
+    
+    
   
       const getChoferes =  () => {
           store.collection('choferes').get()
@@ -76,6 +114,8 @@
   
       //CARGA LA LISTA CUANDO SE CARGA EL COMPONENTE
       useEffect(() => {
+          getCombisCargadas()
+          getViajesCargados()
           store.collection('choferes').get()
           .then(response => {
               const fetchedChoferes = [];
@@ -103,12 +143,31 @@
           const { docs } = await store.collection('choferes').get()
           const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
           setChoferes(nuevoArray)
+
+          const tieneCombiAsig = combisCargadas.find((itemCombi) => {
+            return itemCombi.idChofer === choferEliminar
+          })
+
+          const tieneViajesCombiAsigChofer = viajesCargados.find((itemViaje) => {
+            return itemViaje.idCombi === tieneCombiAsig.id
+          })
+          
+          //PREGUNTO POR "UNDEFINED" PORQUE EL FIND SI NO ENCUENTRA NADA DEVUELVE ESO
+          // SI NO TIENE VIAJES ASIGNADOS === UNDEFINED
+          if(tieneViajesCombiAsigChofer !== undefined){
+            setMsgErrorDelete('El Chofer no se puede eliminar porque se encuentra en una Combi con un viaje asignado')
+            setShowAlertDelete(true)
+            return
+          }
+
+          console.log("hace el eliminar")
           await store.collection('choferes').doc(choferEliminar).delete()
           getChoferes()
           setShowModal(false)
           setMsgSucc('Se elimino con exito! Click aqui para cerrar')
           setShowAlertSucc(true)
           setShowModalEdit(false)
+          
       }
       
   
@@ -126,7 +185,6 @@
 
           } else {
               setEsEditar(false)
-             
               setChoferEditar('')
               setNombres('')
               setApellido('')
@@ -168,23 +226,17 @@
             setShowAlert(true)
             return
          }
-  
-          store.collection('choferes').where("email", "==", email)
-              .get()
-              .then((querySnapshot) => {
-                  let datosRepetidos = false
-                  querySnapshot.forEach((doc) => {
-                      //COMO FILTRO POR PROVINCIA, QUEDA CHEQUEAR QUE NO HAYA UNA CIUDAD IGUAL
-                      const dniBusq = doc.data().dni           
-                      if (dniBusq === dni) {
-                          datosRepetidos = true
-                      }
-                  });  
-                  setEsChoferRepetido(datosRepetidos)                               
-              })
-          
+
+        const esChoferRepetido = choferes.find((chofer) => {
+            let dniMailRep =  ((chofer.dni === dni) || (chofer.email === email))
+            let nombApeDniRep = ((chofer.nombres === nombres) && (chofer.apellido === apellido) && (chofer.dni === dni))
+            let nombApeEmailRep = ((chofer.nombres === nombres) && (chofer.apellido === apellido) && (chofer.email === email))
+            return (dniMailRep || nombApeDniRep || nombApeEmailRep)
+        })
+
+             
           if (esChoferRepetido) {
-              setMsgError('Este Chofer ya se encuentra cargado')
+              setMsgError('Los datos ingresados corresponden a un Chofer ya registrado')
               setShowAlert(true)
               return
           }
@@ -254,7 +306,7 @@
                             <th>Acciones</th>           
                           </tr>
                       </thead>
-                      <tbody>
+                      <tbody className ="animate__animated animate__slideInUp">
                           {
                               choferes.length !== 0 ?
                                   (
@@ -293,7 +345,11 @@
               <Modal.Header >
                   <Modal.Title>Eliminación de Chofer</Modal.Title>
               </Modal.Header>
-              <Modal.Body>¿Está seguro que desea eliminar el chofer seleccionado?</Modal.Body>
+              <Modal.Body>¿Está seguro que desea eliminar el chofer seleccionado?
+                <Alert className="mt-4" variant="danger" show={showAlertDelete} onClick = {handleCloseAlertDelete}>
+                    {msgErrorDelete}
+                </Alert>
+              </Modal.Body>
               <Modal.Footer>
                   <Button variant="primary" onClick={confirmarEliminacion}>
                       Confirmar

@@ -52,7 +52,8 @@ const AdminCombiPage = () => {
     const [butacas, setButacas] = useState('')
     const [tipo,setTipo] = useState('')
     const [choferselect,setChoferSelect] = useState([])
-    const [chofer,setChofer] = useState('')
+    // const [chofer,setChofer] = useState('')
+    const [idChofer,setIdChofer] = useState('')
     const [viaje,setViaje] = useState([])
     const [auxiliar,setAuxiliar] = useState([])
 
@@ -148,7 +149,8 @@ const AdminCombiPage = () => {
             setAño(item.año)
             setButacas(item.butaca)
             setTipo(item.tipocombi)
-            setChofer(item.chofer)
+            //setChofer(item.chofer)
+            setIdChofer(item.idChofer)
         } else {
             setEsEditar(false)
             setCombiEditar('')
@@ -158,7 +160,8 @@ const AdminCombiPage = () => {
             setButacas('')
             setAño('')
             setTipo('')
-            setChofer('')
+            // setChofer('')
+            setIdChofer('')
 
         }
         setShowModalEdit(true)
@@ -202,7 +205,8 @@ const AdminCombiPage = () => {
             setShowAlert(true)
             return
         }
-        if(!chofer.trim()){
+
+        if(!idChofer.trim()){
             setMsgError('El campo chofer esta vacio')
             setShowAlert(true)
             return
@@ -253,6 +257,14 @@ const AdminCombiPage = () => {
             return
         }
 
+        // Me traigo los datos del origen
+        const choferElegido = choferselect.find((element) => {
+            return element.id === idChofer;
+        })
+
+        //el useState es una funcion async por lo que el campo queda vacio cuando haces la asignacion 
+        // setChofer(choferElegido.apellido + " " + choferElegido.nombres)
+
         const regcombi= {
             patente:patente,
             marca:marca,
@@ -260,8 +272,8 @@ const AdminCombiPage = () => {
             año:año,
             butaca:butacas,
             tipocombi:tipo,
-            chofer:chofer
-
+            chofer:choferElegido.apellido + " " + choferElegido.nombres,
+            idChofer: idChofer
         }
         
         if (esEditar){
@@ -325,7 +337,7 @@ const AdminCombiPage = () => {
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className ="animate__animated animate__slideInUp">
                         {
                             combi.length !== 0 ?
                                 (
@@ -462,14 +474,14 @@ const AdminCombiPage = () => {
                             </select>
 
                             <select
-                                value={chofer} onChange={(e) => { setChofer(e.target.value) }}
+                                value={idChofer} onChange={(e) => { setIdChofer(e.target.value) }}
                                 onClick = {handleCloseAlert}
                                 className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
-                                <option disabled="disabled" value="">Seleccione un Chofer </option>
+                                <option value="">Seleccione un Chofer </option>
                                 {
                                 choferselect.map( item2=> (
-                                    <option name ={item2.id}>{item2.apellido} {item2.nombres}</option>
-                                )
+                                    <option key ={item2.id} value ={item2.id}>{item2.apellido} {item2.nombres}</option>
+                                    )
                                 )
                                  }
                             </select>
