@@ -53,6 +53,9 @@ function AdminSitiosPage() {
 
     const [sitios, setSitios] = useState([])
     const [viajes, setViajes] = useState([])
+    const [ruta, setRuta] = useState([])
+
+
     const [modal, setModal] = useState(false)
 
     const [provincia, setProvincia] = useState('')
@@ -75,7 +78,7 @@ function AdminSitiosPage() {
             })
     }
     const getViajes = () => {
-        store.collection('viajesAgus').get()
+        store.collection('viaje').get()
             .then(response => {
                 const fetcheViajes = [];
                 response.docs.forEach(document => {
@@ -89,8 +92,34 @@ function AdminSitiosPage() {
             })
     }
 
+    
+    const getRutas = () => {
+        store.collection('rutasZaca').get()
+            .then(response => {
+                const fetchedCombis = [];
+                response.docs.forEach(document => {
+                    const fetchedCombi = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedCombis.push(fetchedCombi)
+                });
+                setRuta(fetchedCombis)
+            })
+    }
+
     //CARGA LA LISTA CUANDO SE CARGA EL COMPONENTE
     useEffect(() => {
+        const datosSitios = async () => {
+            const v = await store.collection('viaje').get()
+            const viajesArray = v.docs.map(item => ({ id: item.id, ...item.data() }))
+            setViajes(viajesArray)
+            const r = await store.collection('rutasZaca').get()
+            const rutaArray = r.docs.map(item => ({ id: item.id, ...item.data() }))
+            setRuta(rutaArray)
+            getRutas()
+            getViajes()
+        }
 
         store.collection('sitios').get()
             .then(response => {
@@ -109,6 +138,7 @@ function AdminSitiosPage() {
                 setMsgError(error)
                 setShowAlert(true)
             });
+        datosSitios()
     }, []);
 
 
@@ -120,25 +150,41 @@ function AdminSitiosPage() {
 
     const confirmarEliminacion = async () => {
         let encontre = false
+        let origen = ' '
         //viajes
         getViajes()
-        console.log(viajes.length)
+        console.log("cant viajes", viajes.length)
+        
+        let gRutas = []
+        ruta.map(r=>{
+            console.log("r.idOrigen", r.idOrigen , "sitioEliminar.id ", sitioEliminar.id , "r.idDestino ", r.idDestino ,   "sitioEliminar.id ", sitioEliminar.id )
+            if((r.idOrigen === sitioEliminar.id ) || (r.idDestino ===  sitioEliminar.id )){
+                gRutas.push(r)
+            }
+        }) 
+
+        console.log(gRutas)
+
+
         if (viajes.length !== 0) {
             viajes.map(viaje => {
 
-                if (viaje.ruta.origen.provincia === sitioEliminar.provincia) {
-                    if (viaje.ruta.origen.ciudad === sitioEliminar.ciudad) {
-                        encontre = true
-                        setShowModal(false)
-                    }
-                }
-                if (viaje.ruta.destino.provincia === sitioEliminar.provincia) {
-                    if (viaje.ruta.destino.ciudad == sitioEliminar.ciudad) {
-                        encontre = true
-                        setShowModal(false)
-                    }
-                }
+            gRutas.forEach(element =>{})
+                console.log("provDest: ", element.provDest, "ciudadDest: ", element.ciudadDest, "provOrigen: ", element.provOrigen, "ciudadOrigen: ", element.ciudadOrigen )
+                // if (element.provOrigen === sitioEliminar.provincia) {
+                //     if (element.ciudadOrigen === sitioEliminar.ciudad) {
+                //         encontre = true
+                //         setShowModal(false)
+                //     }
+                // }
+                // if (element.provDest === sitioEliminar.provincia) {
+                //     if (element.ciudadDest == sitioEliminar.ciudad) {
+                //         encontre = true
+                //         setShowModal(false)
+                //     }
+                // }
             })
+
             if (encontre) {
                 setMsgDanger('No se pudo eliminar ya que tiene un viaje programado! Click aqui para cerrar')
                 setShowAlertDanger(true)
@@ -146,7 +192,7 @@ function AdminSitiosPage() {
             }
         }
 
-        await store.collection('sitios').doc(sitioEliminar.id).delete()
+        //await store.collection('sitios').doc(sitioEliminar.id).delete()
         getSitios()
         setShowModal(false)
         setMsgSucc('Se elimino con exito! Click aqui para cerrar')
@@ -177,7 +223,7 @@ function AdminSitiosPage() {
 
     const confirmarEdicion = async (e) => {
         e.preventDefault()
-        let sitioCargado=false
+        let sitioCargado = false
         if (provincia === "") {
             setMsgError('El campo provincia esta vacio')
             setShowAlert(true)
@@ -201,7 +247,7 @@ function AdminSitiosPage() {
 
         if (sitioCargado) {
             return
-          }
+        }
         const sitioAct = {
             ciudad: ciudad,
             provincia: provincia
@@ -212,7 +258,7 @@ function AdminSitiosPage() {
             let encontre = false
             //viajes
             getViajes()
-            console.log(viajes.length)
+            console.log("cant viajes", viajes.length)
             if (viajes.length !== 0) {
                 viajes.map(viaje => {
                     console.log('origen')
@@ -301,7 +347,7 @@ function AdminSitiosPage() {
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody className ="animate__animated animate__slideInUp">
+                        <tbody className="animate__animated animate__slideInUp">
                             {
                                 sitios.length !== 0 ?
                                     (
@@ -340,10 +386,10 @@ function AdminSitiosPage() {
                 <Modal.Footer>
                     <Button variant="primary" onClick={confirmarEliminacion}>
                         Confirmar
-				        </Button>
+                    </Button>
                     <Button variant="secondary" onClick={handleClose}>
                         Cancelar
-				        </Button>
+                    </Button>
                 </Modal.Footer>
             </Modal>
             {
@@ -401,10 +447,10 @@ function AdminSitiosPage() {
                             <Modal.Footer>
                                 <Button variant="primary" onClick={confirmarEdicion}>
                                     Confirmar
-                        </Button>
+                                </Button>
                                 <Button variant="secondary" onClick={() => { setShowModalEdit(false); setMsgError(null); setShowAlert(false); }}>
                                     Cancelar
-                        </Button>
+                                </Button>
                             </Modal.Footer>
                         </Modal>
                     ) : (

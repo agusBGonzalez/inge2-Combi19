@@ -144,7 +144,7 @@ function UsuarioBuscarViajes() {
             const v = await store.collection('viaje').get()
             const viajesArray = v.docs.map(item => ({ id: item.id, ...item.data() }))
             setViajes(viajesArray)
-            const r = await store.collection('viaje').get()
+            const r = await store.collection('rutasZaca').get()
             const rutaArray = r.docs.map(item => ({ id: item.id, ...item.data() }))
             setRuta(rutaArray)
             getCombis()
