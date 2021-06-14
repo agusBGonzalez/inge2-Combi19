@@ -83,7 +83,7 @@ function AdminViajePage() {
             const {docs} = await store.collection('combi').get()
             const combiArray = docs.map( item => ({id:item.id, ...item.data()}))
             setCombiSelect(combiArray)
-            const respuesta = await store.collection('ruta').get()
+            const respuesta = await store.collection('rutasZaca').get()
             const rutaArray = respuesta.docs.map( item => ({id:item.id, ...item.data()}))
             setRutaSelect(rutaArray)
         }
@@ -228,9 +228,9 @@ function AdminViajePage() {
         let ruta_select
         rutaSelect.map(item =>{
             if(item.id === idRuta){
-                destino_seleccionado= {ciudad:item.destino.ciudad,provincia:item.destino.provincia}
-                origen_seleccinado = {ciudad:item.origen.ciudad,provincia:item.origen.provincia}
-                ruta_select = 'Origen: '+ item.origen.ciudad + ' Destino:'+ item.destino.ciudad +' Hora:'+ item.hora+' hs - '+item.kilometro+' Km'
+                destino_seleccionado= {ciudad:item.ciudadDest,provincia:item.provDest}
+                origen_seleccinado = {ciudad:item.ciudadOrigen,provincia:item.provOrigen}
+                ruta_select = 'Origen: '+ item.ciudadOrigen + ' Destino:'+ item.ciudadDest +' Hora:'+ item.horario+' hs - '+item.km+' Km'
             }
             
         })
@@ -416,7 +416,7 @@ function AdminViajePage() {
                                 <option disabled="disabled" value="">Seleccione una Ruta </option>
                                 {
                                 rutaSelect.map( item2=> (
-                                    <option value={item2.id} name ={item2.id}>Origen:{item2.origen.ciudad} Destino:{item2.destino.ciudad} Hora:{item2.hora}-{item2.kilometro}Km</option>
+                                    <option value={item2.id} name ={item2.id}>Origen:{item2.ciudadOrigen} Destino:{item2.ciudadDest} Hora:{item2.horario}-{item2.km}Km</option>
                                 )
                                 )
                                  }

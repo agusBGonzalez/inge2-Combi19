@@ -3,7 +3,7 @@ import MenuUsuario from '../../components/menus/MenuUsuario'
 import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
 import Opiniones from '../../components/Comentarios/Opiniones'
 import "../../components/Comentarios/Card.css"
-import image1 from '../../images/combifondo.jpg'
+import image1 from '../../images/combifondo2.jpg'
 
 function AdminPage() {
 
@@ -16,10 +16,10 @@ function AdminPage() {
   return (
       <div>
          {/* <img src={image1} alt="" style={{alignItems:'center', width:'100%'}} /> */}
+         <img src={image1} alt="" style={{alignItems:'center', width:'100%',height:'46rem'}} />
         <MenuUsuario/>
         <MenuOpcAdmin optionName="usuarioAdmin"/>
         <div style={subPageStyle}>
-          {/* <img src={image1} alt="" style={{alignItems:'center', width:'100%',height:'100%'}} /> */}
           <Opiniones/>
         </div>
         

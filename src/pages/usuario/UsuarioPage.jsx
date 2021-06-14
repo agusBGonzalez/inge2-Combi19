@@ -3,7 +3,7 @@ import MenuOpcUsuario from '../../components/menus/MenuOpcUsuario'
 import MenuUsuario from '../../components/menus/MenuUsuario'
 import Opiniones from '../../components/Comentarios/Opiniones'
 import "../../components/Comentarios/Card.css"
-import image1 from '../../images/combifondo.jpg'
+import image1 from '../../images/combifondo2.jpg'
 
 function UsuarioPage() {
   const subPageStyle = {
@@ -13,11 +13,10 @@ function UsuarioPage() {
 };
   return (
       <div >
-        
+        <img src={image1} alt="" style={{alignItems:'center', width:'100%',height:'46rem'}} />
         <MenuUsuario/>
         <MenuOpcUsuario/>
         <div style={subPageStyle}>
-          {/* <img src={image1} alt="" style={{alignItems:'center', width:'800px',height:'600px'}} /> */}
           <Opiniones/> 
         </div>
       </div>
