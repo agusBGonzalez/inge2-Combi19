@@ -56,6 +56,8 @@ function UsuarioBuscarViajes() {
 
     const [fecha, setFecha] = useState('')
     const [combi, setCombi] = useState([])
+    const [ruta, setRuta] = useState([])
+
     const [origen, setOrigen] = useState('')
     const [idOrigen, setIdOrigen] = useState('')
     const [destino, setDestino] = useState('')
@@ -119,15 +121,33 @@ function UsuarioBuscarViajes() {
                 setCombi(fetchedCombis)
             })
     }
+    const getRutas = () => {
+        store.collection('rutasZaca').get()
+            .then(response => {
+                const fetchedCombis = [];
+                response.docs.forEach(document => {
+                    const fetchedCombi = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedCombis.push(fetchedCombi)
+                });
+                setRuta(fetchedCombis)
+            })
+    }
     useEffect(() => {
         const datosSitios = async () => {
             const { docs } = await store.collection('sitios').get()
             const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
             setSitioSelect(nuevoArray)
-            const r = await store.collection('viaje').get()
-            const viajesArray = r.docs.map(item => ({ id: item.id, ...item.data() }))
+            const v = await store.collection('viaje').get()
+            const viajesArray = v.docs.map(item => ({ id: item.id, ...item.data() }))
             setViajes(viajesArray)
+            const r = await store.collection('viaje').get()
+            const rutaArray = r.docs.map(item => ({ id: item.id, ...item.data() }))
+            setRuta(rutaArray)
             getCombis()
+            getRutas()
         }
 
         store.collection('buscarViajes').get()
@@ -185,7 +205,16 @@ function UsuarioBuscarViajes() {
         }
 
   
-
+    const buscarIdRuta =  (idruta) => {
+        console.log("id ruta" , idruta)
+        ruta.map(r=>{
+            console.log("map")
+            if(r.id === idruta ){
+                console.log(r)
+            }
+        })
+    }
+    
     const confirmarBusqueda = async () => {
         deleteCollection(store, 'buscarViajes', 10);
         let fecha2
@@ -233,10 +262,10 @@ function UsuarioBuscarViajes() {
             if (s.id === idDestino) {
                 destino_seleccinado = s
             }
-
         })
         console.log("Origen", origen_seleccinado, "destino", destino_seleccinado)
         viajes.map(v => {
+            buscarIdRuta(v.idRuta)
             if (v.origen.provincia === origen_seleccinado.provincia && v.origen.ciudad === origen_seleccinado.ciudad) {
                 if (v.destino.provincia === destino_seleccinado.provincia && v.destino.ciudad === destino_seleccinado.ciudad) {
                     console.log("fecha viaje", v.fechaviaje)
