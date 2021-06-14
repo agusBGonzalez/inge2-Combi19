@@ -169,20 +169,23 @@ function AdminSitiosPage() {
         if (viajes.length !== 0) {
             viajes.map(viaje => {
 
-            gRutas.forEach(element =>{})
+            gRutas.forEach(element =>{
                 console.log("provDest: ", element.provDest, "ciudadDest: ", element.ciudadDest, "provOrigen: ", element.provOrigen, "ciudadOrigen: ", element.ciudadOrigen )
-                // if (element.provOrigen === sitioEliminar.provincia) {
-                //     if (element.ciudadOrigen === sitioEliminar.ciudad) {
-                //         encontre = true
-                //         setShowModal(false)
-                //     }
-                // }
-                // if (element.provDest === sitioEliminar.provincia) {
-                //     if (element.ciudadDest == sitioEliminar.ciudad) {
-                //         encontre = true
-                //         setShowModal(false)
-                //     }
-                // }
+                    if (element.provOrigen === sitioEliminar.provincia) {
+                    if (element.ciudadOrigen === sitioEliminar.ciudad) {
+                        encontre = true
+                        setShowModal(false)
+                    }
+                }
+                if (element.provDest === sitioEliminar.provincia) {
+                    if (element.ciudadDest == sitioEliminar.ciudad) {
+                        encontre = true
+                        setShowModal(false)
+                    }
+                }
+            })
+                
+
             })
 
             if (encontre) {
@@ -192,7 +195,7 @@ function AdminSitiosPage() {
             }
         }
 
-        //await store.collection('sitios').doc(sitioEliminar.id).delete()
+        await store.collection('sitios').doc(sitioEliminar.id).delete()
         getSitios()
         setShowModal(false)
         setMsgSucc('Se elimino con exito! Click aqui para cerrar')
