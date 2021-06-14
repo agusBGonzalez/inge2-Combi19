@@ -1,5 +1,5 @@
 import React from 'react'
-import MenuUsuario from '../../components/menus/MenuUsuario'
+import MenuUsuarioChofer from '../../components/menus/MenuUsuarioChofer'
 import MenuOpcChofer from '../../components/menus/MenuOpcChofer'
 
 
@@ -7,7 +7,7 @@ function ChoferPage() {
   
   return (
       <div>
-        <MenuUsuario/>
+        <MenuUsuarioChofer/>
         <MenuOpcChofer/>
       </div>
 

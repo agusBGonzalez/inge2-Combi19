@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react'
-import MenuUsuario from '../../components/menus/MenuUsuario'
+import MenuUsuarioAdmin from '../../components/menus/MenuUsuarioAdmin'
 import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
 import {Table, Modal, Button, Alert} from 'react-bootstrap'
 import { store } from '../../firebaseconf'
@@ -312,7 +312,7 @@ const AdminCombiPage = () => {
   
     return (
       <div>
-        <MenuUsuario/>
+        <MenuUsuarioAdmin/>
         <MenuOpcAdmin optionName="listaCombis"/>
         <div>
             <h3 style={{top: 110, position: 'absolute', left: 80,width: "60%",}}> Listado de Combis</h3>

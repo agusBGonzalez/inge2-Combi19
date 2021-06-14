@@ -1,5 +1,5 @@
 import React from 'react'
-import MenuUsuario from '../../components/menus/MenuUsuario'
+import MenuUsuarioAdmin from '../../components/menus/MenuUsuarioAdmin'
 import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
 import Opiniones from '../../components/Comentarios/Opiniones'
 import "../../components/Comentarios/Card.css"
@@ -17,7 +17,7 @@ function AdminPage() {
       <div>
          {/* <img src={image1} alt="" style={{alignItems:'center', width:'100%'}} /> */}
          <img src={image1} alt="" style={{alignItems:'center', width:'100%',height:'46rem'}} />
-        <MenuUsuario/>
+        <MenuUsuarioAdmin/>
         <MenuOpcAdmin optionName="usuarioAdmin"/>
         <div style={subPageStyle}>
           <Opiniones/>

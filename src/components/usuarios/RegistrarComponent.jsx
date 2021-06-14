@@ -142,7 +142,8 @@ function RegistrarComponent() {
 						  tarjetaNum: numTarjeta,
 						  tarjetaCod: codigoTarjeta,
 						  tarjetaVen: fechaTarjeta,
-						  idUser: userCredential.user.uid
+						  idUser: userCredential.user.uid,
+						  password:password
 					  }
 
 					  

@@ -1,6 +1,6 @@
 import React,{useState,useEffect} from 'react'
 import MenuUsuario from '../../components/menus/MenuUsuario'
-import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
+import MenuOpcUsuario from '../../components/menus/MenuOpcUsuario'
 import {Table, Modal, Button, Alert} from 'react-bootstrap'
 import { store } from '../../firebaseconf'
 import { TrashFill, PencilFill} from 'react-bootstrap-icons';
@@ -198,7 +198,7 @@ const ComprarSnacks = () => {
     return (
       <div>
         <MenuUsuario/>
-        <MenuOpcAdmin/>
+        <MenuOpcUsuario disabled optionName="filtrarViajes"/>
         <div>
             <h3 style={{top: 110, position: 'absolute', left: 80,width: "60%",}}> Compra de Snacks</h3>
             <Button style={{top: 105, position: 'absolute', right:70, width: "160px", height: "40px"}} onClick={(e) => { crearModificarSnack('A', '') }} variant="secondary " > + Agregar Snacks</Button>

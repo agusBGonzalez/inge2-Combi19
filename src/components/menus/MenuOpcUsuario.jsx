@@ -23,7 +23,7 @@ function MenuOpcUsuario(props) {
             style={{ backgroundColor: "#7CA0AF",top: "99px"}}
         >
             <SideNav.Toggle />
-            <SideNav.Nav defaultSelected={props.optionName} >
+            <SideNav.Nav defaultSelected={props.optionName ? props.optionName : ''} >
                 <NavItem eventKey="usuarioCliente">
                     <NavIcon>
                         <HouseFill color="black"></HouseFill>
@@ -48,7 +48,7 @@ function MenuOpcUsuario(props) {
                         Mis Pasajes
                     </NavText>
                 </NavItem>
-                <NavItem eventKey="home">
+                <NavItem eventKey="usuarioCliente">
                     <NavIcon>
                         <CreditCardFill color="black"></CreditCardFill>
                     </NavIcon>

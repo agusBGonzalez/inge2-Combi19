@@ -121,6 +121,7 @@ function UsuarioBuscarViajes() {
                 setCombi(fetchedCombis)
             })
     }
+
     const getRutas = () => {
         store.collection('rutasZaca').get()
             .then(response => {
@@ -201,7 +202,7 @@ function UsuarioBuscarViajes() {
             process.nextTick(() => {
                 deleteQueryBatch(db, query, resolve);
             });
-            alert("hola")
+
         }
 
   
@@ -252,34 +253,48 @@ function UsuarioBuscarViajes() {
         getViajes()
 
         // aca lo que hago es guardar cual sera el origen y destino
-        let origen_seleccinado
-        let destino_seleccinado
+ 
         let combiViaje
-        sitioSelect.map(s => {
-            if (s.id === idOrigen) {
-                origen_seleccinado = s
-            }
-            if (s.id === idDestino) {
-                destino_seleccinado = s
-            }
+
+        const sitioOrigen = sitioSelect.find((sitioOr) => {
+            return sitioOr.id === idOrigen
         })
-        console.log("Origen", origen_seleccinado, "destino", destino_seleccinado)
-        viajes.map(v => {
-            buscarIdRuta(v.idRuta)
-            if (v.origen.provincia === origen_seleccinado.provincia && v.origen.ciudad === origen_seleccinado.ciudad) {
-                if (v.destino.provincia === destino_seleccinado.provincia && v.destino.ciudad === destino_seleccinado.ciudad) {
-                    console.log("fecha viaje", v.fechaviaje)
+
+        const sitioDest = sitioSelect.find((sitioDst) => {
+            return sitioDst.id === idDestino
+        })
+
+        let gRutas = []
+        ruta.map(r=>{
+            if((r.idOrigen === sitioOrigen.id ) && (r.idDestino === sitioDest.id)){
+                gRutas.push(r)
+            }
+        }) 
+
+        console.log(gRutas)
+
+
+        viajes.map( v => {
+            console.log(" map")
+            gRutas.forEach(element =>{
+                console.log(" foreach")
+                console.log(v.idRuta)
+                console.log(element.id)
+                if(v.idRuta === element.id){
+                    console.log("antes fecha")
                     if (v.fechaviaje === fecha) {
+                        console.log("entro en === fecha")
                         combi.map(c => {
-                            if (c.patente === v.combi) {
+                            
+                            if (c.id === v.idCombi) {
                                 combiViaje = c
                             }
                         })
                         const agregarViaje = {
-                            origen: origen_seleccinado,
-                            destino: destino_seleccinado,
+                            origen: sitioOrigen.provincia + " - "+sitioOrigen.ciudad,
+                            destino: sitioDest.provincia+ " - "+sitioDest.ciudad,
                             fecha: fecha,
-                            horario: (v.ruta_entera).substr(43, 5),
+                            horario: element.horario,
                             tipoCombi: combiViaje.tipocombi,
                             precio: v.precio,
                             butacas: v.butacaDisponible
@@ -287,9 +302,8 @@ function UsuarioBuscarViajes() {
                         console.log(agregarViaje)
                         store.collection('buscarViajes').add(agregarViaje)
                     }
-
-                }
-            }
+                } 
+            });
 
         })
         try {
@@ -350,9 +364,8 @@ function UsuarioBuscarViajes() {
                                     (
                                         viajesFiltrados.map(item => (
                                             <tr key={item.id}>
-
-                                                <td>{item.origen.provincia}{' - '}{item.origen.ciudad}</td>
-                                                <td>{item.origen.provincia}{' - '}{item.destino.ciudad}</td>
+                                                <td>{item.origen}</td>
+                                                <td>{item.destino}</td>
                                                 <td>{item.fecha}</td>
                                                 <td>{item.horario}</td>
                                                 <td>{item.tipoCombi}</td>
@@ -399,7 +412,7 @@ function UsuarioBuscarViajes() {
                                         <option disabled="disabled" value="">Seleccione una Origen </option>
                                         {
                                             sitioSelect.map(item2 => (
-                                                <option value={item2.id} name={item2.id}> provincia:{item2.provincia} ciudad:{item2.ciudad} </option>
+                                                <option value={item2.id} key={item2.id}> provincia:{item2.provincia} ciudad:{item2.ciudad} </option>
                                             )
                                             )
                                         }
@@ -411,7 +424,7 @@ function UsuarioBuscarViajes() {
                                         <option disabled="disabled" value="">Seleccione una Destino </option>
                                         {
                                             sitioSelect.map(item => (
-                                                <option value={item.id} name={item.id}> provincia:{item.provincia} ciudad:{item.ciudad} </option>
+                                                <option value={item.id} key={item.id}> provincia:{item.provincia} ciudad:{item.ciudad} </option>
                                             )
                                             )
                                         }

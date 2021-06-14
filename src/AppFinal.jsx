@@ -3,6 +3,7 @@ import {BrowserRouter as Router,Switch,Route} from 'react-router-dom';
 import InicioPage from './pages/InicioPage';
 import RegistrarPage from './pages/RegistrarPage';
 import LoginPage from './pages/LoginPage';
+import MisDatosUsuarioPage from './pages/MisDatosUsuarioPage';
 import UsuarioPage from './pages/usuario/UsuarioPage';
 import ChoferPage from './pages/chofer/ChoferPage';
 import AdminPage from './pages/admin/AdminPage';
@@ -41,6 +42,7 @@ function AppFinal() {
           <Route path='/filtrarViajes' component={UsuarioBuscarViajes}></Route>
           <Route path='/detalleViajes' component={UsuarioViajesComprados}></Route>
           <Route path='/comprarsnacks' component={ComprarSnacks}></Route>
+          <Route path='/misDatosUsuario' component={MisDatosUsuarioPage}></Route>
 
         </Switch>
       </Router>

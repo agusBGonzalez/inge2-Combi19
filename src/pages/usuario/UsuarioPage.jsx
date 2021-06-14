@@ -15,7 +15,7 @@ function UsuarioPage() {
       <div >
         <img src={image1} alt="" style={{alignItems:'center', width:'100%',height:'46rem'}} />
         <MenuUsuario/>
-        <MenuOpcUsuario/>
+        <MenuOpcUsuario optionName="usuarioCliente" />
         <div style={subPageStyle}>
           <Opiniones/> 
         </div>

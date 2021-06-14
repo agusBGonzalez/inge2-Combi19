@@ -4,7 +4,7 @@ import logo from '../../images/logo-is.png'
 import {DropdownButton,Dropdown} from 'react-bootstrap'
 import {auth} from '../../firebaseconf'
 
-function MenuUsuario() {
+function MenuUsuarioChofer() {
 
     const historial = useHistory()
     const[usuario,setUsuario] = useState(null)
@@ -47,7 +47,7 @@ function MenuUsuario() {
             </div>
             <div>
               <DropdownButton id="dropdown-user" variant="secondary" title="Mi Sesión">
-                <Dropdown.Item as={Link} to="/misDatosUsuario">Mis Datos</Dropdown.Item>
+                <Dropdown.Item as={Link} disabled to="/usuario">Mis Datos</Dropdown.Item>
                 <Dropdown.Divider />
                 <Dropdown.Item onClick={CerrarSesion}>Cerrar Sesión</Dropdown.Item>
               </DropdownButton>
@@ -60,4 +60,4 @@ function MenuUsuario() {
   
   
 
-  export default MenuUsuario;
+  export default MenuUsuarioChofer;

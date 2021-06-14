@@ -109,7 +109,7 @@ function UsuarioViajesComprados() {
     return (
         <div>
             <MenuUsuario />
-            <MenuOpcUsuario optionName="filtrarViajes" />
+            <MenuOpcUsuario optionName="detalleViajes" />
             <div>
                 <h3 style={{ top: 110, position: 'absolute', left: 80, width: "60%", }}> Listado de Pasajes comprados</h3>
                 <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{ bottom: 0, zIndex: 5, position: 'absolute', left: 75, width: "60%" }} >
