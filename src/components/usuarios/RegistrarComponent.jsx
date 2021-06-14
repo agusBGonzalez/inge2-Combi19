@@ -46,14 +46,14 @@ function RegistrarComponent() {
 	  const cortoDia = fechaSinDia.substr(0, fechaSinDia.indexOf('/'))
 	  const cortoAnio = fechaSinDia.substring(fechaSinDia.indexOf('/') +1 ,fechaSinDia.length)
 
-	  const diaHoyNumb = Number(cortoDia)
-	  const mesHoyNumb = Number(cortoMes)
-	  const anioHoyNumb = Number(cortoAnio)
+	//   const diaHoyNumb = Number(cortoDia)
+	//   const mesHoyNumb = Number(cortoMes)
+	//   const anioHoyNumb = Number(cortoAnio)
 
 	  // LO DEJO POR EL PROBLEMA QUE TUVO AGUS EN LA DEMO
-	  // const diaHoyNumb = 11
-	  // const mesHoyNumb = 5
-	  // const anioHoyNumb = 2021
+	  const diaHoyNumb = 15
+	  const mesHoyNumb = 6
+	  const anioHoyNumb = 2021
 
 	  //CORTO AÑO DEL DIA INGRESADO
 	  const anioFecNac = fecha.substr(0, fecha.indexOf('-'))

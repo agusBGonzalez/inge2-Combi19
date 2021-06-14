@@ -117,7 +117,9 @@ const AdminCombiPage = () => {
         setCombi(nuevoArray)
         viaje.map( itemviaje =>{
             combi.map (itemcombi =>{
-                if(itemcombi.patente == itemviaje.combi){
+                console.log("ID COMBI",itemcombi.id)
+                console.log("ID COMBI en el viaje",itemviaje.idCombi)
+                if(combiEliminar === itemviaje.idCombi){
                     encontre2 = true 
                     setShowModal(false)
                 }
@@ -190,7 +192,7 @@ const AdminCombiPage = () => {
         }
         
         if (butacas === ""){
-            setMsgError('El campo butaca esta vacios')
+            setMsgError('El campo butaca esta vacio')
             setShowAlert(true)
             return
         }
@@ -229,13 +231,9 @@ const AdminCombiPage = () => {
             viaje.map(itemviaje =>{
                 if(itemviaje.combi === auxiliar.patente){
                     if(itemviaje.combi === patente){
-                        setMsgError('La combi que desea modificar ya se encuentra en un viaje')
+                        setMsgError('La combi que desea modificar ya se encuentra asignada a un viaje')
                         setShowAlert(true)
                         encontre2 = true 
-                    }else{
-                        setMsgError('La combi que desea modificar ya se encuentra en un viaje')
-                        setShowAlert(true)
-                        encontre2 = true
                     }
                 }
             })

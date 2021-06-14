@@ -120,7 +120,6 @@ function AdminProdPage() {
         } else {
 
             setEsEditar(false)
-            alert('else')
 
             console.log("entra2222")
             setProductoEditar('')
