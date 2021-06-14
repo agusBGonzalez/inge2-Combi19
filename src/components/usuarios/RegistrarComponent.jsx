@@ -251,6 +251,12 @@ function RegistrarComponent() {
 							  onChange = {(e)=> {setNumTarjeta(e.target.value)}}
 							  onClick = {handleCloseAlert}
 							  className = "form-control"
+							  maxLength = '16'
+                                  onKeyPress={(event) => {
+                                    if (!/[0-9]/.test(event.key)) {
+                                      event.preventDefault();
+                                    }
+                                  }}
 							  placeholder = "Ingrese su número de tarjeta"
 							  type = "text"
 						  />
@@ -260,6 +266,12 @@ function RegistrarComponent() {
 							  onClick = {handleCloseAlert}
 							  className = "form-control"
 							  placeholder = "Ingrese código"
+							  maxLength = '4'
+                                  onKeyPress={(event) => {
+                                    if (!/[0-9]/.test(event.key)) {
+                                      event.preventDefault();
+                                    }
+                                  }}
 							  type = "text"/>
 						  <label className="mt-4">Fecha de Vencimiento:* </label>
 						  <input type="month" 
