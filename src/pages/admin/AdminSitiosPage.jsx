@@ -157,8 +157,8 @@ function AdminSitiosPage() {
 
         let gRutas = []
         ruta.map(r => {
-            console.log("r.idOrigen", r.idOrigen, "sitioEdita.id ", sitioEditar.id, "r.idDestino ", r.idDestino, "sitioEdita.id ", sitioEditar.id)
-            if ((r.idOrigen === sitioEditar.id) || (r.idDestino === sitioEditar.id)) {
+            console.log("r.idOrigen", r.idOrigen, "sitioEdita.id ", sitioEliminar.id, "r.idDestino ", r.idDestino, "sitioEdita.id ", sitioEliminar.id)
+            if ((r.idOrigen === sitioEliminar.id) || (r.idDestino === sitioEliminar.id)) {
                 gRutas.push(r)
             }
         })
@@ -171,14 +171,14 @@ function AdminSitiosPage() {
 
                 gRutas.forEach(element => {
                     console.log("provDest: ", element.provDest, "ciudadDest: ", element.ciudadDest, "provOrigen: ", element.provOrigen, "ciudadOrigen: ", element.ciudadOrigen)
-                    if (element.provOrigen === sitioEditar.provincia) {
-                        if (element.ciudadOrigen === sitioEditar.ciudad) {
+                    if (element.provOrigen === sitioEliminar.provincia) {
+                        if (element.ciudadOrigen === sitioEliminar.ciudad) {
                             encontre = true
                             setShowModal(false)
                         }
                     }
-                    if (element.provDest === sitioEditar.provincia) {
-                        if (element.ciudadDest == sitioEditar.ciudad) {
+                    if (element.provDest === sitioEliminar.provincia) {
+                        if (element.ciudadDest == sitioEliminar.ciudad) {
                             encontre = true
                             setShowModal(false)
                         }
@@ -264,8 +264,8 @@ function AdminSitiosPage() {
             let gRutas = []
             console.log(gRutas)
             ruta.map(r => {
-                console.log("r.idOrigen", r.idOrigen, "sitioEliminar.id ", sitioEliminar.id, "r.idDestino ", r.idDestino, "sitioEliminar.id ", sitioEliminar.id)
-                if ((r.idOrigen === sitioEliminar.id) || (r.idDestino === sitioEliminar.id)) {
+                console.log("r.idOrigen", r.idOrigen, "sitioEditar.id ", sitioEditar.id, "r.idDestino ", r.idDestino, "sitioEditar.id ", sitioEditar.id)
+                if ((r.idOrigen === sitioEditar.id) || (r.idDestino === sitioEditar.id)) {
                     gRutas.push(r)
                 }
             })
@@ -275,14 +275,14 @@ function AdminSitiosPage() {
 
                     gRutas.forEach(element => {
                         console.log("provDest: ", element.provDest, "ciudadDest: ", element.ciudadDest, "provOrigen: ", element.provOrigen, "ciudadOrigen: ", element.ciudadOrigen)
-                        if (element.provOrigen === sitioEliminar.provincia) {
-                            if (element.ciudadOrigen === sitioEliminar.ciudad) {
+                        if (element.provOrigen === sitioEditar.provincia) {
+                            if (element.ciudadOrigen === sitioEditar.ciudad) {
                                 encontre = true
                                 setShowModal(false)
                             }
                         }
-                        if (element.provDest === sitioEliminar.provincia) {
-                            if (element.ciudadDest == sitioEliminar.ciudad) {
+                        if (element.provDest === sitioEditar.provincia) {
+                            if (element.ciudadDest == sitioEditar.ciudad) {
                                 encontre = true
                                 setShowModal(false)
                             }
