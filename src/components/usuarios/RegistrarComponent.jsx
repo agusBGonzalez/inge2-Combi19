@@ -86,8 +86,8 @@ function RegistrarComponent() {
 			  return
 		  }
 
-		  if (!password.trim() || (password.trim().length < 8)){
-			  setMsgError('Debe ingresar una contraseña con al menos 8 caractares para crear un usuario')
+		  if (!password.trim() || (password.trim().length < 6)){
+			  setMsgError('Debe ingresar una contraseña con al menos 6 caractares para crear un usuario')
 			  setShowAlert(true)
 			  return	
 		  }
@@ -278,7 +278,7 @@ function RegistrarComponent() {
 						  <input type="month" 
 								  id="start" 
 								  name="start"
-								  min="2018-03" 
+								  min="2010-03" 
 								  style = {{width:"100%"}}
 								  onChange = {(e)=> {setFechaTarjeta(e.target.value)}}
 								  onClick = {handleCloseAlert}
