@@ -19,14 +19,15 @@ function MisDatosUsuarioPage() {
 
     const [usuarios, setUsuarios] = useState([])
     const [usuario, setUsuario] =  useState(null)
+    const [idUser, setIdUser] = useState('')
 
     const subPageStyle = {
         top: 150,
         position: 'absolute',
         left: 80,
-        width: "92%",
-        height: "77%",
-        overflowY: 'scroll'
+        width: "56%",
+        height: "76%",
+        // overflowY: 'scroll'
 
     };
   
@@ -43,38 +44,42 @@ function MisDatosUsuarioPage() {
 
 
     useEffect( () =>{
-        store.collection('usuarioConfig').get()
-            .then(response => {
-                const fetchedUsers = [];
-                response.docs.forEach(document => {
-                    const fetchedUser = {
-                        id: document.id,
-                        ...document.data()
-                    };
-                    fetchedUsers.push(fetchedUser)
-                });
-                setUsuarios(fetchedUsers)
-            })
-            .catch(error => {
-                setMsgError(error)
-                setShowAlert(true)
-            });
+        //getUsuarioConfig()
 
         auth.onAuthStateChanged( (user) => {
            if(user){
-               console.log(usuarios)
-                const usuarioEncontrado = usuarios.find((itemUser) => {
-                    return itemUser.idUser === user.uid
-                })   
-                setUsuario(usuarioEncontrado)
-                setEmail(usuarioEncontrado.email)
-                setNombres(usuarioEncontrado.nombres)
-                setApellido(usuarioEncontrado.apellido)
-                setFecha(usuarioEncontrado.fechaNac)
-                setPassword('password')
+                setIdUser(user.uid)
+                store.collection('usuariosConfig').get()
+                    .then(response => {
+                        const fetchedUsers = [];
+                        response.docs.forEach(document => {
+                            const fetchedUser = {
+                                id: document.id,
+                                ...document.data()
+                            };
+                            fetchedUsers.push(fetchedUser)
+                        });
+                        setUsuarios(fetchedUsers)
+                        const usuarioEncontrado = fetchedUsers.find((itemUser) => {
+                            return itemUser.idUser === user.uid
+                        })
+                        setUsuario(usuarioEncontrado)
+                        if (usuarioEncontrado !== undefined){
+                            setEmail(usuarioEncontrado.email)
+                            setNombres(usuarioEncontrado.nombres)
+                            setApellido(usuarioEncontrado.apellido)
+                            setFecha(usuarioEncontrado.fechaNac)
+                            setPassword('password')
+                        }
+                        
+                    })
+                    .catch(error => {
+                        setMsgError(error)
+                        setShowAlert(true)
+                    });   
            } 
         })
-        return () => {console.log(usuario)}
+        
     },[])
 
 
@@ -83,51 +88,54 @@ function MisDatosUsuarioPage() {
             <MenuUsuario/>
             <MenuOpcUsuario optionName="" />
             <div>
-            <h3 style={{top: 110, position: 'absolute', left: 80,width: "60%",}}> Mis Datos</h3>
-            
-            <div style={subPageStyle}>
-                <label>Nombres: </label>
-				<input
-                    onChange = {(e)=> {setNombres(e.target.value)}}
-                    onClick = {handleCloseAlert}
-                    className = "form-control"
-                    placeholder = "Ingrese su nombre"
-                    type = "text"/>		  
-				<label className="mt-4">Apellido: </label>
-				<input
-					onChange = {(e)=> {setApellido(e.target.value)}}
-                    onClick = {handleCloseAlert}
-                    className = "form-control"
-                    placeholder = "Ingrese su apellido"
-                    type = "text"/>	  	  	  
-				<label className="mt-4">Fecha de Nacimiento:* </label>	
-					  <input
-						  onChange = {(e)=> {setFecha(e.target.value)}}
-						  onClick = {handleCloseAlert}
-						  className = "form-control"
-						  type = "date"
-						  />
-					  <label className="mt-4">Email:* </label>  
-					  <input
-						  onChange = {(e)=> {setEmail(e.target.value)}}
-						  onClick = {handleCloseAlert}
-						  className = "form-control"
-						  placeholder = "Ingrese un email"
-						  type = "email"/>
-					  <label className="mt-4">Contraseña:* </label>	
-					  <input
-						  onChange = {(e)=> {setPassword(e.target.value)}}
-						  onClick = {handleCloseAlert}
-						  className = "form-control"
-						  placeholder = "Ingrese una contrañesa"
-						  type = "password"/>	  
-					  <Alert className="mt-4" variant="danger" show={showAlert} onClick = {handleCloseAlert}>
-						  {msgError}
-					  </Alert>	
-					  <div className="d-grid gap-2 col-6 mx-auto mt-4">
-						  <button className="btn btn-dark btn-block" type = "submit">Registrar Usuario</button>
-						  <Link className="btn btn-danger btn-block " to="/">Cancelar</Link>
-					  </div>
+                <h3 style={{top: 110, position: 'absolute', left: 80,width: "60%",}}> Mis Datos</h3>
+                <button className="btn btn-dark btn-block" type = "submit">Actualizar</button>
+                <Button style={{top: 105, position: 'absolute', right:170, width: "150px", height: "40px"}} className="btn btn-dark btn-block" onClick={(e) => { console.log('A') }} > Actualizar Datos </Button>
+                
+                <div style={subPageStyle}>
+                    <label>Nombres: </label>
+                    <input
+                        value={nombres}
+                        onChange = {(e)=> {setNombres(e.target.value)}}
+                        onClick = {handleCloseAlert}
+                        className = "form-control"
+                        placeholder = "Ingrese su nombre"
+                        type = "text"/>		  
+                    <label className="mt-4">Apellido: </label>
+                    <input
+                        value={apellido}
+                        onChange = {(e)=> {setApellido(e.target.value)}}
+                        onClick = {handleCloseAlert}
+                        className = "form-control"
+                        placeholder = "Ingrese su apellido"
+                        type = "text"/>	  	  	  
+                    <label className="mt-4">Fecha de Nacimiento:* </label>	
+                    <input
+                        value={fecha}
+                        onChange = {(e)=> {setFecha(e.target.value)}}
+                        onClick = {handleCloseAlert}
+                        className = "form-control"
+                        type = "date"
+                        />
+                    <label className="mt-4">Email:* </label>	    
+                    <input
+                        value={email}
+                        onChange = {(e)=> {setEmail(e.target.value)}}
+                        onClick = {handleCloseAlert}
+                        className = "form-control"
+                        placeholder = "Ingrese un email"
+                        type = "email"/>
+                    <label className="mt-4">Contraseña:* </label>	
+                    <input
+                        value={password}
+                        onChange = {(e)=> {setPassword(e.target.value)}}
+                        onClick = {handleCloseAlert}
+                        className = "form-control"
+                        placeholder = "Ingrese una contrañesa"
+                        type = "password"/>	  
+                    <Alert className="mt-4" variant="danger" show={showAlert} onClick = {handleCloseAlert}>
+                        {msgError}
+                    </Alert>	
                 </div>
             </div>
         </div>

@@ -22,7 +22,12 @@ function AdminRutaPage() {
     const [showModal, setShowModal] = useState(false);
     const [rutaEliminar, setRutaEliminar] = useState('');
 
-    const handleClose = () => setShowModal(false);
+    const handleClose = () => {setShowModal(false);setShowAlertDelete(false);setMsgErrorDelete(null)};
+
+    //ALERT ERROR ELIMINAR
+    const [showAlertDelete, setShowAlertDelete] = useState(false);
+    const handleCloseAlertDelete = () => setShowAlertDelete(false);
+    const [msgErrorDelete, setMsgErrorDelete] = useState (null)
 
     //ALERT ERROR
     const [showAlert, setShowAlert] = useState(false);
@@ -50,12 +55,29 @@ function AdminRutaPage() {
     
     const [sitiosCargados, setSitiosCargados] = useState([])
 
+    const [viajesCargados,setViajesCargados] = useState([])
+
 
     const [idOrigen, setIdOrigen] = useState('')
     const [idDestino, setIdDestino] = useState('')
     const [horario, setHorario] = useState('')
     const [km, setKm] = useState('')
+
     
+    const getViajesCargados =  () => {
+        store.collection('viaje').get()
+        .then(response => {
+            const fetchedViajes = [];
+            response.docs.forEach(document => {
+            const fetchedViaje = {
+                id: document.id,
+                ...document.data()
+            };
+            fetchedViajes.push(fetchedViaje)
+            });
+            setViajesCargados(fetchedViajes)
+        })
+    }
 
 
     const getRutas =  () => {
@@ -92,6 +114,7 @@ function AdminRutaPage() {
     //CARGA LA LISTA CUANDO SE CARGA EL COMPONENTE
     useEffect(() => {
         getSitiosCargados()
+        getViajesCargados()
         store.collection('rutasZaca').get()
         .then(response => {
             const fetchedRutas = [];
@@ -119,6 +142,21 @@ function AdminRutaPage() {
         const { docs } = await store.collection('rutasZaca').get()
         const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
         setRutas(nuevoArray)
+
+        const tieneViajeAsig = viajesCargados.find((itemViaje) => {
+            return itemViaje.idRuta === rutaEliminar
+        })    
+        
+        //PREGUNTO POR "UNDEFINED" PORQUE EL FIND SI NO ENCUENTRA NADA DEVUELVE ESO
+        // SI NO TIENE VIAJES ASIGNADOS === UNDEFINED  
+
+        if(tieneViajeAsig !== undefined){
+
+            setMsgErrorDelete('La Ruta no se puede eliminar porque se encuentra asignada a un viaje')
+            setShowAlertDelete(true)
+            return
+        }
+
         await store.collection('rutasZaca').doc(rutaEliminar).delete()
         getRutas()
         setShowModal(false)
@@ -152,6 +190,19 @@ function AdminRutaPage() {
 
     const confirmarEdicion = async (e) => {
         e.preventDefault()
+
+        const tieneViajeAsig = viajesCargados.find((itemViaje) => {
+            return itemViaje.idRuta === rutaEditar
+        })    
+        
+        //PREGUNTO POR "UNDEFINED" PORQUE EL FIND SI NO ENCUENTRA NADA DEVUELVE ESO
+        // SI NO TIENE VIAJES ASIGNADOS === UNDEFINED  
+
+        if(tieneViajeAsig !== undefined){
+            setMsgError('La Ruta que quiere modificar se encuentra asignada a un viaje' )
+            setShowAlert(true)
+            return
+        }
 
         if (!idOrigen.trim()) {
             setMsgError('El campo Origen esta vacio' )
@@ -309,7 +360,11 @@ function AdminRutaPage() {
             <Modal.Header >
                 <Modal.Title>Eliminación de Ruta</Modal.Title>
             </Modal.Header>
-            <Modal.Body>¿Está seguro que desea eliminar la ruta seleccionada?</Modal.Body>
+            <Modal.Body>¿Está seguro que desea eliminar la ruta seleccionada?
+                <Alert className="mt-4" variant="danger" show={showAlertDelete} onClick = {handleCloseAlertDelete}>
+                    {msgErrorDelete}
+                </Alert>
+            </Modal.Body>
             <Modal.Footer>
                 <Button variant="primary" onClick={confirmarEliminacion}>
                     Confirmar

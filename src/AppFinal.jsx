@@ -4,6 +4,7 @@ import InicioPage from './pages/InicioPage';
 import RegistrarPage from './pages/RegistrarPage';
 import LoginPage from './pages/LoginPage';
 import MisDatosUsuarioPage from './pages/MisDatosUsuarioPage';
+import UsuarioGoldDatosPage from './pages/usuario/UsuarioGoldDatosPage';
 import UsuarioPage from './pages/usuario/UsuarioPage';
 import ChoferPage from './pages/chofer/ChoferPage';
 import AdminPage from './pages/admin/AdminPage';
@@ -43,6 +44,7 @@ function AppFinal() {
           <Route path='/detalleViajes' component={UsuarioViajesComprados}></Route>
           <Route path='/comprarsnacks' component={ComprarSnacks}></Route>
           <Route path='/misDatosUsuario' component={MisDatosUsuarioPage}></Route>
+          <Route path='/misDatosGold' component={UsuarioGoldDatosPage}></Route>
 
         </Switch>
       </Router>
