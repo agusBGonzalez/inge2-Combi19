@@ -439,6 +439,7 @@ function UsuarioBuscarViajes() {
                                         maxLength='8'
                                         placeholder='Fecha del viaje'
                                         id="fecha"
+                                        min="2021-06-15"
                                         value={fecha}
                                     />
                                 </form>
