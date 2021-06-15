@@ -92,7 +92,7 @@ function AdminSitiosPage() {
             })
     }
 
-    
+
     const getRutas = () => {
         store.collection('rutasZaca').get()
             .then(response => {
@@ -154,14 +154,14 @@ function AdminSitiosPage() {
         //viajes
         getViajes()
         console.log("cant viajes", viajes.length)
-        
+
         let gRutas = []
-        ruta.map(r=>{
-            console.log("r.idOrigen", r.idOrigen , "sitioEliminar.id ", sitioEliminar.id , "r.idDestino ", r.idDestino ,   "sitioEliminar.id ", sitioEliminar.id )
-            if((r.idOrigen === sitioEliminar.id ) || (r.idDestino ===  sitioEliminar.id )){
+        ruta.map(r => {
+            console.log("r.idOrigen", r.idOrigen, "sitioEliminar.id ", sitioEliminar.id, "r.idDestino ", r.idDestino, "sitioEliminar.id ", sitioEliminar.id)
+            if ((r.idOrigen === sitioEliminar.id) || (r.idDestino === sitioEliminar.id)) {
                 gRutas.push(r)
             }
-        }) 
+        })
 
         console.log(gRutas)
 
@@ -169,22 +169,22 @@ function AdminSitiosPage() {
         if (viajes.length !== 0) {
             viajes.map(viaje => {
 
-            gRutas.forEach(element =>{
-                console.log("provDest: ", element.provDest, "ciudadDest: ", element.ciudadDest, "provOrigen: ", element.provOrigen, "ciudadOrigen: ", element.ciudadOrigen )
+                gRutas.forEach(element => {
+                    console.log("provDest: ", element.provDest, "ciudadDest: ", element.ciudadDest, "provOrigen: ", element.provOrigen, "ciudadOrigen: ", element.ciudadOrigen)
                     if (element.provOrigen === sitioEliminar.provincia) {
-                    if (element.ciudadOrigen === sitioEliminar.ciudad) {
-                        encontre = true
-                        setShowModal(false)
+                        if (element.ciudadOrigen === sitioEliminar.ciudad) {
+                            encontre = true
+                            setShowModal(false)
+                        }
                     }
-                }
-                if (element.provDest === sitioEliminar.provincia) {
-                    if (element.ciudadDest == sitioEliminar.ciudad) {
-                        encontre = true
-                        setShowModal(false)
+                    if (element.provDest === sitioEliminar.provincia) {
+                        if (element.ciudadDest == sitioEliminar.ciudad) {
+                            encontre = true
+                            setShowModal(false)
+                        }
                     }
-                }
-            })
-                
+                })
+
 
             })
 
@@ -261,33 +261,34 @@ function AdminSitiosPage() {
             let encontre = false
             //viajes
             getViajes()
+            let gRutas = []
+            ruta.map(r => {
+                console.log("r.idOrigen", r.idOrigen, "sitioEliminar.id ", sitioEliminar.id, "r.idDestino ", r.idDestino, "sitioEliminar.id ", sitioEliminar.id)
+                if ((r.idOrigen === sitioEliminar.id) || (r.idDestino === sitioEliminar.id)) {
+                    gRutas.push(r)
+                }
+            })
             console.log("cant viajes", viajes.length)
             if (viajes.length !== 0) {
                 viajes.map(viaje => {
-                    console.log('origen')
-                    console.log(viaje.ruta.origen.provincia)
-                    console.log(viaje.ruta.origen.ciudad)
-                    console.log('destino')
-                    console.log(viaje.ruta.destino.provincia)
-                    console.log(viaje.ruta.destino.ciudad)
-                    console.log('mis datos')
-                    console.log(sitioEditar.provincia)
-                    console.log(sitioEditar.ciudad)
 
-
-                    if (viaje.ruta.origen.provincia === sitioEditar.provincia) {
-                        if (viaje.ruta.origen.ciudad === sitioEditar.ciudad) {
-                            encontre = true
-                            setShowModal(false)
+                    gRutas.forEach(element => {
+                        console.log("provDest: ", element.provDest, "ciudadDest: ", element.ciudadDest, "provOrigen: ", element.provOrigen, "ciudadOrigen: ", element.ciudadOrigen)
+                        if (element.provOrigen === sitioEliminar.provincia) {
+                            if (element.ciudadOrigen === sitioEliminar.ciudad) {
+                                encontre = true
+                                setShowModal(false)
+                            }
                         }
-                    }
-                    if (viaje.ruta.destino.provincia === sitioEditar.provincia) {
-                        if (viaje.ruta.destino.ciudad == sitioEditar.ciudad) {
-                            encontre = true
-                            setShowModal(false)
-
+                        if (element.provDest === sitioEliminar.provincia) {
+                            if (element.ciudadDest == sitioEliminar.ciudad) {
+                                encontre = true
+                                setShowModal(false)
+                            }
                         }
-                    }
+                    })
+    
+    
                 })
                 if (encontre) {
                     setMsgError('No se puede editar el sitio ya que pertenece a un viaje programado')
