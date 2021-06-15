@@ -26,9 +26,9 @@ function MenuInicio() {
 							<Link className="btn btn-secondary border border-2 me-1" to={"/registrar"}>Registrarse</Link>
 							<Link className="btn btn-outline-dark border border-2 me-1" to={"/login"}>Iniciar Sesion</Link>
               {/* BEGIN ---- COMENTAR PARA HACER LAS DEMOS */}
-              <Link className="btn btn-outline-dark border border-2" to={"/usuarioAdmin"}>UsuarioAdm</Link>
+              {/* <Link className="btn btn-outline-dark border border-2" to={"/usuarioAdmin"}>UsuarioAdm</Link>
               <Link className="btn btn-outline-dark border border-2" to={"/usuarioChofer"}>UsuarioChofer</Link>
-              <Link className="btn btn-outline-dark border border-2" to={"/usuarioCliente"}>UsuarioCliente</Link>
+              <Link className="btn btn-outline-dark border border-2" to={"/usuarioCliente"}>UsuarioCliente</Link> */}
               {/* END ---- COMENTAR PARA HACER LAS DEMOS */}
             </div>
           </div>

@@ -46,14 +46,14 @@ function RegistrarComponent() {
 	  const cortoDia = fechaSinDia.substr(0, fechaSinDia.indexOf('/'))
 	  const cortoAnio = fechaSinDia.substring(fechaSinDia.indexOf('/') +1 ,fechaSinDia.length)
 
-	  const diaHoyNumb = Number(cortoDia)
-	  const mesHoyNumb = Number(cortoMes)
-	  const anioHoyNumb = Number(cortoAnio)
+	//   const diaHoyNumb = Number(cortoDia)
+	//   const mesHoyNumb = Number(cortoMes)
+	//   const anioHoyNumb = Number(cortoAnio)
 
 	  // LO DEJO POR EL PROBLEMA QUE TUVO AGUS EN LA DEMO
-	  // const diaHoyNumb = 11
-	  // const mesHoyNumb = 5
-	  // const anioHoyNumb = 2021
+	  const diaHoyNumb = 15
+	  const mesHoyNumb = 6
+	  const anioHoyNumb = 2021
 
 	  //CORTO AÑO DEL DIA INGRESADO
 	  const anioFecNac = fecha.substr(0, fecha.indexOf('-'))
@@ -86,8 +86,8 @@ function RegistrarComponent() {
 			  return
 		  }
 
-		  if (!password.trim() || (password.trim().length < 8)){
-			  setMsgError('Debe ingresar una contraseña con al menos 8 caractares para crear un usuario')
+		  if (!password.trim() || (password.trim().length < 6)){
+			  setMsgError('Debe ingresar una contraseña con al menos 6 caractares para crear un usuario')
 			  setShowAlert(true)
 			  return	
 		  }
@@ -278,7 +278,7 @@ function RegistrarComponent() {
 						  <input type="month" 
 								  id="start" 
 								  name="start"
-								  min="2018-03" 
+								  min="2010-03" 
 								  style = {{width:"100%"}}
 								  onChange = {(e)=> {setFechaTarjeta(e.target.value)}}
 								  onClick = {handleCloseAlert}

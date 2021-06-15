@@ -48,7 +48,7 @@ function MenuOpcUsuario(props) {
                         Mis Pasajes
                     </NavText>
                 </NavItem>
-                <NavItem eventKey="usuarioCliente">
+                <NavItem eventKey="misDatosGold">
                     <NavIcon>
                         <CreditCardFill color="black"></CreditCardFill>
                     </NavIcon>
