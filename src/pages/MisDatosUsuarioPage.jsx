@@ -173,7 +173,7 @@ function MisDatosUsuarioPage() {
 
             try{
                 const mailRepetido= usuarios.find((itemUser) => {
-                    return itemUser.email === email
+                    return (itemUser.email === email && itemUser.idUser === usuario.idUser)
                 })    
                 
                 //PREGUNTO POR "UNDEFINED" PORQUE EL FIND SI NO ENCUENTRA NADA DEVUELVE ESO
