@@ -173,7 +173,7 @@ function MisDatosUsuarioPage() {
 
             try{
                 const mailRepetido= usuarios.find((itemUser) => {
-                    return itemUser.email === email
+                    return (itemUser.email === email && itemUser.idUser !== usuario.idUser)
                 })    
                 
                 //PREGUNTO POR "UNDEFINED" PORQUE EL FIND SI NO ENCUENTRA NADA DEVUELVE ESO
@@ -184,7 +184,8 @@ function MisDatosUsuarioPage() {
                     setShowAlert(true)
                     return
                 } else {
-                    await store.collection('usuariosConfig').doc(usuario.idUser).set(editUser)
+                    console.log(usuario.id)
+                    await store.collection('usuariosConfig').doc(usuario.id).set(editUser)
                     getUsuarioConfig()
                     setMsgSucc('Actualizacion Exitosa! Click aqui para cerrar')
                     setShowAlertSucc(true)

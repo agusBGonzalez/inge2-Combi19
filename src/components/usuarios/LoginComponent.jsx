@@ -23,13 +23,13 @@ function LoginComponent() {
         e.preventDefault();
 
         if (!email.trim()){
-            setMsgError('Debe ingresar un email para crear un usuario')
+            setMsgError('Debe ingresar un email para acceder al sistema')
             setShowAlert(true)
             return
         }
 
-        if (!password.trim() || (password.trim().length < 8)){
-            setMsgError('Debe ingresar una contraseña con al menos 8 caractares para crear un usuario')
+        if (!password.trim() || (password.trim().length < 6)){
+            setMsgError('Debe ingresar una contraseña con al menos 6 caractares para acceder al sistema')
             setShowAlert(true)
             return	
         }
