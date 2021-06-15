@@ -417,6 +417,7 @@ function AdminViajePage() {
                                 type="date"
                                 placeholder='Fecha del viaje'
                                 id="fecha"
+                                min="2021-06-15"
                                 value={fecha}   
                             />
                             <select

@@ -209,7 +209,12 @@ const Opiniones = () => {
         <div >
             <div style={{marginBottom:'20px'}} >
                 <h3 style={{top: 110, position: 'absolute', left: 80,width: "60%",}}>Comentarios</h3>
-                <Button style={{top: 105,  position: 'absolute', right:70, width: "250px", height: "40px"}} onClick={(e) => { crearModificarComentario('A', '') }} variant="danger" > Agregar Comentario</Button>  
+                {
+                    idUsuarioLogueado === "QQc6vciuwNPp1U0t7AStYzOimPg2" ?
+                    (
+                        null
+                    ):(<Button style={{top: 105,  position: 'absolute', right:70, width: "250px", height: "40px"}} onClick={(e) => { crearModificarComentario('A', '') }} variant="danger" > Agregar Comentario</Button>)
+                }  
             </div>
             <div style={subPageStyle}>
                   <div className="container " >

@@ -390,7 +390,7 @@ function UsuarioBuscarViajes() {
                         </tbody>
                     </Table>
                     {
-                        viajesFiltrados.length === 0 ? <div className="alert alert-warning mt-19"> No hay elementos en la lista </div> : <div></div>
+                        viajesFiltrados.length === 0 ? <div className="alert alert-warning mt-19"> No se encontraron viajes para el filtro seleccionado </div> : <div></div>
                     }
                 </div>
             </div>
@@ -439,6 +439,7 @@ function UsuarioBuscarViajes() {
                                         maxLength='8'
                                         placeholder='Fecha del viaje'
                                         id="fecha"
+                                        min="2021-06-15"
                                         value={fecha}
                                     />
                                 </form>
