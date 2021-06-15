@@ -184,7 +184,8 @@ function MisDatosUsuarioPage() {
                     setShowAlert(true)
                     return
                 } else {
-                    await store.collection('usuariosConfig').doc(usuario.idUser).set(editUser)
+                    console.log(usuario.id)
+                    await store.collection('usuariosConfig').doc(usuario.id).set(editUser)
                     getUsuarioConfig()
                     setMsgSucc('Actualizacion Exitosa! Click aqui para cerrar')
                     setShowAlertSucc(true)
