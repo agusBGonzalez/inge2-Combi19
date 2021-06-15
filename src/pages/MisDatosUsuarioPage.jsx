@@ -172,10 +172,25 @@ function MisDatosUsuarioPage() {
             }
 
             try{
-                await store.collection('usuariosConfig').doc(usuario.idUser).set(editUser)
-                getUsuarioConfig()
-                setMsgSucc('Actualizacion Exitosa! Click aqui para cerrar')
-                setShowAlertSucc(true)
+                const mailRepetido= usuarios.find((itemUser) => {
+                    return itemUser.email === email
+                })    
+                
+                //PREGUNTO POR "UNDEFINED" PORQUE EL FIND SI NO ENCUENTRA NADA DEVUELVE ESO
+                // SI NO TIENE VIAJES ASIGNADOS === UNDEFINED  
+        
+                if(mailRepetido !== undefined){
+                    setMsgError('El email que ingreso ya se encuentra registrado por otro usuario, por favor verifique dicho dato' )
+                    setShowAlert(true)
+                    return
+                } else {
+                    await store.collection('usuariosConfig').doc(usuario.idUser).set(editUser)
+                    getUsuarioConfig()
+                    setMsgSucc('Actualizacion Exitosa! Click aqui para cerrar')
+                    setShowAlertSucc(true)
+                }
+
+                
 
             }catch(e){
                 setMsgError('Uups! Hubo un problema al actualizar los datos en el sistema')
