@@ -52,12 +52,9 @@ function AppFinal() {
           <Route path='/comprarsnacks' component={ComprarSnacks}></Route>
           <Route path='/misDatosUsuario' component={MisDatosUsuarioPage}></Route>
           <Route path='/misDatosGold' component={UsuarioGoldDatosPage}></Route>
-<<<<<<< HEAD
 
           {/* Choferes */}
-=======
           <Route path='/listaPasajeros' component={ListaPasajeros}></Route>
->>>>>>> 98b43639ac1cbacbf63f12dca0cae13b84eeb95c
           <Route path='/choferListarViaje' component={ChoferPageListarViaje}></Route>
           <Route path='/choferMiCombi' component={ChoferPageVerDetalleCombi}></Route>
 

@@ -3,9 +3,10 @@ import React,{useState, useEffect} from 'react'
   import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
   import {Table, Modal, Button, Alert} from 'react-bootstrap'
   import { store } from '../../firebaseconf'
-  import { TrashFill, PencilFill} from 'react-bootstrap-icons';
+  import { TrashFill, PencilFill, Check} from 'react-bootstrap-icons';
   import Accordion from 'react-bootstrap/Accordion'
   import { Card } from 'react-bootstrap'
+  
 
 const ListaPasajeros = () => {
     const subPageStyle = {
@@ -47,24 +48,28 @@ const ListaPasajeros = () => {
     
 
     const handleCloseEdit = () => setShowModalEdit(false)
-    const [persona,setPersona] = useState([])
+    const [persona,setPersona] = useState([{id:1,Apellido:'Agnelli', Nombre:'Nicolas',Dni:'35611095'},{id:2,Apellido:'Gonzalez', Nombre:'Viviana',Dni:'22567555'},{id:3,Apellido:'Perez', Nombre:'Cesar',Dni:'55213555'}])
+    const [check,setCheck] = useState(false)
+    const [ausente,setAusente] = useState([])
     
-    
-    useEffect(() => {
-        const prueba = ()=>{
-            let p = 'Agnelli'
-            setPersona(p,...persona) 
-            p = 'Perez'
-            setPersona(p ,...persona) 
-            p ='LAL '
-            setPersona(p,...persona) 
-            p ='LALE'
-            setPersona(p,...persona)
-            p = 'LILO'
-            setPersona(p,...persona)
-        }
-        prueba()
-    }, []);
+
+
+
+    const estaTildado = (check,item) =>{
+        setCheck(check)
+        const repetidoAusente = ausente.find(elemento => elemento === item.id)
+        console.log('por aca pasa')
+        if(repetidoAusente === undefined && check){
+            console.log('entre')
+            ausente.push(item)
+        }else{
+            if(!check){
+                ausente.pop()
+            }
+        } 
+        console.log('Cantidad en el arreglo',ausente.length)
+        
+    }
 
     return (
       <div>
@@ -77,8 +82,17 @@ const ListaPasajeros = () => {
             <Button variant ="secondary" style={{top: 105, position: 'absolute', left: 80,width:"100px" , height: "40px"}}>Atras</Button>
             <Button variant ="primary" style={{top: 105, position: 'absolute', left: 400,width:"150px" , height: "40px"}}>Vender Pasaje</Button> 
             <Button variant ="success" style={{top: 105, position: 'absolute', right:650,width:"150px" , height: "40px"}}>Comenzar Viaje</Button> 
-            <Button variant ="secondary" style={{top: 105, position: 'absolute', right:360,width:"150px" , height: "40px"}} disabled variant="danger ">Finalizar Viaje</Button>  
-            <Button style={{top: 105, position: 'absolute', right:70, width: "150px", height: "40px"}} variant="danger " >Cancelar Viaje</Button>
+            {   
+                
+                ausente.length === persona.length ?
+                (
+                    <div>
+                        <Button variant ="secondary" style={{top: 105, position: 'absolute', right:360,width:"150px" , height: "40px"}}  variant="danger ">Finalizar Viaje</Button>  
+                        <Button style={{top: 105, position: 'absolute', right:70, width: "150px", height: "40px"}} variant="danger " >Cancelar Viaje</Button>
+                    </div>
+                ):
+                (<></>)
+            }
             
             <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{bottom:0,zIndex:5, position: 'absolute', left: 75,width: "60%"}} >
                 {msgSucc}
@@ -102,11 +116,47 @@ const ListaPasajeros = () => {
                     </Accordion.Toggle>
                     <Accordion.Collapse eventKey="1">
                     <Card.Body>
-                        {
-                            persona.map(item =>(
-                                <input type="text" name="pasajeros" placeholder= '´prueba'/>
-                            ))
-                        }
+                    <Table striped bordered hover variant="secondary" className ="animate__animated animate__slideInUp" >
+                            <thead>
+                                <tr>
+                                <th>Apellido</th>
+                                <th>Nombres</th>
+                                <th>Dni</th>
+                                <th>Resultado</th>
+                                <th>Covid-19</th>
+                                <th>Ausente</th>         
+                                </tr>
+                            </thead>
+                            <tbody >
+                                {
+                                    persona.length !== 0 ?
+                                        (
+                                        persona.map(item => (
+                                                <tr key={item.id}>
+                                                    <td>{item.Apellido}</td>
+                                                    <td>{item.Nombre}</td>
+                                                    <td>{item.Dni}</td>
+                                                    <td>Pendiente</td>
+                                                        <td style={{width:"15px"}}>
+                                                            <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center">
+                                                                Sintomas
+                                                            </button>
+                                                        </td>
+                                                    <td style={{width:"10px"}}>
+                                                        <div  class="custom-control custom-checkbox">
+                                                            <input  type="checkbox"   defaultChecked={check} onClick= {(e)=> estaTildado(e.target.checked,item)}/>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <></>
+                                        )
+                                }
+                            </tbody>
+                        </Table>
+                        
+            
                     </Card.Body>
                     </Accordion.Collapse>
                 </Card>
