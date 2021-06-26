@@ -223,7 +223,7 @@ const Opiniones = () => {
                             comentarios.map(item =>(
                                 <div className ="col-md-4" key={item.id}>
                                     <div className="card  animate__animated animate__fadeInUp" style={{ width: '18rem' }}>
-                                        <div className="card-body rounded">
+                                        <div className="card-bodyy rounded">
                                             <h4 className ="card-title text-center ">{item.nombre}</h4>
                                             <p className="card-text text-dark text-center">{item.texto}</p>
                                             {

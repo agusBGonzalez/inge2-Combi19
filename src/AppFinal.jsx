@@ -17,7 +17,7 @@ import AdminViajePage from './pages/admin/AdminViajePage';
 import UsuarioBuscarViajes from './pages/usuario/UsuarioBuscarViajes';
 import UsuarioViajesComprados from './pages/usuario/UsuarioViajesComprados';
 import ComprarSnacks from '../src/pages/usuario/ComprarSnacks'
-
+import ListaPasajeros from './pages/chofer/ListaPasajeros';
 
 
 
@@ -45,7 +45,7 @@ function AppFinal() {
           <Route path='/comprarsnacks' component={ComprarSnacks}></Route>
           <Route path='/misDatosUsuario' component={MisDatosUsuarioPage}></Route>
           <Route path='/misDatosGold' component={UsuarioGoldDatosPage}></Route>
-
+          <Route path='/listaPasajeros' component={ListaPasajeros}></Route>
         </Switch>
       </Router>
 
