@@ -29,7 +29,7 @@ function MenuOpcChofer(props) {
                         Inicio
                     </NavText>
                 </NavItem>
-                <NavItem eventKey="home">
+                <NavItem eventKey="choferListarViaje">
                     <NavIcon>
                         <GeoFill color="black"></GeoFill>
                     </NavIcon>
