@@ -18,6 +18,7 @@ import UsuarioBuscarViajes from './pages/usuario/UsuarioBuscarViajes';
 import UsuarioViajesComprados from './pages/usuario/UsuarioViajesComprados';
 import ComprarSnacks from '../src/pages/usuario/ComprarSnacks'
 import ChoferPageListarViaje from './pages/chofer/ChoferPageListarViaje';
+import ChoferPageVerDetalleCombi from './pages/chofer/ChoferPageVerDetalleCombi';
 
 
 
@@ -35,18 +36,26 @@ function AppFinal() {
           <Route path='/usuarioAdmin' component={AdminPage}></Route>
           <Route path='/usuarioChofer' component={ChoferPage}></Route>
           <Route path='/usuarioCliente' component={UsuarioPage}></Route>
+
+          {/* admin */}
           <Route path='/listaSitios' component={AdminSitiosPage}></Route>
           <Route path='/listaChoferes' component={AdminChoferPage}></Route>
           <Route path='/listaCombis' component={AdminCombiPage}></Route>
           <Route path='/listaProductos' component={AdminProdPage}></Route>
           <Route path='/listaRutas' component={AdminRutaPage}></Route>
           <Route path='/listaViajes' component={AdminViajePage}></Route>
+
+          {/* usuarios */}
           <Route path='/filtrarViajes' component={UsuarioBuscarViajes}></Route>
           <Route path='/detalleViajes' component={UsuarioViajesComprados}></Route>
           <Route path='/comprarsnacks' component={ComprarSnacks}></Route>
           <Route path='/misDatosUsuario' component={MisDatosUsuarioPage}></Route>
           <Route path='/misDatosGold' component={UsuarioGoldDatosPage}></Route>
+
+          {/* Choferes */}
           <Route path='/choferListarViaje' component={ChoferPageListarViaje}></Route>
+          <Route path='/choferMiCombi' component={ChoferPageVerDetalleCombi}></Route>
+
 
         </Switch>
       </Router>

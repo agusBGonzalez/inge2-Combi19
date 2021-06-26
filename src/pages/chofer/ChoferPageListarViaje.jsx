@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import MenuUsuario from '../../components/menus/MenuUsuario'
-import MenuOpcUsuario from '../../components/menus/MenuOpcUsuario'
+import MenuUsuarioChofer from '../../components/menus/MenuUsuarioChofer'
+import MenuOpcChofer from '../../components/menus/MenuOpcChofer'
 import { Table, Modal, Button, Alert } from 'react-bootstrap'
 import { store, auth } from '../../firebaseconf'
 
@@ -192,8 +192,8 @@ function ChoferPageListarViaje() {
 
     return (
         <div>
-            <MenuUsuario />
-            <MenuOpcUsuario optionName="choferListarViaje" />
+            <MenuUsuarioChofer />
+            <MenuOpcChofer optionName="choferListarViaje" />
             <div>
                 <h3 style={{ top: 110, position: 'absolute', left: 80, width: "60%", }}> Listado de mis Viajes</h3>
                 <Button style={{ top: 105, position: 'absolute', right: 70, width: "200px", height: "40px" }} onClick={(e) => { filtarViajes() }} variant="secondary " > + Agregar Producto</Button>

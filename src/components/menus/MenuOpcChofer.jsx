@@ -34,7 +34,7 @@ function MenuOpcChofer(props) {
                         <GeoFill color="black"></GeoFill>
                     </NavIcon>
                     <NavText style={{color:"black"}}>
-                        Viajes
+                        Mis Viajes
                     </NavText>
                 </NavItem>
                 <NavItem eventKey="home">
@@ -53,7 +53,7 @@ function MenuOpcChofer(props) {
                         Snacks Comprados
                     </NavText>
                 </NavItem>
-                <NavItem eventKey="home">
+                <NavItem eventKey="choferMiCombi">
                     <NavIcon>
                         <Truck color="black"></Truck>
                     </NavIcon>
