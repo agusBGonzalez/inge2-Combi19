@@ -18,6 +18,8 @@ import UsuarioBuscarViajes from './pages/usuario/UsuarioBuscarViajes';
 import UsuarioViajesComprados from './pages/usuario/UsuarioViajesComprados';
 import ComprarSnacks from '../src/pages/usuario/ComprarSnacks'
 import ListaPasajeros from './pages/chofer/ListaPasajeros';
+import ChoferPageListarViaje from './pages/chofer/ChoferPageListarViaje';
+
 
 
 
@@ -46,6 +48,8 @@ function AppFinal() {
           <Route path='/misDatosUsuario' component={MisDatosUsuarioPage}></Route>
           <Route path='/misDatosGold' component={UsuarioGoldDatosPage}></Route>
           <Route path='/listaPasajeros' component={ListaPasajeros}></Route>
+          <Route path='/choferListarViaje' component={ChoferPageListarViaje}></Route>
+
         </Switch>
       </Router>
 
