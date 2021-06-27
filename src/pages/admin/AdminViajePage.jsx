@@ -290,7 +290,8 @@ function AdminViajePage() {
             butacaDisponible:butacaDisponible,
             precio:precio,
             destino:destino_seleccionado,
-            origen:origen_seleccinado
+            origen:origen_seleccinado,
+            estado:'Pendiente'
         }
         if (esEditar){
             try{

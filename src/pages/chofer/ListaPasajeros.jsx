@@ -1,6 +1,6 @@
 import React,{useState, useEffect} from 'react'
-  import MenuUsuarioAdmin from '../../components/menus/MenuUsuarioAdmin'
-  import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
+  import MenuUsuarioChofer from '../../components/menus/MenuUsuarioChofer'
+  import MenuOpcChofer from '../../components/menus/MenuOpcChofer'
   import {Table, Modal, Button, Alert} from 'react-bootstrap'
   import { store } from '../../firebaseconf'
   import { TrashFill, PencilFill, Check} from 'react-bootstrap-icons';
@@ -73,22 +73,21 @@ const ListaPasajeros = () => {
 
     return (
       <div>
-        <MenuUsuarioAdmin/>
-        <MenuOpcAdmin />
+        <MenuUsuarioChofer/>
+        <MenuOpcChofer />
         
         <div>
             
             <h3 style={{top: 150, position: 'absolute', left: 80,width: "60%",}}> Listado de Pasajeros</h3>
             <Button variant ="secondary" style={{top: 105, position: 'absolute', left: 80,width:"100px" , height: "40px"}}>Atras</Button>
             <Button variant ="primary" style={{top: 105, position: 'absolute', left: 400,width:"150px" , height: "40px"}}>Vender Pasaje</Button> 
-            <Button variant ="success" style={{top: 105, position: 'absolute', right:650,width:"150px" , height: "40px"}}>Comenzar Viaje</Button> 
+            <Button style={{top: 105, position: 'absolute', right:70, width: "150px", height: "40px"}} variant="danger " >Cancelar Viaje</Button>
             {   
                 
                 ausente.length === persona.length ?
                 (
                     <div>
-                        <Button variant ="secondary" style={{top: 105, position: 'absolute', right:360,width:"150px" , height: "40px"}}  variant="danger ">Finalizar Viaje</Button>  
-                        <Button style={{top: 105, position: 'absolute', right:70, width: "150px", height: "40px"}} variant="danger " >Cancelar Viaje</Button>
+                        <Button variant ="secondary" style={{top: 105, position: 'absolute', right:360,width:"150px" , height: "40px"}}  variant="danger ">Finalizar Viaje</Button>   
                     </div>
                 ):
                 (<></>)
@@ -161,7 +160,7 @@ const ListaPasajeros = () => {
                     </Accordion.Collapse>
                 </Card>
                 <Card>
-                    <Accordion.Toggle as={Card.Header} eventKey="1">
+                    <Accordion.Toggle as={Card.Header} eventKey="2">
                     Lista de Snacks
                     </Accordion.Toggle>
                     <Accordion.Collapse eventKey="2">
