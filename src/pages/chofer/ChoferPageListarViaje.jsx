@@ -212,7 +212,7 @@ function ChoferPageListarViaje() {
                                 <th>Destino</th>
                                 <th>Fecha</th>
                                 <th>Estado</th>
-                                <th>Accinones</th>
+                                <th>Acciones</th>
 
                             </tr>
                         </thead>
@@ -222,16 +222,19 @@ function ChoferPageListarViaje() {
                                     (
                                         viajesFiltrados.map(item => (
                                             <tr key={item.id}>
-
                                                 <td>{item.origen}</td>
                                                 <td>{item.destino}</td>
                                                 <td>{item.fecha}</td>
                                                 <td>{item.estado}</td>
-                                                <td style={{ width: "12%" }} >
+                                                <td style={{ width: "30%" }} >
                                                     <div className="d-flex justify-content-around">
                                                         <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { }}>
-                                                            {/* <PencilFill color="white"></PencilFill> */} 
+                                                        
                                                             Ver detalle de viaje
+                                                        </button>
+                                                        <button style={{ left:"5px" }} className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { }}>
+                                                            
+                                                            Comenzar viaje
                                                         </button>
                                                     </div>
                                                 </td>

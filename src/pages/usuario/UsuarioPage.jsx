@@ -10,7 +10,7 @@ function UsuarioPage() {
     top: 150,
     left: 80,
     width: "90%"
-};
+  };  
   return (
       <div >
         <img src={image1} alt="" style={{alignItems:'center', width:'100%',height:'46rem'}} />

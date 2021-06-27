@@ -1,26 +1,30 @@
 import React from 'react'
+import { useHistory } from "react-router-dom"
 import SideNav, { Toggle, Nav, NavItem, NavIcon, NavText } from '@trendmicro/react-sidenav';
 
 // Be sure to include styles at some point, probably during your bootstraping
 import '@trendmicro/react-sidenav/dist/react-sidenav.css';
 import './SideBar.css';
 
-import { ListCheck, Truck, PeopleFill, GeoFill, HouseFill} from 'react-bootstrap-icons';
+import { Truck, GeoFill, HouseFill} from 'react-bootstrap-icons';
 
 
 
 function MenuOpcChofer(props) {
 
+    const historial = useHistory()
+
     return (
 
         <SideNav
             onSelect={(selected) => {
-                // Add your code here
+                const to = '/' + selected;
+                historial.push(to);
             }}
             style={{ backgroundColor: "#7CA0AF",top: "99px"}}
         >
             <SideNav.Toggle style={{color:"black"}}/>
-            <SideNav.Nav defaultSelected="">
+            <SideNav.Nav defaultSelected={props.optionName ? props.optionName : ''} >
                 <NavItem eventKey="usuarioChofer">
                     <NavIcon>
                         <HouseFill color="black"></HouseFill>
@@ -35,22 +39,6 @@ function MenuOpcChofer(props) {
                     </NavIcon>
                     <NavText style={{color:"black"}}>
                         Mis Viajes
-                    </NavText>
-                </NavItem>
-                <NavItem eventKey="home">
-                    <NavIcon>
-                        <PeopleFill color="black"></PeopleFill>
-                    </NavIcon>
-                    <NavText style={{color:"black"}}>
-                        Pasajeros
-                    </NavText>
-                </NavItem>
-                <NavItem eventKey="home">
-                    <NavIcon>
-                        <ListCheck color="black"></ListCheck>
-                    </NavIcon>
-                    <NavText style={{color:"black"}}>
-                        Snacks Comprados
                     </NavText>
                 </NavItem>
                 <NavItem eventKey="choferMiCombi">

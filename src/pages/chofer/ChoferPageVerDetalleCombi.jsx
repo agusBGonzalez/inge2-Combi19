@@ -52,6 +52,12 @@ function ChoferPageVerDetalleCombi() {
     const [combis, setCombis] = useState([])
 
     const [combi, setCombi] = useState('')
+    const [patente, setPatente] = useState('')
+    const [marca, setMarca] = useState('')
+    const [modelo, setModelo] = useState('')
+    const [anio, setAnio] = useState('')
+    const [cantButa, setCantButa] = useState('')
+    const [tipo, setTipo] = useState('')
 
     const [idUsuarioLogueado, setIdUsuarioLogueado] = useState('')
     const [userConfig, setUserConfig] = useState([])
@@ -88,7 +94,7 @@ function ChoferPageVerDetalleCombi() {
                     fetchedCombis.push(fetchedCombi)
                 });
                 setCombis(fetchedCombis)
-            })
+        })
     }
 
 
@@ -98,19 +104,76 @@ function ChoferPageVerDetalleCombi() {
             const { docs } = await store.collection('usuariosConfig').get()
             const userArray = docs.map(item => ({ id: item.id, ...item.data() }))
             setUserConfig(userArray)
+
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    setUsuario(user.email)
+                    setIdUsuarioLogueado(user.uid)
+                }
+            })
         }
 
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                setUsuario(user.email)
-                setIdUsuarioLogueado(user.uid)
-            }
-        })
-
-
-
-
+        
+        getViajes()
+        getCombis()
         datos()
+
+        // no tocar hasta la demo
+        store.collection('viaje').get()
+            .then(response => {
+                const fetchedViajes = [];
+                response.docs.forEach(document => {
+                    const fetchedViaje = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedViajes.push(fetchedViaje)
+
+                    store.collection('combi').get()
+                        .then(response => {
+                            const fetchedCombis = [];
+                            response.docs.forEach(document => {
+                                const fetchedCombi = {
+                                    id: document.id,
+                                    ...document.data()
+                                };
+                                fetchedCombis.push(fetchedCombi)
+
+                                fetchedViajes.map(v=>{
+                                    fetchedCombis.map(c=>{
+                                        auth.onAuthStateChanged((user) => {
+                                            if (user) {
+                                                console.log(user.uid)
+                                                if (v.idCombi === c.id){
+                                                    console.log("pregunta222")
+                                                    if(c.idChofer === user.uid){
+                                                        setCombi(c)
+                                                        setPatente(c.patente)
+                                                        setMarca(c.marca)
+                                                        setModelo(c.modelo)
+                                                        setAnio(c.año)
+                                                        setCantButa(c.butaca)
+                                                        setTipo(c.tipocombi)
+                                                        console.log("pregunta")
+                                                    }
+                                                }
+                                            }
+                                        })
+                                        
+                                    })
+                                })
+
+                            });
+                        
+                    })
+                });
+                
+        })
+        // no tocar
+
+        
+       
+
         store.collection('viajeChofer').get()
             .then(response => {
                 const fetchedViajes = [];
@@ -165,42 +228,31 @@ function ChoferPageVerDetalleCombi() {
             <MenuOpcChofer optionName="choferMiCombi" />
             <div>
                 <h3 style={{ top: 110, position: 'absolute', left: 80, width: "60%", }}> Detalles de Mi Combi</h3>
-                <Button style={{top: 105, position: 'absolute', right:70, width: "150px", height: "40px"}} onClick={confirmarFiltro} variant="secondary " > Cargar Datos</Button>
-
-                <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{ bottom: 0, zIndex: 5, position: 'absolute', left: 75, width: "60%" }} >
-                    {msgSucc}
-                </Alert>
-                <Alert id="danger" className="" variant="danger" show={showAlertDanger} onClick={handleCloseAlertDanger} style={{ bottom: 0, zIndex: 5, position: 'absolute', left: 75, width: "60%" }} >
-                    {msgDanger}
-                </Alert>
                 <div style={subPageStyle}>
                     <form className='form-group'>
                         <p>Patente:</p>
                         <input
                             className='form-control mt-2'
                             type="text"
-                            placeholder={combi.patente}
                             id="origen"
-                            value={combi.patente}
+                            value={patente}
                             disabled
                         />
                         <p>Marca:</p>
                         <input
                             className='form-control mt-2'
                             type="text"
-                            placeholder={combi.marca}
                             id="destino"
-                            value={combi.marca}
+                            value={marca}
                             disabled
                         />
 
                         <p>Modelo:</p>
                         <input
                             className='form-control mt-2'
-                            type="data"
-                            placeholder={combi.modelo}
+                            type="text"
                             id="fecha"
-                            value={combi.modelo}
+                            value={modelo}
                             disabled
                         />
 
@@ -208,29 +260,26 @@ function ChoferPageVerDetalleCombi() {
                         <input
                             className='form-control mt-2'
                             type="number"
-                            placeholder={combi.año}
                             id="destino"
-                            value={combi.año}
+                            value={anio}
                             disabled
                         />
 
                         <p>Cantidad de butacas de la combi:</p>
                         <input
                             className='form-control mt-2'
-                            type="data"
-                            placeholder={combi.butaca}
+                            type="text"
                             id="fecha"
-                            value={combi.butaca}
+                            value={cantButa}
                             disabled
                         />
 
                         <p>Tipo de Combi:</p>
                         <input
                             className='form-control mt-2'
-                            type="number"
-                            placeholder={combi.tipocombi}
+                            type="text"
                             id="destino"
-                            value={combi.tipocombi}
+                            value={tipo}
                             disabled
                         />
 

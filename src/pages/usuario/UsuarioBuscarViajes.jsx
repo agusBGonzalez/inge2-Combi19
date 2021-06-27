@@ -4,6 +4,7 @@ import MenuOpcUsuario from '../../components/menus/MenuOpcUsuario'
 import { Table, Modal, Button, Alert } from 'react-bootstrap'
 import { store } from '../../firebaseconf'
 import { FileEarmarkSlidesFill } from 'react-bootstrap-icons'
+import { Link, useHistory} from 'react-router-dom'
 
 
 
@@ -18,6 +19,9 @@ function UsuarioBuscarViajes() {
         overflowY: 'scroll'
 
     };
+
+    //NO BORRAR --> NECESARIO PARA PASAR DE PANTALLAS
+    const historial = useHistory()
 
     //MODAL ELIMINAR
     const [sitioEliminar, setSitioEliminar] = useState('');
@@ -324,7 +328,10 @@ function UsuarioBuscarViajes() {
     const filtarViajes = () => {
         setShowModalEdit(true)
     }
+
     const comprar = () => {
+        //TE LLEVA A COMPRAR -- NO BORRAR
+        historial.push('/comprarPasaje')
     }
 
     const buscarIdOrigen = (id) => {
@@ -357,8 +364,7 @@ function UsuarioBuscarViajes() {
                                 <th>Tipo Combi</th>
                                 <th>Precio</th>
                                 <th>Butacas</th>
-                                <th>Accinones</th>
-
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
