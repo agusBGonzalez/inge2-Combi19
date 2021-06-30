@@ -243,7 +243,7 @@ function UsuarioBuscarViajes() {
             setShowAlert(true)
             return
         }
-        getViajes()
+        // getViajes()
 
         // aca lo que hago es guardar cual sera el origen y destino
  
