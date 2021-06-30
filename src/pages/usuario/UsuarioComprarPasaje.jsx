@@ -284,7 +284,7 @@ function UsuarioComprarPasaje() {
             infoSnack: {nombre: snackABM.nombre, precio : snackABM.precio, cantidad : cantSnack},
             totalPrecio: precioTotal,
             idViaje: viajeCompra.id,
-            idPasajero: idUser
+            idPasajero: usuario.id
         }
 
         
