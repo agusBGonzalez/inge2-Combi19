@@ -7,7 +7,7 @@ import SideNav, { NavItem, NavIcon, NavText } from '@trendmicro/react-sidenav';
 import '@trendmicro/react-sidenav/dist/react-sidenav.css';
 import './SideBar.css';
 
-import { CalendarWeek, Truck, PersonLinesFill, GeoAltFill, Cart4, Map, HouseFill } from 'react-bootstrap-icons';
+import { CalendarWeek, Truck, PersonLinesFill, GeoAltFill, Cart4, Map, HouseFill, CalendarCheckFill} from 'react-bootstrap-icons';
 
 
 function MenuOpcAdmin(props) {
@@ -81,6 +81,14 @@ function MenuOpcAdmin(props) {
                     </NavIcon>
                     <NavText style={{ color: "black" }}>
                         Viajes
+                    </NavText>
+                </NavItem>
+                <NavItem eventKey="listaViajes">
+                    <NavIcon>
+                        <CalendarCheckFill color="black"></CalendarCheckFill>
+                    </NavIcon>
+                    <NavText style={{ color: "black" }}>
+                        Viajes Finalizados
                     </NavText>
                 </NavItem>
             </SideNav.Nav>

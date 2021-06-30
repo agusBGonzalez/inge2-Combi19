@@ -39,14 +39,19 @@ function UsuarioGoldDatosPage() {
     const [msgSucc, setMsgSucc] = useState (null)
  
 
-//    //ALERT
-//    const [showAlert, setShowAlert] = useState(false);
-//    const handleCloseAlert = () => {setShowAlert(false); setMsgError(null);}
-//    const [msgError, setMsgError] = useState (null)
+   //MODAL PARA CANCELAR SUSCRIPCION
+    const [esCancelarSuscripcion, setEsCancelarSuscripcion] = useState(false)
+    const handleCloseCancelar = () => setEsCancelarSuscripcion(false)
+
+    //MODAL PARA CARGAR SUSCRIPCION
+    const [esCargarSuscripcion, setEsCargarSuscripcion] = useState(false)
+    const handleCloseCargar = () => setEsCargarSuscripcion(false)
+
+
 
 
     useEffect( () =>{
-        //getUsuarioConfig()
+        getUsuarioConfig()
 
         auth.onAuthStateChanged( (user) => {
            if(user){
@@ -131,7 +136,7 @@ function UsuarioGoldDatosPage() {
         const numAnioTarj = Number(cortoAnioFecTarjeta)
 
         // LO DEJO POR EL PROBLEMA QUE TUVO AGUS EN LA DEMO
-        const diaHoyNumb = 15
+        
         const mesHoyNumb = 6
         const anioHoyNumb = 2021
 
@@ -148,20 +153,29 @@ function UsuarioGoldDatosPage() {
             fechaNac: usuario.fechaNac,
             email: usuario.email,
             tipo: "usuario",
-            esGold: usuario.esGold,
+            esGold: true,
             tarjetaNum: numTarjeta,
             tarjetaCod: codTarjeta,
             tarjetaVen: fechaTarjeta,
             idUser: usuario.idUser,
             password:usuario.password
         }
+        
+        // BUSCO EL ID DE LA PERSONA EN usuariosConfig
+        const idUsuarioActualizar = usuarios.find((itemUser) => {
+            return itemUser.idUser === usuario.idUser
+        })
+
+        console.log(idUsuarioActualizar.id)
 
         try{
             
-            await store.collection('usuariosConfig').doc(idUser).set(editUser)
+            await store.collection('usuariosConfig').doc(idUsuarioActualizar.id).set(editUser)
             getUsuarioConfig()
             setMsgSucc('Actualizacion Exitosa! Click aqui para cerrar')
             setShowAlertSucc(true)
+            setShowGoldInfo(true)
+            setEsCargarSuscripcion(false)
 
         }catch(e){
             setMsgError('Uups! Hubo un problema al actualizar los datos en el sistema')
@@ -169,6 +183,91 @@ function UsuarioGoldDatosPage() {
             console.log(e)
         }    
 
+    }
+
+    const adherirSuscripcion = async (e) => {
+        setEsCargarSuscripcion(true)
+    }
+
+    const cancelarSuscripcion = async (e) => {
+        handleCloseCancelar()
+        e.preventDefault();
+
+        if (!numTarjeta.trim() || (numTarjeta.trim().length < 16)){
+            setMsgError('Debe ingresar los 16 números de su tarjeta para crear un usuario Gold')
+            setShowAlert(true)
+            return
+        }
+
+        if (!codTarjeta.trim() || (codTarjeta.trim().length < 3)){
+            setMsgError('Debe ingresar el código de seguridad de la tarjeta, deben ser al menos 3 caracteres')
+            setShowAlert(true)
+            return
+        }
+
+        if (!fechaTarjeta.trim()){
+            setMsgError('Debe ingresar la fecha de vencimiento de su tarjeta')
+            setShowAlert(true)
+            return
+        }
+
+        //VALIDACION DE FECHA DE LA TARJETA
+        const cortoAnioFecTarjeta = fechaTarjeta.substr(0, fechaTarjeta.indexOf('-'))
+        const cortoMesFecTarjeta = fechaTarjeta.substring(fechaTarjeta.indexOf('-') +1 ,fechaTarjeta.length)                
+
+        const numMesTarj = Number(cortoMesFecTarjeta)
+        const numAnioTarj = Number(cortoAnioFecTarjeta)
+
+        // LO DEJO POR EL PROBLEMA QUE TUVO AGUS EN LA DEMO
+        
+        const mesHoyNumb = 6
+        const anioHoyNumb = 2021
+
+        if((anioHoyNumb > numAnioTarj) || ((mesHoyNumb > numMesTarj) && (anioHoyNumb === numAnioTarj)) ) {
+            setMsgError('La fecha de vencimiento de su tarjeta ya no es válida para poder realizar la operación')
+            setShowAlert(true)
+            return
+
+        }
+
+        const editUser = {
+            nombres: usuario.nombres,
+            apellido: usuario.apellido,
+            fechaNac: usuario.fechaNac,
+            email: usuario.email,
+            tipo: "usuario",
+            esGold: false,
+            tarjetaNum: '',
+            tarjetaCod: '',
+            tarjetaVen: '',
+            idUser: usuario.idUser,
+            password:usuario.password
+        }
+        
+        // BUSCO EL ID DE LA PERSONA EN usuariosConfig
+        const idUsuarioActualizar = usuarios.find((itemUser) => {
+            return itemUser.idUser === usuario.idUser
+        })
+
+        console.log(idUsuarioActualizar.id)
+
+        try{
+            
+            await store.collection('usuariosConfig').doc(idUsuarioActualizar.id).set(editUser)
+            getUsuarioConfig()
+            setMsgSucc('Actualizacion Exitosa! Click aqui para cerrar')
+            setShowAlertSucc(true)
+            setShowGoldInfo(false)
+            setEsCargarSuscripcion(false)
+            setNumTarjeta('')
+            setCodTarjeta('')
+            setFechaTarjeta('')
+
+        }catch(e){
+            setMsgError('Uups! Hubo un problema al actualizar los datos en el sistema')
+            setShowAlert(true)
+            console.log(e)
+        }
     }
 
 
@@ -180,12 +279,29 @@ function UsuarioGoldDatosPage() {
                 <h3 style={{top: 110, position: 'absolute', left: 80,width: "60%",}}> Datos Gold</h3>
                 <button className="btn btn-dark btn-block" type = "submit">Actualizar</button>
                 { showGoldInfo ?
-                <Button style={{top: 105, position: 'absolute', right:170, width: "200px", height: "40px"}} variant="warning" onClick={confirmarEdicion} > Actualizar Datos Gold </Button>
+                <div>
+                    <Button style={{top: 105, position: 'absolute', right:270, width: "180px", height: "40px"}} variant="warning" onClick={confirmarEdicion} > Actualizar Datos Gold </Button>
+                    <Button style={{top: 105, position: 'absolute', right:70, width: "170px", height: "40px"}} variant="dark" onClick={(e) =>{setEsCancelarSuscripcion(true)}} > Cancelar suscripción </Button>
+                </div>
                 :
-                <Button variant="warning" style={{top: 105, position: 'absolute', right:170, width: "200px", height: "40px"}} disabled> Adherirme a suscripción</Button>
+                <></>
+                }
+                { !showGoldInfo && !esCargarSuscripcion ?
+                    <Button variant="warning" style={{top: 105, position: 'absolute', right:170, width: "200px", height: "40px"}} onClick={adherirSuscripcion} > Adherirme a suscripción</Button>
+                    :
+                    <></>
+
+                }
+                { esCargarSuscripcion ?
+                    <div>
+                        <Button style={{top: 105, position: 'absolute', right:270, width: "180px", height: "40px"}} variant="warning" onClick={confirmarEdicion} > Registrar Datos Gold </Button>
+                        <Button style={{top: 105, position: 'absolute', right:70, width: "170px", height: "40px"}} variant="dark" onClick={(e) =>{setEsCargarSuscripcion(false);setNumTarjeta('');setCodTarjeta('');setFechaTarjeta('')}} > Cancelar adhesion </Button>
+                    </div>
+                    :
+                    <></>
                 }
                 <div style={subPageStyle}>
-                    { showGoldInfo ?
+                    { (showGoldInfo || esCargarSuscripcion) ?
                         <div className = "col" > 
                             <form className = "form-group" >
                                 <label>Número de Tarjeta:* </label>
@@ -249,6 +365,29 @@ function UsuarioGoldDatosPage() {
                 </div>
                 
             </div>
+
+            {
+            esCancelarSuscripcion ?
+            (
+                <Modal id="modalEditar" show={esCancelarSuscripcion} onHide={handleCloseCancelar}>
+                    <Modal.Header >
+                        <Modal.Title>¿Está seguro de querer cancelar su suscripción?</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Footer>
+                        <Button variant="primary" onClick={cancelarSuscripcion}>
+                            Confirmar
+                        </Button>
+                        <Button variant="secondary" onClick={() => {setEsCancelarSuscripcion(false);}}>
+                            Cancelar
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            ) : (
+                <></>
+            )
+                            
+        }
+
         </div>
     );
   }

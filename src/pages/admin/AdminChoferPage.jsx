@@ -2,7 +2,7 @@
   import MenuUsuarioAdmin from '../../components/menus/MenuUsuarioAdmin'
   import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
   import {Table, Modal, Button, Alert} from 'react-bootstrap'
-  import { store } from '../../firebaseconf'
+  import { store, auth } from '../../firebaseconf'
   import { TrashFill, PencilFill} from 'react-bootstrap-icons';
   
   
@@ -269,8 +269,55 @@
   
           } else {
               try{
+                    auth.createUserWithEmailAndPassword(email,password)
+                        .then( async (userCredential) => {
+                            
+                            const nuevoUser = {
+                                nombres: nombres,
+                                apellido: apellido,
+                                fechaNac: '',
+                                email: email,
+                                tipo: "chofer",
+                                esGold: false,
+                                tarjetaNum: '',
+                                tarjetaCod: '',
+                                tarjetaVen: '',
+                                idUser: userCredential.user.uid,
+                                password:password
+                            }
+
+                            
+                            try{
+                                await store.collection('choferes').add(choferAct)
+                                getChoferes()
+
+                            }catch(e){
+                                setMsgError('Uups! Hubo un problema al registrar el usuario en el sistema')
+                                setShowModal(true)
+                                console.log(e)
+                            }
+                            
+                        })
+                        .catch (err => {
+                            console.log(err)
+                            if(err.code === 'auth/invalid-email'){
+                                setMsgError('Formato de Email incorrecto')
+                                setShowModal(true)
+                            }
+                    
+                            if(err.code === 'auth/weak-password'){
+                                setMsgError('La password debe tener 6 caracteres o más')
+                                setShowModal(true)
+                            }
+                            if(err.code === 'auth/email-already-in-use'){
+                                setMsgError('El email que ingresó ya se encuentra registrado')
+                                setShowModal(true)
+                            }
+                            
+                            console.log(err)
+                        })
                   //FALTA MOSTRAR MSJ DE SUCESS
-                  await store.collection('choferes').add(choferAct)
+                  
                   getChoferes()
                   setMsgSucc('Registro Exitoso! Click aqui para cerrar')
                   setShowAlertSucc(true)

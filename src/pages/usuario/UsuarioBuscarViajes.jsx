@@ -4,7 +4,7 @@ import MenuOpcUsuario from '../../components/menus/MenuOpcUsuario'
 import { Table, Modal, Button, Alert } from 'react-bootstrap'
 import { store } from '../../firebaseconf'
 import { FileEarmarkSlidesFill } from 'react-bootstrap-icons'
-import { Link, useHistory} from 'react-router-dom'
+import { useHistory} from 'react-router-dom'
 
 
 
@@ -23,15 +23,9 @@ function UsuarioBuscarViajes() {
     //NO BORRAR --> NECESARIO PARA PASAR DE PANTALLAS
     const historial = useHistory()
 
-    //MODAL ELIMINAR
-    const [sitioEliminar, setSitioEliminar] = useState('');
-
     //ALERT ERROR
     const [showAlert, setShowAlert] = useState(false);
     const handleCloseAlert = () => setShowAlert(false);
-
-    const [showAlert2, setShowAlert2] = useState(false);
-    const handleCloseAlert2 = () => setShowAlert2(false);
 
     const [msgError, setMsgError] = useState(null)
 
@@ -68,15 +62,8 @@ function UsuarioBuscarViajes() {
     const [idDestino, setIdDestino] = useState('')
 
 
-
-
-    const [butacaDisponible, setButacaDisponible] = useState('')
-    const [precio, setPrecio] = useState('')
-
     // select
-    const [rutaSelect, setRutaSelect] = useState([])
     const [sitioSelect, setSitioSelect] = useState([])
-    const [combiSelect, setCombiSelect] = useState([])
     var hoy = new Date().toLocaleDateString()
 
 
@@ -95,133 +82,135 @@ function UsuarioBuscarViajes() {
             })
     }
 
-    const getViajesFiltrados = () => {
-        store.collection('buscarViajes').get()
-            .then(response => {
-                const fetchedViajes = [];
-                response.docs.forEach(document => {
-                    const fetchedViaje = {
-                        id: document.id,
-                        ...document.data()
-                    };
-                    fetchedViajes.push(fetchedViaje)
-                });
-                setViajesFiltrados(fetchedViajes)
+    // const getViajesFiltrados = () => {
+    //     store.collection('buscarViajes').get()
+    //         .then(response => {
+    //             const fetchedViajes = [];
+    //             response.docs.forEach(document => {
+    //                 const fetchedViaje = {
+    //                     id: document.id,
+    //                     ...document.data()
+    //                 };
+    //                 fetchedViajes.push(fetchedViaje)
+    //             });
+    //             setViajesFiltrados(fetchedViajes)
 
-            })
-    }
+    //         })
+    // }
 
-    const getCombis = () => {
-        store.collection('combi').get()
-            .then(response => {
-                const fetchedCombis = [];
-                response.docs.forEach(document => {
-                    const fetchedCombi = {
-                        id: document.id,
-                        ...document.data()
-                    };
-                    fetchedCombis.push(fetchedCombi)
-                });
-                setCombi(fetchedCombis)
-            })
-    }
+    // const getCombis = () => {
+    //     store.collection('combi').get()
+    //         .then(response => {
+    //             const fetchedCombis = [];
+    //             response.docs.forEach(document => {
+    //                 const fetchedCombi = {
+    //                     id: document.id,
+    //                     ...document.data()
+    //                 };
+    //                 fetchedCombis.push(fetchedCombi)
+    //             });
+    //             setCombi(fetchedCombis)
+    //         })
+    // }
 
-    const getRutas = () => {
-        store.collection('rutasZaca').get()
-            .then(response => {
-                const fetchedCombis = [];
-                response.docs.forEach(document => {
-                    const fetchedCombi = {
-                        id: document.id,
-                        ...document.data()
-                    };
-                    fetchedCombis.push(fetchedCombi)
-                });
-                setRuta(fetchedCombis)
-            })
-    }
+    // const getRutas = () => {
+    //     store.collection('rutasZaca').get()
+    //         .then(response => {
+    //             const fetchedCombis = [];
+    //             response.docs.forEach(document => {
+    //                 const fetchedCombi = {
+    //                     id: document.id,
+    //                     ...document.data()
+    //                 };
+    //                 fetchedCombis.push(fetchedCombi)
+    //             });
+    //             setRuta(fetchedCombis)
+    //         })
+    // }
     useEffect(() => {
-        const datosSitios = async () => {
+        const datosViajes = async () => {
             const { docs } = await store.collection('sitios').get()
             const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
             setSitioSelect(nuevoArray)
-            const v = await store.collection('viaje').get()
-            const viajesArray = v.docs.map(item => ({ id: item.id, ...item.data() }))
-            setViajes(viajesArray)
-            const r = await store.collection('rutasZaca').get()
-            const rutaArray = r.docs.map(item => ({ id: item.id, ...item.data() }))
-            setRuta(rutaArray)
-            getCombis()
-            getRutas()
+            
+            // const v = await store.collection('viaje').get()
+            // const viajesArray = v.docs.map(item => ({ id: item.id, ...item.data() }))
+            // setViajes(viajesArray)
+            // const r = await store.collection('rutasZaca').get()
+            // const rutaArray = r.docs.map(item => ({ id: item.id, ...item.data() }))
+            // setRuta(rutaArray)
+            // getCombis()
+            // getRutas()
+            getViajes()
         }
 
-        store.collection('buscarViajes').get()
-            .then(response => {
-                const fetchedViajes = [];
-                response.docs.forEach(document => {
-                    const fetchedViaje = {
-                        id: document.id,
-                        ...document.data()
-                    };
-                    fetchedViajes.push(fetchedViaje)
-                });
-                setViajesFiltrados(fetchedViajes)
+        // store.collection('buscarViajes').get()
+        //     .then(response => {
+        //         const fetchedViajes = [];
+        //         response.docs.forEach(document => {
+        //             const fetchedViaje = {
+        //                 id: document.id,
+        //                 ...document.data()
+        //             };
+        //             fetchedViajes.push(fetchedViaje)
+        //         });
+        //         setViajesFiltrados(fetchedViajes)
 
-            })
-            .catch(error => {
-                setMsgError(error)
-                setShowAlert(true)
-            });
-        datosSitios()
+        //     })
+        //     .catch(error => {
+        //         setMsgError(error)
+        //         setShowAlert(true)
+        //     });
+            datosViajes()
     }, []);
 
-        async function deleteCollection(db, collectionPath, batchSize) {
-            const collectionRef = db.collection(collectionPath);
-            const query = collectionRef.orderBy('__name__').limit(batchSize);
+        // async function deleteCollection(db, collectionPath, batchSize) {
+        //     const collectionRef = db.collection(collectionPath);
+        //     const query = collectionRef.orderBy('__name__').limit(batchSize);
 
-            return new Promise((resolve, reject) => {
-                deleteQueryBatch(db, query, resolve).catch(reject);
-            });
-        }
+        //     return new Promise((resolve, reject) => {
+        //         deleteQueryBatch(db, query, resolve).catch(reject);
+        //     });
+        // }
 
-        async function deleteQueryBatch(db, query, resolve) {
-            const snapshot = await query.get();
+        // async function deleteQueryBatch(db, query, resolve) {
+        //     const snapshot = await query.get();
 
-            const batchSize = snapshot.size;
-            if (batchSize === 0) {
-                // When there are no documents left, we are done
-                resolve();
-                return;
-            }
+        //     const batchSize = snapshot.size;
+        //     if (batchSize === 0) {
+        //         // When there are no documents left, we are done
+        //         resolve();
+        //         return;
+        //     }
 
-            // Delete documents in a batch
-            const batch = db.batch();
-            snapshot.docs.forEach((doc) => {
-                batch.delete(doc.ref);
-            });
-            await batch.commit();
+        //     // Delete documents in a batch
+        //     const batch = db.batch();
+        //     snapshot.docs.forEach((doc) => {
+        //         batch.delete(doc.ref);
+        //     });
+        //     await batch.commit();
 
-            // Recurse on the next process tick, to avoid
-            // exploding the stack.
-            process.nextTick(() => {
-                deleteQueryBatch(db, query, resolve);
-            });
+        //     // Recurse on the next process tick, to avoid
+        //     // exploding the stack.
+        //     process.nextTick(() => {
+        //         deleteQueryBatch(db, query, resolve);
+        //     });
 
-        }
+        // }
 
   
-    const buscarIdRuta =  (idruta) => {
-        console.log("id ruta" , idruta)
-        ruta.map(r=>{
-            console.log("map")
-            if(r.id === idruta ){
-                console.log(r)
-            }
-        })
-    }
+    // const buscarIdRuta =  (idruta) => {
+    //     console.log("id ruta" , idruta)
+    //     ruta.map(r=>{
+    //         console.log("map")
+    //         if(r.id === idruta ){
+    //             console.log(r)
+    //         }
+    //     })
+    // }
     
     const confirmarBusqueda = async () => {
-        deleteCollection(store, 'buscarViajes', 10);
+        // deleteCollection(store, 'buscarViajes', 10);
         let fecha2
         let dia = 1
         let aux
@@ -268,54 +257,61 @@ function UsuarioBuscarViajes() {
             return sitioDst.id === idDestino
         })
 
-        let gRutas = []
-        ruta.map(r=>{
-            if((r.idOrigen === sitioOrigen.id ) && (r.idDestino === sitioDest.id)){
-                gRutas.push(r)
-            }
-        }) 
+        // let gRutas = []
+        // ruta.map(r=>{
+        //     if((r.idOrigen === sitioOrigen.id ) && (r.idDestino === sitioDest.id)){
+        //         gRutas.push(r)
+        //     }
+        // }) 
 
-        console.log(gRutas)
+        // console.log(gRutas)
 
 
-        viajes.map( v => {
-            console.log(" map")
-            gRutas.forEach(element =>{
-                console.log(" foreach")
-                console.log(v.idRuta)
-                console.log(element.id)
-                if(v.idRuta === element.id){
-                    console.log("antes fecha")
-                    if (v.fechaviaje === fecha) {
-                        console.log("entro en === fecha")
-                        combi.map(c => {
+        // viajes.map( v => {
+        //     console.log(" map")
+        //     gRutas.forEach(element =>{
+        //         console.log(" foreach")
+        //         console.log(v.idRuta)
+        //         console.log(element.id)
+        //         if(v.idRuta === element.id){
+        //             console.log("antes fecha")
+        //             if (v.fechaviaje === fecha) {
+        //                 console.log("entro en === fecha")
+        //                 combi.map(c => {
                             
-                            if (c.id === v.idCombi) {
-                                combiViaje = c
-                            }
-                        })
-                        console.log(v.butacaDisponible)
-                        if (v.butacaDisponible >= 1 ) {
-                            const agregarViaje = {
-                                origen: sitioOrigen.provincia + " - "+sitioOrigen.ciudad,
-                                destino: sitioDest.provincia+ " - "+sitioDest.ciudad,
-                                fecha: fecha,
-                                horario: element.horario,
-                                tipoCombi: combiViaje.tipocombi,
-                                precio: v.precio,
-                                butacas: v.butacaDisponible
-                            }
-                            console.log(agregarViaje)
-                            store.collection('buscarViajes').add(agregarViaje)
-                        }                      
-                    }
-                } 
-            });
+        //                     if (c.id === v.idCombi) {
+        //                         combiViaje = c
+        //                     }
+        //                 })
+        //                 console.log(v.butacaDisponible)
+        //                 if (v.butacaDisponible >= 1 ) {
+        //                     const agregarViaje = {
+        //                         origen: sitioOrigen.provincia + " - "+sitioOrigen.ciudad,
+        //                         destino: sitioDest.provincia+ " - "+sitioDest.ciudad,
+        //                         fecha: fecha,
+        //                         horario: element.horario,
+        //                         tipoCombi: combiViaje.tipocombi,
+        //                         precio: v.precio,
+        //                         butacas: v.butacaDisponible
+        //                     }
+        //                     console.log(agregarViaje)
+        //                     store.collection('buscarViajes').add(agregarViaje)
+        //                 }                      
+        //             }
+        //         } 
+        //     });
 
-        })
+        // })
+        const viajesConFiltro = viajes.filter( (viaje) => 
+            viaje.butacaDisponible >= 1 && viaje.fechaviaje === fecha && viaje.datosRuta.idOrigen === sitioOrigen.id && viaje.datosRuta.idDestino === sitioDest.id
+        )
+
+        console.log(viajesConFiltro)
+
+        setViajesFiltrados(viajesConFiltro)
         try {
             //FALTA MOSTRAR MSJ DE SUCESS
-            getViajesFiltrados()
+            // getViajesFiltrados()
             setShowModalEdit(false)
         } catch (err) {
             console.log(err)
@@ -329,9 +325,10 @@ function UsuarioBuscarViajes() {
         setShowModalEdit(true)
     }
 
-    const comprar = () => {
+    const comprar = (id) => {
         //TE LLEVA A COMPRAR -- NO BORRAR
-        historial.push('/comprarPasaje')
+        console.log(id)
+        historial.push('/comprarPasaje', { idViaje: id })
     }
 
     const buscarIdOrigen = (id) => {
@@ -375,14 +372,14 @@ function UsuarioBuscarViajes() {
                                             <tr key={item.id}>
                                                 <td>{item.origen}</td>
                                                 <td>{item.destino}</td>
-                                                <td>{item.fecha}</td>
-                                                <td>{item.horario}</td>
-                                                <td>{item.tipoCombi}</td>
+                                                <td>{item.fechaviaje}</td>
+                                                <td>{item.datosRuta.horario}</td>
+                                                <td>{item.datosCombi.tipocombi}</td>
                                                 <td>{item.precio}</td>
-                                                <td>{item.butacas}</td>
+                                                <td>{item.butacaDisponible}</td>
                                                 <td style={{ width: "12%" }} >
                                                     <div className="d-flex justify-content-around">
-                                                        <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { comprar() }}>
+                                                        <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { comprar(item.id) }}>
                                                             <FileEarmarkSlidesFill color="white"></FileEarmarkSlidesFill>
                                                         </button>
                                                     </div>

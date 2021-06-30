@@ -3,7 +3,7 @@ import MenuUsuarioAdmin from '../../components/menus/MenuUsuarioAdmin'
 import MenuOpcAdmin from '../../components/menus/MenuOpcAdmin'
 import {Table, Modal, Button, Alert} from 'react-bootstrap'
 import { store } from '../../firebaseconf'
-import { TrashFill, PencilFill, CloudHazeFill} from 'react-bootstrap-icons';
+import { TrashFill, PencilFill} from 'react-bootstrap-icons';
 
 
 function AdminViajePage() {
@@ -246,6 +246,11 @@ function AdminViajePage() {
             
         })
 
+        // ME GUARDO TODOS LOS DATOS DE LA RUTA ELEGIDA EN EL SELECT
+        const datosRuta = rutaSelect.find((item) => {
+            return item.id === rutas
+        })
+
         if (esEditar) {
             if (auxiliar.fechaviaje !== fecha) {
                 viajes.map (itemviaje =>{
@@ -291,7 +296,9 @@ function AdminViajePage() {
             precio:precio,
             destino:destino_seleccionado,
             origen:origen_seleccinado,
-            estado:'Pendiente'
+            estado:'Pendiente',
+            datosRuta: datosRuta,
+            datosCombi : datosCombi
         }
         if (esEditar){
             try{

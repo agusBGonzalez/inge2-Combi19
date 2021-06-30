@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import MenuUsuarioChofer from '../../components/menus/MenuUsuarioChofer'
 import MenuOpcChofer from '../../components/menus/MenuOpcChofer'
-import { Table, Modal, Button, Alert } from 'react-bootstrap'
 import { store, auth } from '../../firebaseconf'
 
 
@@ -58,30 +57,15 @@ function ChoferPageVerDetalleCombi() {
     const [anio, setAnio] = useState('')
     const [cantButa, setCantButa] = useState('')
     const [tipo, setTipo] = useState('')
+    const [tieneCombiAsignada, setTieneCombiAsignada] = useState(false)
 
     const [idUsuarioLogueado, setIdUsuarioLogueado] = useState('')
     const [userConfig, setUserConfig] = useState([])
 
     const [usuario, setUsuario] = useState('')
-    const [esAdmin, setEsAdmin] = useState(false)
-    const [esUsuarioLog, setEsUsuarioLog] = useState(false)
 
 
 
-    const getViajes = () => {
-        store.collection('viaje').get()
-            .then(response => {
-                const fetchedViajes = [];
-                response.docs.forEach(document => {
-                    const fetchedViaje = {
-                        id: document.id,
-                        ...document.data()
-                    };
-                    fetchedViajes.push(fetchedViaje)
-                });
-                setViajes(fetchedViajes)
-            })
-    }
     const getCombis = () => {
         store.collection('combi').get()
             .then(response => {
@@ -113,23 +97,11 @@ function ChoferPageVerDetalleCombi() {
             })
         }
 
-        
-        getViajes()
         getCombis()
         datos()
 
         // no tocar hasta la demo
-        store.collection('viaje').get()
-            .then(response => {
-                const fetchedViajes = [];
-                response.docs.forEach(document => {
-                    const fetchedViaje = {
-                        id: document.id,
-                        ...document.data()
-                    };
-                    fetchedViajes.push(fetchedViaje)
-
-                    store.collection('combi').get()
+        store.collection('combi').get()
                         .then(response => {
                             const fetchedCombis = [];
                             response.docs.forEach(document => {
@@ -139,96 +111,41 @@ function ChoferPageVerDetalleCombi() {
                                 };
                                 fetchedCombis.push(fetchedCombi)
 
-                                fetchedViajes.map(v=>{
-                                    fetchedCombis.map(c=>{
-                                        auth.onAuthStateChanged((user) => {
-                                            if (user) {
-                                                console.log(user.uid)
-                                                if (v.idCombi === c.id){
-                                                    console.log("pregunta222")
-                                                    if(c.idChofer === user.uid){
-                                                        setCombi(c)
-                                                        setPatente(c.patente)
-                                                        setMarca(c.marca)
-                                                        setModelo(c.modelo)
-                                                        setAnio(c.año)
-                                                        setCantButa(c.butaca)
-                                                        setTipo(c.tipocombi)
-                                                        console.log("pregunta")
-                                                    }
-                                                }
+                                fetchedCombis.map(c=>{
+                                    auth.onAuthStateChanged((user) => {
+                                        if (user) {
+                                            if ( c.idChofer === user.uid){
+                                                setTieneCombiAsignada(true)
+                                                setCombi(c)
+                                                setPatente(c.patente)
+                                                setMarca(c.marca)
+                                                setModelo(c.modelo)
+                                                setAnio(c.año)
+                                                setCantButa(c.butaca)
+                                                setTipo(c.tipocombi)
                                             }
-                                        })
-                                        
+                                        }
                                     })
+                                    
                                 })
-
                             });
                         
                     })
-                });
-                
-        })
         // no tocar
-
-        
-       
-
-        store.collection('viajeChofer').get()
-            .then(response => {
-                const fetchedViajes = [];
-                response.docs.forEach(document => {
-                    const fetchedViaje = {
-                        id: document.id,
-                        ...document.data()
-                    };
-                    fetchedViajes.push(fetchedViaje)
-                });
-            })
-            .catch(error => {
-                setMsgError(error)
-                setShowAlert(true)
-            });
 
     }, []);
 
 
-    const confirmarFiltro = () => {
-        getViajes()
-        getCombis()
-        console.log(idUsuarioLogueado)
-        // recorro los viajes
-        // console.log("antes del primer map")
-        viajes.map(v=>{
-
-            combis.map(c=>{
-                if (v.idCombi === c.id){
-                    console.log(c.idChofer)
-                    if(c.idChofer === idUsuarioLogueado){
-                        setCombi(c)
-                    }
-                }
-            })
-            
-            
-        })
-        try {
-            //FALTA MOSTRAR MSJ DE SUCESS
-            setShowModalFiltar(false)
-        } catch (err) {
-            console.log(err)
-            setMsgError(err)
-            setShowAlert(true)
-        }
-    }
-
     return (
         <div>
-            <MenuUsuarioChofer />
+            <MenuUsuarioChofer/>
             <MenuOpcChofer optionName="choferMiCombi" />
             <div>
                 <h3 style={{ top: 110, position: 'absolute', left: 80, width: "60%", }}> Detalles de Mi Combi</h3>
                 <div style={subPageStyle}>
+                {
+                tieneCombiAsignada ?
+                
                     <form className='form-group'>
                         <p>Patente:</p>
                         <input
@@ -284,7 +201,17 @@ function ChoferPageVerDetalleCombi() {
                         />
 
                     </form>
-                </div>
+                :
+                <div>
+                    <br/>
+                    <br/>
+                    <h5>Uups algo salió mal!</h5>
+                    <label> Aún no contamos con la información de su combi! 
+                        Aquí podrá ver los detalles de la misma, una vez que se le asigne una nueva. En caso de error comunicarse con el Administrador, muchas gracias! 
+                    </label>
+                </div> 
+                }
+                </div>   
             </div>
         </div>
 
