@@ -66,24 +66,26 @@ function ChoferPageListarViaje() {
 
     const historial = useHistory()
 
-    const comenzarViaje = () => {
+    const comenzarViaje = (item) => {
 
-        historial.push('/listaPasajeros', { idViaje: viajesFiltrados })
+        historial.push('/listaPasajeros', { idViaje: item })
     }
-    // const getChoferes =  () => {
-    //     store.collection('choferes').get()
-    //     .then(response => {
-    //         const fetchedChoferes = [];
-    //         response.docs.forEach(document => {
-    //         const fetchedChofer = {
-    //             id: document.id,
-    //             ...document.data()
-    //         };
-    //         fetchedChoferes.push(fetchedChofer)
-    //         });
-    //         setChoferes(fetchedChoferes)
-    //     })
-    // }  
+
+    const getChoferes =  () => {
+        store.collection('choferes').get()
+        .then(response => {
+            const fetchedChoferes = [];
+            response.docs.forEach(document => {
+            const fetchedChofer = {
+                id: document.id,
+                ...document.data()
+            };
+            fetchedChoferes.push(fetchedChofer)
+            });
+            setChoferes(fetchedChoferes)
+        })
+    }  
+
     const getViajes = () => {
         store.collection('viaje').get()
             .then(response => {
@@ -98,36 +100,10 @@ function ChoferPageListarViaje() {
                 setViajes(fetchedViajes)
             })
     }
-    const getCombis = () => {
-        store.collection('combi').get()
-            .then(response => {
-                const fetchedCombis = [];
-                response.docs.forEach(document => {
-                    const fetchedCombi = {
-                        id: document.id,
-                        ...document.data()
-                    };
-                    fetchedCombis.push(fetchedCombi)
-                });
-                setCombis(fetchedCombis)
-            })
-    }
-    const getViajesFiltrados = () => {
-        store.collection('viajeChofer').get()
-            .then(response => {
-                const fetchedViajes = [];
-                response.docs.forEach(document => {
-                    const fetchedViaje = {
-                        id: document.id,
-                        ...document.data()
-                    };
-                    fetchedViajes.push(fetchedViaje)
-                });
-                setViajesFiltrados(fetchedViajes)
-            })
-    }
 
     useEffect(() => {
+        getViajes()
+        getChoferes()
         const datos = async () => {
             const { docs } = await store.collection('usuariosConfig').get()
             const userArray = docs.map(item => ({ id: item.id, ...item.data() }))
@@ -141,26 +117,7 @@ function ChoferPageListarViaje() {
             }
         })
 
-
-
-
         datos()
-        store.collection('viajeChofer').get()
-            .then(response => {
-                const fetchedViajes = [];
-                response.docs.forEach(document => {
-                    const fetchedViaje = {
-                        id: document.id,
-                        ...document.data()
-                    };
-                    fetchedViajes.push(fetchedViaje)
-                });
-                setViajesFiltrados(fetchedViajes)
-            })
-            .catch(error => {
-                setMsgError(error)
-                setShowAlert(true)
-            });
 
     }, []);
 
@@ -168,22 +125,9 @@ function ChoferPageListarViaje() {
     const filtarViajes = () => {
         setShowModalFiltar(true)
     }
-    // let idUsuarioChofer
-    // const cumpleUsuario = () => {
-    //     userConfig.map(user => {
-    //         if (user.idUser === idUsuarioLogueado) {
-    //             choferes.map(c => {
-    //                 if (c.email === user.email) {
-    //                     idUsuarioChofer = c.id
-    //                 }
-    //             })
-    //         }
-    //     })
-    // }
 
     const confirmarFiltro = () => {
-        getViajes()
-        getCombis()
+
         console.log(idUsuarioLogueado)
         // recorro los viajes
         let combi
@@ -191,25 +135,33 @@ function ChoferPageListarViaje() {
             return idUsuarioLogueado === id.idUser
         })
 
+        const choferActual = choferes.find((chofer) => {
+            return idUsuarioLogueado === chofer.idUser
+        })
+
+        let viajesFiltroChofer = []
+        let idRandom = 0
         viajes.map(v => {
-            if (v.datosCombi.idChofer === usuarioActual.id) {
+            if (v.datosCombi.idChofer === choferActual.id) {
                 const agregarViaje = {
+                    id: idRandom,
                     origen: v.origen,
                     destino: v.destino,
                     fecha: v.fechaviaje,
                     estadoViaje: v.estado,
                     infoViaje: v
                 }
-                console.log(agregarViaje)
-                store.collection('viajeChofer').add(agregarViaje)
+
+                viajesFiltroChofer.push(agregarViaje);
             }
+            idRandom = idRandom + 1
 
         })
-        getViajesFiltrados()
+
+        setViajesFiltrados(viajesFiltroChofer)
         console.log(viajesFiltrados)
         try {
             //FALTA MOSTRAR MSJ DE SUCESS
-            getViajesFiltrados()
             setShowModalFiltar(false)
         } catch (err) {
             console.log(err)
@@ -259,7 +211,7 @@ function ChoferPageListarViaje() {
                                                         <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { }}>
                                                             Ver detalle de viaje
                                                         </button>
-                                                        <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => {comenzarViaje() }}>
+                                                        <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => {comenzarViaje(item) }}>
                                                             Comenzar Viaje
                                                         </button>
                                                     </div>

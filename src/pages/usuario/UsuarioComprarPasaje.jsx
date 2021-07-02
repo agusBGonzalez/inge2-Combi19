@@ -607,7 +607,13 @@ function UsuarioComprarPasaje() {
                             <Card.Body style={{ backgroundColor: "#FFFFFF"}}>
                                 <form style={{ left: "40px", width:"100%"}}>
                                     <div className="form-group row">
-                                        <label className="col-sm-10 col-form-label"><b>Total a pagar:</b> $ {totalSnackPagar + totalPasajePagar} </label>
+                                        <label className="col-sm-10 col-form-label"><b>Total a pagar:</b> $ {showGoldInfo ? (totalSnackPagar + totalPasajePagar) * 0.9 : totalSnackPagar + totalPasajePagar} </label>
+                                        {
+                                            showGoldInfo ? 
+                                            <label disabled={showGoldInfo} className="col-sm-10 col-form-label"><b>Por ser GOLD tiene un 10% de descuento en el viaje y sus productos</b></label>
+                                            :
+                                            <></>
+                                        }
                                     </div>
                                     <hr></hr>
                                     <br/>

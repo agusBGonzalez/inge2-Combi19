@@ -61,6 +61,7 @@
       const [email, setEmail] = useState('')
       const [telefono, setTelefono] = useState('')
       const [password, setPassword] = useState('')
+      const [idUser, setIdUser] = useState('')
       
       
 
@@ -184,6 +185,7 @@
               setEmail(item.email)
               setTelefono(item.telefono)
               setPassword(item.password)
+              setIdUser(item.idUser)
 
           } else {
               setEsEditar(false)
@@ -194,6 +196,7 @@
               setEmail('')
               setTelefono('')
               setPassword('')
+              setIdUser('')
           }
           setShowModalEdit(true)
       }
@@ -250,7 +253,8 @@
             dni: dni,
             email: email,
             telefono: telefono,
-            password: password
+            password: password,
+            idUser: idUser
           }
           
           if (esEditar){
@@ -286,6 +290,15 @@
                                 password:password
                             }
 
+                            const choferAct = {
+                                nombres: nombres,
+                                apellido: apellido,
+                                dni: dni,
+                                email: email,
+                                telefono: telefono,
+                                password: password,
+                                idUser: userCredential.user.uid
+                              }
                             
                             try{
                                 await store.collection('choferes').add(choferAct)
