@@ -130,10 +130,6 @@ function ChoferPageListarViaje() {
 
         console.log(idUsuarioLogueado)
         // recorro los viajes
-        let combi
-        const usuarioActual = userConfig.find((id) => {
-            return idUsuarioLogueado === id.idUser
-        })
 
         const choferActual = choferes.find((chofer) => {
             return idUsuarioLogueado === chofer.idUser
