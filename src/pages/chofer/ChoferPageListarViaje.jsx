@@ -64,21 +64,26 @@ function ChoferPageListarViaje() {
     const [esAdmin, setEsAdmin] = useState(false)
     const [esUsuarioLog, setEsUsuarioLog] = useState(false)
 
+    const historial = useHistory()
 
-    const getChoferes =  () => {
-        store.collection('choferes').get()
-        .then(response => {
-            const fetchedChoferes = [];
-            response.docs.forEach(document => {
-            const fetchedChofer = {
-                id: document.id,
-                ...document.data()
-            };
-            fetchedChoferes.push(fetchedChofer)
-            });
-            setChoferes(fetchedChoferes)
-        })
-    }  
+    const comenzarViaje = () => {
+
+        historial.push('/listaPasajeros', { idViaje: viajesFiltrados })
+    }
+    // const getChoferes =  () => {
+    //     store.collection('choferes').get()
+    //     .then(response => {
+    //         const fetchedChoferes = [];
+    //         response.docs.forEach(document => {
+    //         const fetchedChofer = {
+    //             id: document.id,
+    //             ...document.data()
+    //         };
+    //         fetchedChoferes.push(fetchedChofer)
+    //         });
+    //         setChoferes(fetchedChoferes)
+    //     })
+    // }  
     const getViajes = () => {
         store.collection('viaje').get()
             .then(response => {
@@ -166,11 +171,11 @@ function ChoferPageListarViaje() {
     let idUsuarioChofer
     const cumpleUsuario = () => {
         getChoferes()
-        userConfig.map (user => {
-            if(user.idUser === idUsuarioLogueado){
-                choferes.map (c => {
-                    if(c.email === user.email){
-                        idUsuarioChofer=c.id
+        userConfig.map(user => {
+            if (user.idUser === idUsuarioLogueado) {
+                choferes.map(c => {
+                    if (c.email === user.email) {
+                        idUsuarioChofer = c.id
                     }
                 })
             }
@@ -183,23 +188,23 @@ function ChoferPageListarViaje() {
         console.log(idUsuarioLogueado)
         // recorro los viajes
         let combi
-        cumpleUsuario()
-        viajes.map(v=>{
-            combis.map(c=>{
-                if (v.idCombi === c.id){
-                    if(c.idChofer === idUsuarioChofer){
-                        console.log("agregar")
-                        const agregarViaje = {
-                            origen: v.origen,
-                            destino: v.destino,
-                            fecha: v.fechaviaje,
-                            estadoViaje: v.estado
-                        }
-                        console.log(agregarViaje)
-                        store.collection('viajeChofer').add(agregarViaje)
-                    }
+        const usuarioActual = userConfig.find((id) => {
+            return idUsuarioLogueado === id.idUser
+        })
+
+        viajes.map(v => {
+            if (v.datosCombi.idChofer === usuarioActual.id) {
+                const agregarViaje = {
+                    origen: v.origen,
+                    destino: v.destino,
+                    fecha: v.fechaviaje,
+                    estadoViaje: v.estado,
+                    infoViaje: v
                 }
-            })           
+                console.log(agregarViaje)
+                store.collection('viajeChofer').add(agregarViaje)
+            }
+
         })
         getViajesFiltrados()
         console.log(viajesFiltrados)
@@ -220,7 +225,7 @@ function ChoferPageListarViaje() {
             <MenuOpcChofer optionName="choferListarViaje" />
             <div>
                 <h3 style={{ top: 110, position: 'absolute', left: 80, width: "60%", }}> Listado de mis Viajes</h3>
-                <Button style={{ top: 105, position: 'absolute', right: 70, width: "200px", height: "40px" }} onClick={(e) => { filtarViajes() }} variant="secondary " > + Agregar Producto</Button>
+                <Button style={{ top: 105, position: 'absolute', right: 70, width: "200px", height: "40px" }} onClick={(e) => { filtarViajes() }} variant="secondary " >filtrar viajes</Button>
 
                 <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{ bottom: 0, zIndex: 5, position: 'absolute', left: 75, width: "60%" }} >
                     {msgSucc}
