@@ -444,7 +444,8 @@ function UsuarioComprarPasaje() {
             tieneSnackComprados: tieneSnackComprado,
             snackComprados: snacksPasaje,
             estadoPasaje: "Pendiente",
-            idPasajero: usuario.id
+            idPasajero: usuario.id,
+            infoPasajero: usuario
         }
         //DESCOMENTAR PARA VER LOS DATOS DEL PASAJE POR REGISTRAR
         console.log(ventaPasaje)
