@@ -3,7 +3,7 @@ import MenuUsuarioChofer from '../../components/menus/MenuUsuarioChofer'
 import MenuOpcChofer from '../../components/menus/MenuOpcChofer'
 import { Table, Modal, Button, Alert } from 'react-bootstrap'
 import { store, auth } from '../../firebaseconf'
-
+import { useHistory} from 'react-router-dom'
 import { TrashFill, PencilFill } from 'react-bootstrap-icons';
 
 
@@ -168,19 +168,18 @@ function ChoferPageListarViaje() {
     const filtarViajes = () => {
         setShowModalFiltar(true)
     }
-    let idUsuarioChofer
-    const cumpleUsuario = () => {
-        getChoferes()
-        userConfig.map(user => {
-            if (user.idUser === idUsuarioLogueado) {
-                choferes.map(c => {
-                    if (c.email === user.email) {
-                        idUsuarioChofer = c.id
-                    }
-                })
-            }
-        })
-    }
+    // let idUsuarioChofer
+    // const cumpleUsuario = () => {
+    //     userConfig.map(user => {
+    //         if (user.idUser === idUsuarioLogueado) {
+    //             choferes.map(c => {
+    //                 if (c.email === user.email) {
+    //                     idUsuarioChofer = c.id
+    //                 }
+    //             })
+    //         }
+    //     })
+    // }
 
     const confirmarFiltro = () => {
         getViajes()
@@ -259,6 +258,9 @@ function ChoferPageListarViaje() {
                                                     <div className="d-flex justify-content-around">
                                                         <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { }}>
                                                             Ver detalle de viaje
+                                                        </button>
+                                                        <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => {comenzarViaje() }}>
+                                                            Comenzar Viaje
                                                         </button>
                                                     </div>
                                                 </td>
