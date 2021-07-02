@@ -289,6 +289,7 @@
                             
                             try{
                                 await store.collection('choferes').add(choferAct)
+                                await store.collection('usuariosConfig').add(nuevoUser)
                                 getChoferes()
 
                             }catch(e){
