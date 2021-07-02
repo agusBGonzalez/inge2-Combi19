@@ -50,19 +50,35 @@ function ChoferPageListarViaje() {
 
     // colecciones de firebase
     const [viajes, setViajes] = useState([])
+    const [choferes, setChoferes] = useState([])
+
     const [combis, setCombis] = useState([])
+    const [userConfig, setUserConfig] = useState([]) // lo uso para detectar que la id del logeado sea igual que idUsuario de algun elemento
+
 
     const [viajesFiltrados, setViajesFiltrados] = useState([])
 
     const [idUsuarioLogueado, setIdUsuarioLogueado] = useState('')
-    const [userConfig, setUserConfig] = useState([])
 
     const [usuario, setUsuario] = useState('')
     const [esAdmin, setEsAdmin] = useState(false)
     const [esUsuarioLog, setEsUsuarioLog] = useState(false)
 
 
-
+    const getChoferes =  () => {
+        store.collection('choferes').get()
+        .then(response => {
+            const fetchedChoferes = [];
+            response.docs.forEach(document => {
+            const fetchedChofer = {
+                id: document.id,
+                ...document.data()
+            };
+            fetchedChoferes.push(fetchedChofer)
+            });
+            setChoferes(fetchedChoferes)
+        })
+    }  
     const getViajes = () => {
         store.collection('viaje').get()
             .then(response => {
@@ -105,11 +121,6 @@ function ChoferPageListarViaje() {
                 setViajesFiltrados(fetchedViajes)
             })
     }
-    const detectarCombi = (id) => {
-
-    }
-
-
 
     useEffect(() => {
         const datos = async () => {
@@ -152,6 +163,19 @@ function ChoferPageListarViaje() {
     const filtarViajes = () => {
         setShowModalFiltar(true)
     }
+    let idUsuarioChofer
+    const cumpleUsuario = () => {
+        getChoferes()
+        userConfig.map (user => {
+            if(user.idUser === idUsuarioLogueado){
+                choferes.map (c => {
+                    if(c.email === user.email){
+                        idUsuarioChofer=c.id
+                    }
+                })
+            }
+        })
+    }
 
     const confirmarFiltro = () => {
         getViajes()
@@ -159,23 +183,23 @@ function ChoferPageListarViaje() {
         console.log(idUsuarioLogueado)
         // recorro los viajes
         let combi
+        cumpleUsuario()
         viajes.map(v=>{
-
             combis.map(c=>{
                 if (v.idCombi === c.id){
-                    if(c.idChofer === idUsuarioLogueado){
+                    if(c.idChofer === idUsuarioChofer){
+                        console.log("agregar")
                         const agregarViaje = {
                             origen: v.origen,
                             destino: v.destino,
-                            fecha: v.fechaviaje
+                            fecha: v.fechaviaje,
+                            estadoViaje: v.estado
                         }
                         console.log(agregarViaje)
                         store.collection('viajeChofer').add(agregarViaje)
                     }
                 }
-            })
-            
-            
+            })           
         })
         getViajesFiltrados()
         console.log(viajesFiltrados)
@@ -211,7 +235,7 @@ function ChoferPageListarViaje() {
                                 <th>Origen</th>
                                 <th>Destino</th>
                                 <th>Fecha</th>
-                                <th>Estado</th>
+                                <th>estadoViaje</th>
                                 <th>Acciones</th>
 
                             </tr>
@@ -225,16 +249,11 @@ function ChoferPageListarViaje() {
                                                 <td>{item.origen}</td>
                                                 <td>{item.destino}</td>
                                                 <td>{item.fecha}</td>
-                                                <td>{item.estado}</td>
+                                                <td>{item.estadoViaje}</td>
                                                 <td style={{ width: "30%" }} >
                                                     <div className="d-flex justify-content-around">
                                                         <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { }}>
-                                                        
                                                             Ver detalle de viaje
-                                                        </button>
-                                                        <button style={{ left:"5px" }} className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { }}>
-                                                            
-                                                            Comenzar viaje
                                                         </button>
                                                     </div>
                                                 </td>
