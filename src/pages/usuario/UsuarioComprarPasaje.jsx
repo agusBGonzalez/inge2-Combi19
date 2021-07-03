@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import MenuUsuario from '../../components/menus/MenuUsuario'
 import MenuOpcUsuario from '../../components/menus/MenuOpcUsuario'
-import { Table, Modal, Button, Alert, Accordion, Card, Form, Spinner} from 'react-bootstrap'
+import { Table, Modal, Button, Alert, Accordion, Card, Form} from 'react-bootstrap'
 import { TrashFill, PencilFill} from 'react-bootstrap-icons';
 import { store, auth } from '../../firebaseconf'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -447,8 +447,19 @@ function UsuarioComprarPasaje() {
             idPasajero: usuario.id,
             infoPasajero: usuario
         }
+
+        const ventaPasajeCliente = {
+            idViaje: viajeCompra.id,
+            totalPagado: totalPasajePagar + totalSnackPagar,
+            cantidadButacas: cantPasajesComprarViaje,
+            tieneSnackComprados: tieneSnackComprado,
+            snackComprados: snacksPasaje,
+            estadoPasaje: "Pendiente",
+            idPasajero: usuario.id,
+            infoPasajero: usuario
+        }
         //DESCOMENTAR PARA VER LOS DATOS DEL PASAJE POR REGISTRAR
-        console.log(ventaPasaje)
+        // console.log(ventaPasaje)
         try{
             // ME TRAIGO EL VIAJE ORIGINAL PARA RESTARLE LAS BUTACAS QUE VOY A VENDER
             let viajeParaActualizar = viajes.find((itemViaje) => {
@@ -460,6 +471,8 @@ function UsuarioComprarPasaje() {
             await store.collection('viaje').doc(ventaPasaje.idViaje).set(viajeParaActualizar)
 
             await store.collection('pasajeViajeVendido').add(ventaPasaje)
+
+            await store.collection('pasajeComprados').add(ventaPasajeCliente)
                     
             setShowModalExito(true)
 
@@ -484,7 +497,7 @@ function UsuarioComprarPasaje() {
             <MenuUsuario />
             <MenuOpcUsuario optionName="filtrarViajes" />
             <div>
-                <h3 style={{ top: 110, position: 'absolute', left: 380, width: "60%" }}> Compra de Pasajes</h3>
+                <h3 style={{ top: 110, position: 'absolute', left: 380, width: "60%" }}> Información de Compra de Pasajes</h3>
                 <Button style={{ top: 105, position: 'absolute', left: 80, width: "80px", height: "35px", fontSize: 14, justifyContent: 'center' }} onClick={(e) => { volverAtras() }} variant="secondary " > Volver</Button>
                 <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{ bottom: 0, zIndex: 5, position: 'absolute', left: 75, width: "60%" }} >
                     {msgSucc}
@@ -496,7 +509,7 @@ function UsuarioComprarPasaje() {
                     <Accordion defaultActiveKey= "0">
                         <Card className="card-accordion">
                             <Accordion.Toggle as={Card.Header} eventKey="0">
-                                Datos de pasajes
+                                Compra de pasajes
                             </Accordion.Toggle>
                             <Accordion.Collapse eventKey="0" >
                                 <Card.Body style={{ backgroundColor: "#FFFFFF"}}>
