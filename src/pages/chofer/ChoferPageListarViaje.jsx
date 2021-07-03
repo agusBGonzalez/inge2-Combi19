@@ -138,19 +138,22 @@ function ChoferPageListarViaje() {
         let viajesFiltroChofer = []
         let idRandom = 0
         viajes.map(v => {
-            if (v.datosCombi.idChofer === choferActual.id) {
-                const agregarViaje = {
-                    id: idRandom,
-                    origen: v.origen,
-                    destino: v.destino,
-                    fecha: v.fechaviaje,
-                    estadoViaje: v.estado,
-                    infoViaje: v
+            if((v.estado === estado) || (estado === "Todos")){
+                if (v.datosCombi.idChofer === choferActual.id) {
+                    const agregarViaje = {
+                        id: idRandom,
+                        origen: v.origen,
+                        destino: v.destino,
+                        fecha: v.fechaviaje,
+                        estadoViaje: v.estado,
+                        infoViaje: v
+                    }
+    
+                    viajesFiltroChofer.push(agregarViaje);
                 }
-
-                viajesFiltroChofer.push(agregarViaje);
+                idRandom = idRandom + 1
             }
-            idRandom = idRandom + 1
+            
 
         })
 
@@ -239,16 +242,13 @@ function ChoferPageListarViaje() {
                                         value={estado} onChange={(e) => { setEstado(e.target.value) }}
                                         className="form-control form-select-lg mt-3" aria-label=".form-select-lg example">
                                         <option disabled="disabled" value="">Seleccione Tipo</option>
-                                        <option value="todos">Todos</option>
-                                        <option value="finalizado">Finalizado</option>
-                                        <option value="pendiente">Pendiente</option>
+                                        <option value="Todos">Todos</option>
+                                        <option value="Finalizado">Finalizado</option>
+                                        <option value="Pendiente">Pendiente</option>
+                                        <option value="Cancelado">Cancelado</option>
                                     </select>
 
                                 </form>
-
-
-
-
                                 <Alert className="mt-4" variant="danger" show={showAlert}>
                                     {msgError}
                                 </Alert>
