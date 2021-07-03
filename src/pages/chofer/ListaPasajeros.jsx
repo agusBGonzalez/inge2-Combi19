@@ -199,6 +199,7 @@ const ListaPasajeros = () => {
         }
         const estaTildadoDolorGarganta = (check) => {
             setCheckDolorGarganta(check)
+            
             if(check){
                 setCantidadSintomas(cantSintomas+1)
             }
