@@ -450,6 +450,7 @@ function UsuarioComprarPasaje() {
 
         const ventaPasajeCliente = {
             idViaje: viajeCompra.id,
+            infoViaje: infoViajeCompra,
             totalPagado: totalPasajePagar + totalSnackPagar,
             cantidadButacas: cantPasajesComprarViaje,
             tieneSnackComprados: tieneSnackComprado,
