@@ -45,17 +45,12 @@ function UsuarioViajesComprados() {
     const handleCloseEdit = () => setShowModalEdit(false)
 
     const [pasajesComprados, setPasajesComprados] = useState([])
-    const [productos, setProductos] = useState([])
     const [origen, setOrigen] = useState('')
     const [destino, setDestino] = useState('')
     const [fecha, setFecha] = useState('')
     const [cantidadPasajes, setCantPasajes] = useState('')
     const [viaje,setViaje] = useState('')
 
-    //Usuario logueado
-    const [esUsuarioLog,setEsUsuarioLog] = useState(false)
-    const [idUsuarioLogueado,setIdUsuarioLogueado] = useState('')
-    const [usuario,setUsuario] = useState ('')
 
     // select
     var hoy = new Date().toLocaleDateString()
@@ -109,26 +104,18 @@ function UsuarioViajesComprados() {
            
 
     }, []);
-    const verDetalle = (itemOrigen, itemDestino, itemFecha, itemCantidadPasajes, itemProductos) => {
-        setOrigen("Provincia: " + itemOrigen.provincia + " Ciudad: " + itemOrigen.ciudad)
-        setDestino("Provincia: " + itemDestino.provincia + " Ciudad: " + itemDestino.ciudad)
+    const verDetalle = (itemOrigen, itemDestino, itemFecha, itemCantidadPasajes) => {
+        setOrigen("Origen: " + itemOrigen)
+        setDestino("Destino: " + itemDestino)
         setFecha(itemFecha)
         setCantPasajes(itemCantidadPasajes)
-        store.collection('prodComprados').get()
-            .then(response => {
-                const fetchedViajes = [];
-                response.docs.forEach(document => {
-                    const fetchedViaje = {
-                        id: document.id,
-                        ...document.data()
-                    };
-                    fetchedViajes.push(fetchedViaje)
-                });
-                setProductos(fetchedViajes)
-            })
         setShowModalEdit(true)
     }
 
+    const cancelarPasaje = (itemPasaje)=>{
+        console.log(itemPasaje)
+    }
+    
 
     return (
         <div>
@@ -150,7 +137,7 @@ function UsuarioViajesComprados() {
                                 <th>Destino</th>
                                 <th>Fecha</th>
                                 <th>Estado</th>
-                                <th>Accinones</th>
+                                <th>Acciones</th>
 
                             </tr>
                         </thead>
@@ -165,10 +152,13 @@ function UsuarioViajesComprados() {
                                                 <td>{item.infoViaje.destino}</td>
                                                 <td>{item.infoViaje.fechaviaje}</td>
                                                 <td>{item.estadoPasaje}</td>
-                                                <td style={{ width: "12%" }} >
+                                                <td style={{ width: "15%" }} >
                                                     <div className="d-flex justify-content-around">
-                                                        <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { verDetalle(item.origen, item.destino, item.fecha, item.cantidadPasajes, item.productos) }}>
+                                                        <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { verDetalle(item.infoViaje.origen, item.infoViaje.destino, item.infoViaje.fechaviaje, item.cantidadButacas) }}>
                                                             <PencilFill color="white"></PencilFill>
+                                                        </button>
+                                                        <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(e) => {cancelarPasaje(item)}}>
+                                                            Cancelar Pasaje
                                                         </button>
                                                     </div>
                                                 </td>
