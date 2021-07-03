@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import MenuUsuario from '../../components/menus/MenuUsuario'
 import MenuOpcUsuario from '../../components/menus/MenuOpcUsuario'
 import { Table, Modal, Button, Alert } from 'react-bootstrap'
-import { store } from '../../firebaseconf'
+import { store,auth } from '../../firebaseconf'
 import { TrashFill, PencilFill } from 'react-bootstrap-icons';
 
 
@@ -50,15 +50,19 @@ function UsuarioViajesComprados() {
     const [destino, setDestino] = useState('')
     const [fecha, setFecha] = useState('')
     const [cantidadPasajes, setCantPasajes] = useState('')
+    const [viaje,setViaje] = useState('')
 
-
+    //Usuario logueado
+    const [esUsuarioLog,setEsUsuarioLog] = useState(false)
+    const [idUsuarioLogueado,setIdUsuarioLogueado] = useState('')
+    const [usuario,setUsuario] = useState ('')
 
     // select
     var hoy = new Date().toLocaleDateString()
 
 
     const getViajes = () => {
-        store.collection('pasajesComprados').get()
+        store.collection('viaje').get()
             .then(response => {
                 const fetchedViajes = [];
                 response.docs.forEach(document => {
@@ -68,11 +72,11 @@ function UsuarioViajesComprados() {
                     };
                     fetchedViajes.push(fetchedViaje)
                 });
-                setPasajesComprados(fetchedViajes)
+                setViaje(fetchedViajes)
             })
     }
     useEffect(() => {
-        store.collection('pasajesComprados').get()
+        store.collection('pasajeComprados').get()
             .then(response => {
                 const fetchedViajes = [];
                 response.docs.forEach(document => {
@@ -83,7 +87,27 @@ function UsuarioViajesComprados() {
                     fetchedViajes.push(fetchedViaje)
                 });
                 setPasajesComprados(fetchedViajes)
+                console.log(fetchedViajes)
+                auth.onAuthStateChanged( (user) => {
+                    let userPasaje = fetchedViajes.filter((item) => item.infoPasajero.idUser === user.uid)
+                    setPasajesComprados(userPasaje)
+                    console.log(userPasaje)
+                 })
             })
+            store.collection('viaje').get()
+            .then(response => {
+                const fetchedViajes = [];
+                response.docs.forEach(document => {
+                    const fetchedViaje = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedViajes.push(fetchedViaje)
+                });
+                setViaje(fetchedViajes)
+            })
+           
+
     }, []);
     const verDetalle = (itemOrigen, itemDestino, itemFecha, itemCantidadPasajes, itemProductos) => {
         setOrigen("Provincia: " + itemOrigen.provincia + " Ciudad: " + itemOrigen.ciudad)
@@ -137,10 +161,10 @@ function UsuarioViajesComprados() {
                                         pasajesComprados.map(item => (
                                             <tr key={item.id}>
 
-                                                <td>{item.origen.provincia}{' - '}{item.origen.ciudad}</td>
-                                                <td>{item.origen.provincia}{' - '}{item.destino.ciudad}</td>
-                                                <td>{item.fecha}</td>
-                                                <td>{item.estado}</td>
+                                                <td>{item.infoViaje.origen}</td>
+                                                <td>{item.infoViaje.destino}</td>
+                                                <td>{item.infoViaje.fechaviaje}</td>
+                                                <td>{item.estadoPasaje}</td>
                                                 <td style={{ width: "12%" }} >
                                                     <div className="d-flex justify-content-around">
                                                         <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { verDetalle(item.origen, item.destino, item.fecha, item.cantidadPasajes, item.productos) }}>
