@@ -29,10 +29,10 @@ const ListaPasajeros = () => {
         console.log('que tiene info', pasajeVendido)
     }
 
-    const registrarDatosCovid = (item) => {
+    // const registrarDatosCovid = (item) => {
 
-        historialCovid.push('/registrarDatosCovid', { idPasajero: item, viaje: datosViaje })
-    }
+    //     historialCovid.push('/registrarDatosCovid', { idPasajero: item , viaje:datosViaje})
+    // }
     //MODAL ELIMINAR
     const [showModal, setShowModal] = useState(false);
 
@@ -75,16 +75,22 @@ const ListaPasajeros = () => {
     const [infoCliente, setInfoCliente] = useState({})
     const [idSnack, setIdSnack] = useState('')
     const [infoSnack, setInfoSnack] = useState({})
+    const [infoViaje, setInfoViaje] = useState([{}])
 
-    // const recorrer = (item)=>{
-    //     console.log('entro al recorrer')
-    //     snack.map(s => {
-    //         if(s.idPasajero === item.idPasajero){
-    //             setNombreProducto(s.infoSnack.nombre)
-    //             setCantidadProducto(s.infoSnack.cantidad)
-    //         }
-    //     })
-    // }
+    //modal
+    const [showModalRegistrarDatosCovid, setShowModalRegistrarDatosCovid] = useState(false)
+    const handleCloseRegistrarDatosCovid = () => showModalRegistrarDatosCovid(false)
+
+    const registrarDatosCovid = () => {
+        setShowModalRegistrarDatosCovid(true)
+    }
+    // controlar covid
+    const [temp, setTemp] = useState('')
+    const [checkGustoOlfato, setCheckGustoOlfato] = useState(false)
+    const [checkTemperatura, setCheckTemperatura] = useState(false)
+    const [checkDificultadResp, setCheckDificultadResp] = useState(false)
+    const [checkDolorGarganta, setCheckDolorGarganta] = useState(false)
+    const [cantSintomas, setCantidadSintomas] = useState(0)
 
 
     useEffect(() => {
@@ -98,6 +104,9 @@ const ListaPasajeros = () => {
                 infoPasajero:'',
 
             }
+            // const info = pasajeArray.find((pasaje) => {
+            //     return datosViaje.infoViaje.id === pasaje.idViaje
+            // })
             pasajeArray.map(pasaje => {
                 if (datosViaje.infoViaje.id === pasaje.idViaje) {
                     arregloPasaje.push(pasaje)
@@ -128,26 +137,76 @@ const ListaPasajeros = () => {
 
 
 
-    const estaTildado = (check, item) => {
-        setCheck(check)
-        const repetidoAusente = ausente.find(elemento => elemento === item.id)
-        console.log('por aca pasa')
-        if (repetidoAusente === undefined && check) {
-            console.log('entre')
-            ausente.push(item)
-        } else {
-            if (!check) {
-                ausente.pop()
+
+        const estaTildado = (check, item) => {
+            setCheck(check)
+            const repetidoAusente = ausente.find(elemento => elemento === item.id)
+            console.log('por aca pasa')
+            if (repetidoAusente === undefined && check) {
+                console.log('entre')
+                ausente.push(item)
+            } else {
+                if (!check) {
+                    ausente.pop()
+                }
+            }
+            console.log('Cantidad en el arreglo', ausente.length)
+
+        }
+
+        
+        const mostrar = () => {
+            console.log('Pasaje Vendido', pasajeVendido)
+            console.log('Viaje Elegido', datosViaje)
+            console.log('Snack de pasajes',snack)
+        }
+
+            console.log(datosViaje)
+        }
+        //control datos covid
+        const confirmarDatosCovid = () => {
+            if (temp >= 38) {
+                console.log("es mayor")
+            }
+            else {
+                console.log(" temperatura alta por 1 semana ", checkTemperatura)
+                console.log(" perdida del gusto ", checkGustoOlfato)
+                console.log(" dificultad respiratoria", checkDificultadResp)
+                console.log("dolorGarganta ", checkDolorGarganta)
+                console.log(cantSintomas)
+                if(cantSintomas > 1 ) {
+                    console.log("No puede viajar")
+                }
             }
         }
-        console.log('Cantidad en el arreglo', ausente.length)
+        const estaTildadoTemperatura = (check) => {
+            setCheckTemperatura(check)
+            if(check){
+                setCantidadSintomas(cantSintomas+1)
+            }
+            console.log(cantSintomas)
+    
 
-    }
-    const mostrar = () => {
-        console.log('Pasaje Vendido', pasajeVendido)
-        console.log('Viaje Elegido', datosViaje)
-        console.log('Snack de pasajes',snack)
-    }
+        }
+        const estaTildadoGustoOlfato = (check) => {
+            setCheckGustoOlfato(check)
+            if(check){
+                setCantidadSintomas(cantSintomas+1)
+            }
+
+        }
+        const estaTildadoDificultadRespitaroria = (check) => {
+            setCheckDificultadResp(check)
+            if(check){
+                setCantidadSintomas(cantSintomas+1)
+            }
+        }
+        const estaTildadoDolorGarganta = (check) => {
+            setCheckDolorGarganta(check)
+            if(check){
+                setCantidadSintomas(cantSintomas+1)
+            }
+        }
 
     return (
         <div>
@@ -165,7 +224,7 @@ const ListaPasajeros = () => {
                     ausente.length === persona.length ?
                         (
                             <div>
-                                <Button variant="secondary" style={{ top: 105, position: 'absolute', right: 360, width: "150px", height: "40px" }} variant="danger " onClick={(e) => { mostrar() }}>Finalizar Viaje</Button>
+                                <Button variant="secondary" style={{ top: 105, position: 'absolute', right: 360, width: "150px", height: "40px" }} variant="danger " >Finalizar Viaje</Button>
                             </div>
                         ) :
                         (<></>)
@@ -206,6 +265,7 @@ const ListaPasajeros = () => {
                                         <hr></hr>
                                         
                                     </form>
+
                                 </Card.Body>
                             </Accordion.Collapse>
                         </Card>
@@ -299,6 +359,7 @@ const ListaPasajeros = () => {
                                         </tbody>
                                     </Table>
                                 </Card.Body>
+                                <Card.Body>Hello! I'm another body</Card.Body>
                             </Accordion.Collapse>
                         </Card>
                     </Accordion>
@@ -306,9 +367,74 @@ const ListaPasajeros = () => {
                 </div>
             </div>
 
+            {
+                showModalRegistrarDatosCovid ? (
+                    <Modal id="registrsrDatosCovid" show={showModalRegistrarDatosCovid} onHide={handleCloseRegistrarDatosCovid}>
+                        <Modal.Header >
+                            <Modal.Title>Registrar Sintomas</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <form className='form-group'>
+                                <input onChange={(e) => { setTemp(e.target.value) }}
+                                    onClick={handleCloseAlert}
+                                    className='form-control mt-5'
+                                    type="number"
+                                    placeholder='temperatura'
+                                    id="temperatura"
+                                    value={temp}
+                                />
+                                <br></br>
+                                <Table striped bordered hover variant="secondary" className="animate__animated animate__slideInUp" >
+                                    <thead>
+                                        <tr>
+                                            <th>Sintomas</th>
+                                            <th>Si</th>
+                                            <th>No</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody >
+                                        <tr>
+                                            <th><label for="fiebreUltimaSemana">Tuvo fiebre la ultima semana</label></th>
+                                            <th><input type="checkbox" defaultChecked={checkTemperatura} onClick={(e) => estaTildadoTemperatura(e.target.checked)} /> </th>
+                                            <th><input type="checkbox" name="fiebreUltimaSemana" value="no" /></th>
+                                        </tr>
+                                        <tr>
+                                            <th><label for="gustoOlfato">Tiente perdida del olfato y/o gusto</label></th>
+                                            <th><input type="checkbox" defaultChecked={checkGustoOlfato} onClick={(e) => estaTildadoGustoOlfato(e.target.checked)} /></th>
+                                            <th><input type="checkbox" name="gustoOlfato" value="no" /></th>
+                                        </tr>
+                                        <tr>
+                                            <th>Posee dificultades respiratorias</th>
+                                            <th><input type="checkbox" defaultChecked={checkDificultadResp} onClick={(e) => estaTildadoDificultadRespitaroria(e.target.checked)} /></th>
+                                            <th><input type="checkbox" name="gustoOlfato" value="no" /></th>
+                                        </tr>
+                                        <tr>
+                                            <th><label for="dolorGarganta">Posee dolor de garganta</label></th>
+                                            <th><input type="checkbox" defaultChecked={checkDolorGarganta} onClick={(e) => estaTildadoDolorGarganta(e.target.checked)} /></th>
+                                            <th><input type="checkbox" name="dolorGarganta" value="no" /></th>
+                                        </tr>
+                                    </tbody>
+                                </Table>
+                            </form>
+                            <Alert className="mt-4" variant="danger" show={showAlert}>
+                                {msgError}
+                            </Alert>
+                        </Modal.Body>
+
+                        <Modal.Footer>
+                            <Button variant="primary" onClick={() => { confirmarDatosCovid() }} >
+                                Confirmar
+                            </Button>
+                            <Button variant="secondary" onClick={() => { setShowModalRegistrarDatosCovid(false); setMsgError(null); setShowAlert(false); }}>
+                                Cancelar
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+                ) : (<></>)
+            }
         </div>
 
     );
 }
 
-export default ListaPasajeros
+export default ListaPasajeros;
