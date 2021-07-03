@@ -3,7 +3,6 @@ import MenuUsuarioChofer from '../../components/menus/MenuUsuarioChofer'
 import MenuOpcChofer from '../../components/menus/MenuOpcChofer'
 import { Table, Modal, Button, Alert } from 'react-bootstrap'
 import { store } from '../../firebaseconf'
-import { TrashFill, PencilFill, Check } from 'react-bootstrap-icons';
 import Accordion from 'react-bootstrap/Accordion'
 import { Card } from 'react-bootstrap'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -159,9 +158,6 @@ const ListaPasajeros = () => {
             console.log('Pasaje Vendido', pasajeVendido)
             console.log('Viaje Elegido', datosViaje)
             console.log('Snack de pasajes',snack)
-        }
-
-            console.log(datosViaje)
         }
         //control datos covid
         const confirmarDatosCovid = () => {
