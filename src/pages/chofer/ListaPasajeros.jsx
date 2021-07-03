@@ -57,11 +57,10 @@ const ListaPasajeros = () => {
 
 
     const handleCloseEdit = () => setShowModalEdit(false)
-    const [persona, setPersona] = useState([])
+    
     const [check, setCheck] = useState(false)
     const [ausente, setAusente] = useState([])
     const [pasajeVendido, setPasajeVendido] = useState([])
-    const [infoViaje, setInfoViaje] = useState([{}])
     const [snack, setSnack] = useState([])
     const [infoSnack, setInfoSnack] = useState({})
 
@@ -74,6 +73,7 @@ const ListaPasajeros = () => {
     const [cantSintomas, setCantidadSintomas] = useState(0)
     const [showModalRegistrarDatosCovid, setShowModalRegistrarDatosCovid] = useState(false)
     const handleCloseRegistrarDatosCovid = () => showModalRegistrarDatosCovid(false)
+    const [pasajero, setPasajero] = useState ('')
 
     useEffect(() => {
         const datos = async () => {
@@ -141,12 +141,15 @@ const ListaPasajeros = () => {
     }
 
     //control datos covid
-    const registrarDatosCovid = () => {
+    const registrarDatosCovid = (item) => {
+        setPasajero(item)
         setShowModalRegistrarDatosCovid(true)
     }
-    const confirmarDatosCovid = () => {
+    const confirmarDatosCovid = async () => {
+        let sospechoso= false
         if (temp >= 38) {
-            console.log("es mayor")
+            alert("El pasajero no podra viajar por tener fiebre, asi mismo se devolvera su dinero y no podra comprar pasajes por 14 dias")
+            sospechoso = true
         }
         else {
             console.log(" temperatura alta por 1 semana ", checkTemperatura)
@@ -155,8 +158,20 @@ const ListaPasajeros = () => {
             console.log("dolorGarganta ", checkDolorGarganta)
             console.log(cantSintomas)
             if (cantSintomas > 1) {
-                console.log("No puede viajar")
+                alert("El pasajero no podra viajar por tener mas de dos sintomas, asi mismo se devolvera su dinero y no podra comprar pasajes por 14 dias")
+                sospechoso= true
             }
+        }
+        if (sospechoso){
+            const pasajeroSospechoso = {
+                datos:pasajero
+            }
+                //FALTA MOSTRAR MSJ DE SUCESS
+                await store.collection('reporteSospechosos').add(pasajeroSospechoso)
+                //setMsgSucc('Registro Exitoso! Click aqui para cerrar')
+                //(true
+                showModalRegistrarDatosCovid(false)
+    
         }
     }
     const estaTildadoTemperatura = (check) => {
