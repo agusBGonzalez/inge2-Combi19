@@ -6,6 +6,7 @@ import React,{useState, useEffect} from 'react'
   import { TrashFill, PencilFill, Check} from 'react-bootstrap-icons';
   import Accordion from 'react-bootstrap/Accordion'
   import { Card } from 'react-bootstrap'
+  import { useHistory,useLocation} from 'react-router-dom'
   
 
 const ListaPasajeros = () => {
@@ -18,7 +19,20 @@ const ListaPasajeros = () => {
         overflowY: 'scroll'
         
     };
+    //PARA VOLVER AL LISTADO DE VIAJES DE UN CHOFER
+    const historial = useHistory()
+    const historialCovid = useHistory()
+    const location = useLocation()
+    const datosViaje = location.state.idViaje
+    const volverAtras = () => {
+        historial.push('/choferListarViaje')
+        console.log('que tiene info', pasajeVendido)
+    }
 
+    const registrarDatosCovid = (item) => {
+
+        historialCovid.push('/registrarDatosCovid', { idPasajero: item })
+    }
     //MODAL ELIMINAR
     const [showModal, setShowModal] = useState(false);
 
@@ -48,10 +62,33 @@ const ListaPasajeros = () => {
     
 
     const handleCloseEdit = () => setShowModalEdit(false)
-    const [persona,setPersona] = useState([{id:1,Apellido:'Agnelli', Nombre:'Nicolas',Dni:'35611095'},{id:2,Apellido:'Gonzalez', Nombre:'Viviana',Dni:'22567555'},{id:3,Apellido:'Perez', Nombre:'Cesar',Dni:'55213555'}])
+    const [persona,setPersona] = useState([])
     const [check,setCheck] = useState(false)
     const [ausente,setAusente] = useState([])
-    
+    const [pasajeVendido,setPasajeVendido] = useState([])
+    const [infoViaje,setInfoViaje] = useState([{}])
+
+    useEffect(() => {
+        const datos = async() =>{
+            const {docs} = await store.collection('pasajeViajeVendido').get()
+            const pasajeArray = docs.map( item => ({id:item.id, ...item.data()}))
+            // const info = pasajeArray.find((pasaje) => {
+            //     return datosViaje.infoViaje.id === pasaje.idViaje
+            // })
+            let arregloPasaje = []
+            pasajeArray.map(pasaje =>{
+                if(datosViaje.infoViaje.id === pasaje.idViaje){
+                    arregloPasaje.push(pasaje)
+                }
+            })
+            setPasajeVendido(arregloPasaje)
+            
+
+        }
+        
+        datos()
+        
+    },[]);
 
 
 
@@ -70,7 +107,9 @@ const ListaPasajeros = () => {
         console.log('Cantidad en el arreglo',ausente.length)
         
     }
-
+    const mostrar = ()=>{
+        console.log(pasajeVendido)
+    }
     return (
       <div>
         <MenuUsuarioChofer/>
@@ -78,8 +117,8 @@ const ListaPasajeros = () => {
         
         <div>
             
-            <h3 style={{top: 150, position: 'absolute', left: 80,width: "60%",}}> Listado de Pasajeros</h3>
-            <Button variant ="secondary" style={{top: 105, position: 'absolute', left: 80,width:"100px" , height: "40px"}}>Atras</Button>
+            <h3 style={{top: 150, position: 'absolute', left: 80,width: "60%",}}> Informacion del Viaje</h3>
+            <Button variant ="secondary" style={{top: 105, position: 'absolute', left: 80,width:"100px" , height: "40px"}} onClick={(e)=>{volverAtras()}}>Atras</Button>
             <Button variant ="primary" style={{top: 105, position: 'absolute', left: 400,width:"150px" , height: "40px"}}>Vender Pasaje</Button> 
             <Button style={{top: 105, position: 'absolute', right:70, width: "150px", height: "40px"}} variant="danger " >Cancelar Viaje</Button>
             {   
@@ -87,7 +126,7 @@ const ListaPasajeros = () => {
                 ausente.length === persona.length ?
                 (
                     <div>
-                        <Button variant ="secondary" style={{top: 105, position: 'absolute', right:360,width:"150px" , height: "40px"}}  variant="danger ">Finalizar Viaje</Button>   
+                        <Button variant ="secondary" style={{top: 105, position: 'absolute', right:360,width:"150px" , height: "40px"}}  variant="danger " onClick ={(e)=>{mostrar()}}>Finalizar Viaje</Button>   
                     </div>
                 ):
                 (<></>)
@@ -120,24 +159,28 @@ const ListaPasajeros = () => {
                                 <tr>
                                 <th>Apellido</th>
                                 <th>Nombres</th>
-                                <th>Dni</th>
+                                <th>Email</th>
+                                <th>Cant. Pasajes</th>
                                 <th>Resultado</th>
                                 <th>Covid-19</th>
                                 <th>Ausente</th>         
                                 </tr>
                             </thead>
                             <tbody >
+                                
                                 {
-                                    persona.length !== 0 ?
+                                    pasajeVendido.length !== 0 ?
                                         (
-                                        persona.map(item => (
+                                        pasajeVendido.map(item => (
+                                                
                                                 <tr key={item.id}>
-                                                    <td>{item.Apellido}</td>
-                                                    <td>{item.Nombre}</td>
-                                                    <td>{item.Dni}</td>
+                                                    <td>{item.infoPasajero.apellido}</td>
+                                                    <td>{item.infoPasajero.nombres}</td>
+                                                    <td>{item.infoPasajero.email}</td>
+                                                    <td>{item.cantidadButacas}</td>
                                                     <td>Pendiente</td>
                                                         <td style={{width:"15px"}}>
-                                                            <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center">
+                                                            <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e)=> registrarDatosCovid(e.target.checked,item)}>
                                                                 Sintomas
                                                             </button>
                                                         </td>
