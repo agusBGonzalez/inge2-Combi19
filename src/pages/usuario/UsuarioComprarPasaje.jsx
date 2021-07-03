@@ -385,8 +385,8 @@ function UsuarioComprarPasaje() {
             setShowAlertDanger(true)
             return
         }
-
-        if(cantPasajesComprarViaje > viajeCompra.butacaDisponible){
+        
+        if(parseInt(cantPasajesComprarViaje) > parseInt(viajeCompra.butacaDisponible)){
             setMsgDanger('La cantidad de pasajes ingresada es mayor a la cantidad de pasajes disponibles para la compra.')
             setShowAlertDanger(true)
             return
