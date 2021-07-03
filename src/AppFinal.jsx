@@ -21,6 +21,7 @@ import UsuarioComprarPasaje from './pages/usuario/UsuarioComprarPasaje';
 import ListaPasajeros from './pages/chofer/ListaPasajeros';
 import ChoferPageListarViaje from './pages/chofer/ChoferPageListarViaje';
 import ChoferPageVerDetalleCombi from './pages/chofer/ChoferPageVerDetalleCombi';
+import RegistrarDatosCovid from './pages/chofer/RegistrarDatosCovid'
 
 
 
@@ -56,6 +57,9 @@ function AppFinal() {
           <Route path='/listaPasajeros' component={ListaPasajeros}></Route>
           <Route path='/choferListarViaje' component={ChoferPageListarViaje}></Route>
           <Route path='/choferMiCombi' component={ChoferPageVerDetalleCombi}></Route>
+          <Route path='/registrarDatosCovid' component={RegistrarDatosCovid}></Route>
+
+          
 
 
         </Switch>
