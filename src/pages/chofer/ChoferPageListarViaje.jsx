@@ -41,7 +41,7 @@ function ChoferPageListarViaje() {
 
     //MODAL REGISTRAR / MODIFICAR
     const [showModalFiltar, setShowModalFiltar] = useState(false)
-    const handleCloseFlitrar = () => showModalFiltar(false)
+    const handleCloseFlitrar = () => setShowModalFiltar(false)
 
     const [estado, setEstado] = useState('')
 
