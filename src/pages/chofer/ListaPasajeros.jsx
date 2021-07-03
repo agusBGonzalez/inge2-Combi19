@@ -31,7 +31,7 @@ const ListaPasajeros = () => {
 
     const registrarDatosCovid = (item) => {
 
-        historialCovid.push('/registrarDatosCovid', { idPasajero: item })
+        historialCovid.push('/registrarDatosCovid', { idPasajero: item , viaje:datosViaje})
     }
     //MODAL ELIMINAR
     const [showModal, setShowModal] = useState(false);
@@ -108,7 +108,7 @@ const ListaPasajeros = () => {
         
     }
     const mostrar = ()=>{
-        console.log(pasajeVendido)
+        console.log(datosViaje)
     }
     return (
       <div>
@@ -180,7 +180,7 @@ const ListaPasajeros = () => {
                                                     <td>{item.cantidadButacas}</td>
                                                     <td>Pendiente</td>
                                                         <td style={{width:"15px"}}>
-                                                            <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e)=> registrarDatosCovid(e.target.checked,item)}>
+                                                            <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e)=> registrarDatosCovid(item)}>
                                                                 Sintomas
                                                             </button>
                                                         </td>
