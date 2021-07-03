@@ -3,6 +3,7 @@ import MenuUsuarioChofer from '../../components/menus/MenuUsuarioChofer'
 import MenuOpcChofer from '../../components/menus/MenuOpcChofer'
 import { Table, Modal, Button, Alert } from 'react-bootstrap'
 import { store } from '../../firebaseconf'
+import { TrashFill, PencilFill, Check } from 'react-bootstrap-icons';
 import Accordion from 'react-bootstrap/Accordion'
 import { Card } from 'react-bootstrap'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -20,7 +21,7 @@ const ListaPasajeros = () => {
     };
     //PARA VOLVER AL LISTADO DE VIAJES DE UN CHOFER
     const historial = useHistory()
-    const historialCovid = useHistory()
+
     const location = useLocation()
     const datosViaje = location.state.idViaje
     const volverAtras = () => {
@@ -28,10 +29,6 @@ const ListaPasajeros = () => {
         console.log('que tiene info', pasajeVendido)
     }
 
-    // const registrarDatosCovid = (item) => {
-
-    //     historialCovid.push('/registrarDatosCovid', { idPasajero: item , viaje:datosViaje})
-    // }
     //MODAL ELIMINAR
     const [showModal, setShowModal] = useState(false);
 
@@ -65,24 +62,10 @@ const ListaPasajeros = () => {
     const [check, setCheck] = useState(false)
     const [ausente, setAusente] = useState([])
     const [pasajeVendido, setPasajeVendido] = useState([])
-    const [snack,setSnack] = useState([])
-    const [nombreProducto, setNombreProducto] = useState('')
-    const [cantidadProducto, setCantidadProducto] = useState('')
-
-    //Armado de snack para cada usuario
-    const [idCliente, setIdCliente] = useState('')
-    const [infoCliente, setInfoCliente] = useState({})
-    const [idSnack, setIdSnack] = useState('')
-    const [infoSnack, setInfoSnack] = useState({})
     const [infoViaje, setInfoViaje] = useState([{}])
+    const [snack, setSnack] = useState([])
+    const [infoSnack, setInfoSnack] = useState({})
 
-    //modal
-    const [showModalRegistrarDatosCovid, setShowModalRegistrarDatosCovid] = useState(false)
-    const handleCloseRegistrarDatosCovid = () => showModalRegistrarDatosCovid(false)
-
-    const registrarDatosCovid = () => {
-        setShowModalRegistrarDatosCovid(true)
-    }
     // controlar covid
     const [temp, setTemp] = useState('')
     const [checkGustoOlfato, setCheckGustoOlfato] = useState(false)
@@ -90,7 +73,8 @@ const ListaPasajeros = () => {
     const [checkDificultadResp, setCheckDificultadResp] = useState(false)
     const [checkDolorGarganta, setCheckDolorGarganta] = useState(false)
     const [cantSintomas, setCantidadSintomas] = useState(0)
-
+    const [showModalRegistrarDatosCovid, setShowModalRegistrarDatosCovid] = useState(false)
+    const handleCloseRegistrarDatosCovid = () => showModalRegistrarDatosCovid(false)
 
     useEffect(() => {
         const datos = async () => {
@@ -99,36 +83,31 @@ const ListaPasajeros = () => {
             let snackPasaje = []
             let arregloPasaje = []
             let info = {
-                idPasajero:'',
-                infoPasajero:'',
+                idPasajero: '',
+                infoPasajero: '',
 
             }
-            // const info = pasajeArray.find((pasaje) => {
-            //     return datosViaje.infoViaje.id === pasaje.idViaje
-            // })
+
             pasajeArray.map(pasaje => {
                 if (datosViaje.infoViaje.id === pasaje.idViaje) {
                     arregloPasaje.push(pasaje)
-                    if(pasaje.tieneSnackComprados){
-                            snackPasaje.push(pasaje.snackComprados)
-                            const producto = {
-                                idProducto:'',
-                                cantidad:'',
-                                nombre:'',
-                                precio:''
-                            }
-                    }else{
+                    if (pasaje.tieneSnackComprados) {
+                        snackPasaje.push(pasaje.snackComprados)
+                        const producto = {
+                            idProducto: '',
+                            cantidad: '',
+                            nombre: '',
+                            precio: ''
+                        }
+                    } else {
                         setSnack(null)
                     }
                     setInfoSnack()
                 }
             })
-            
+
             setPasajeVendido(arregloPasaje)
             setSnack(snackPasaje)
-            
-            
-            
         }
 
         datos()
@@ -136,74 +115,75 @@ const ListaPasajeros = () => {
 
 
 
-
-        const estaTildado = (check, item) => {
-            setCheck(check)
-            const repetidoAusente = ausente.find(elemento => elemento === item.id)
-            console.log('por aca pasa')
-            if (repetidoAusente === undefined && check) {
-                console.log('entre')
-                ausente.push(item)
-            } else {
-                if (!check) {
-                    ausente.pop()
-                }
-            }
-            console.log('Cantidad en el arreglo', ausente.length)
-
-        }
-
-        
-        const mostrar = () => {
-            console.log('Pasaje Vendido', pasajeVendido)
-            console.log('Viaje Elegido', datosViaje)
-            console.log('Snack de pasajes',snack)
-        }
-        //control datos covid
-        const confirmarDatosCovid = () => {
-            if (temp >= 38) {
-                console.log("es mayor")
-            }
-            else {
-                console.log(" temperatura alta por 1 semana ", checkTemperatura)
-                console.log(" perdida del gusto ", checkGustoOlfato)
-                console.log(" dificultad respiratoria", checkDificultadResp)
-                console.log("dolorGarganta ", checkDolorGarganta)
-                console.log(cantSintomas)
-                if(cantSintomas > 1 ) {
-                    console.log("No puede viajar")
-                }
+    const estaTildado = (check, item) => {
+        setCheck(check)
+        const repetidoAusente = ausente.find(elemento => elemento === item.id)
+        console.log('por aca pasa')
+        if (repetidoAusente === undefined && check) {
+            console.log('entre')
+            ausente.push(item)
+        } else {
+            if (!check) {
+                ausente.pop()
             }
         }
-        const estaTildadoTemperatura = (check) => {
-            setCheckTemperatura(check)
-            if(check){
-                setCantidadSintomas(cantSintomas+1)
-            }
+        console.log('Cantidad en el arreglo', ausente.length)
+
+    }
+    const mostrar = () => {
+        console.log(datosViaje)
+    }
+
+    //control datos covid
+    const registrarDatosCovid = () => {
+        setShowModalRegistrarDatosCovid(true)
+    }
+    const confirmarDatosCovid = () => {
+        if (temp >= 38) {
+            console.log("es mayor")
+        }
+        else {
+            console.log(" temperatura alta por 1 semana ", checkTemperatura)
+            console.log(" perdida del gusto ", checkGustoOlfato)
+            console.log(" dificultad respiratoria", checkDificultadResp)
+            console.log("dolorGarganta ", checkDolorGarganta)
             console.log(cantSintomas)
-    
+            if (cantSintomas > 1) {
+                console.log("No puede viajar")
+            }
+        }
+    }
+    const estaTildadoTemperatura = (check) => {
+        setCheckTemperatura(check)
+        if (check) {
+            setCantidadSintomas(cantSintomas + 1)
+        }
+        console.log(cantSintomas)
 
-        }
-        const estaTildadoGustoOlfato = (check) => {
-            setCheckGustoOlfato(check)
-            if(check){
-                setCantidadSintomas(cantSintomas+1)
-            }
 
+    }
+    const estaTildadoGustoOlfato = (check) => {
+        setCheckGustoOlfato(check)
+        if (check) {
+            setCantidadSintomas(cantSintomas + 1)
         }
-        const estaTildadoDificultadRespitaroria = (check) => {
-            setCheckDificultadResp(check)
-            if(check){
-                setCantidadSintomas(cantSintomas+1)
-            }
+
+    }
+    const estaTildadoDificultadRespitaroria = (check) => {
+        setCheckDificultadResp(check)
+        if (check) {
+            setCantidadSintomas(cantSintomas + 1)
         }
-        const estaTildadoDolorGarganta = (check) => {
-            setCheckDolorGarganta(check)
-            
-            if(check){
-                setCantidadSintomas(cantSintomas+1)
-            }
+    }
+    const estaTildadoDolorGarganta = (check) => {
+        setCheckDolorGarganta(check)
+
+        if (check) {
+            setCantidadSintomas(cantSintomas + 1)
         }
+    }
+
+
 
     return (
         <div>
@@ -221,7 +201,7 @@ const ListaPasajeros = () => {
                     ausente.length === persona.length ?
                         (
                             <div>
-                                <Button variant="secondary" style={{ top: 105, position: 'absolute', right: 360, width: "150px", height: "40px" }} variant="danger " >Finalizar Viaje</Button>
+                                <Button variant="secondary" style={{ top: 105, position: 'absolute', right: 360, width: "150px", height: "40px" }} variant="danger " onClick={(e) => { mostrar() }}>Finalizar Viaje</Button>
                             </div>
                         ) :
                         (<></>)
@@ -260,9 +240,8 @@ const ListaPasajeros = () => {
                                             </div>
                                         </div>
                                         <hr></hr>
-                                        
-                                    </form>
 
+                                    </form>
                                 </Card.Body>
                             </Accordion.Collapse>
                         </Card>
@@ -326,7 +305,7 @@ const ListaPasajeros = () => {
                             </Accordion.Toggle>
                             <Accordion.Collapse eventKey="2">
                                 <Card.Body>
-                                <Table striped bordered hover variant="secondary" className="animate__animated animate__slideInUp" >
+                                    <Table striped bordered hover variant="secondary" className="animate__animated animate__slideInUp" >
                                         <thead>
                                             <tr>
                                                 <th>Producto</th>
@@ -342,11 +321,11 @@ const ListaPasajeros = () => {
                                                         pasajeVendido.map(item => (
 
                                                             <tr key={item.id}>
-                                                                <td>{}</td>
-                                                                <td>{}</td>
+                                                                <td>{ }</td>
+                                                                <td>{ }</td>
                                                                 <td>{item.infoPasajero.apellido}</td>
                                                                 <td>{item.infoPasajero.nombres}</td>
-                                                                
+
                                                             </tr>
                                                         ))
                                                     ) : (
@@ -356,14 +335,12 @@ const ListaPasajeros = () => {
                                         </tbody>
                                     </Table>
                                 </Card.Body>
-                                <Card.Body>Hello! I'm another body</Card.Body>
                             </Accordion.Collapse>
                         </Card>
                     </Accordion>
 
                 </div>
             </div>
-
             {
                 showModalRegistrarDatosCovid ? (
                     <Modal id="registrsrDatosCovid" show={showModalRegistrarDatosCovid} onHide={handleCloseRegistrarDatosCovid}>
@@ -434,4 +411,4 @@ const ListaPasajeros = () => {
     );
 }
 
-export default ListaPasajeros;
+export default ListaPasajeros
