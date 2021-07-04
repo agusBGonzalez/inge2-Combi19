@@ -141,6 +141,8 @@ const ListaPasajeros = () => {
     }
 
     //control datos covid
+    let sintomasPasajero = []
+
     const registrarDatosCovid = (item) => {
         setPasajero(item)
         setShowModalRegistrarDatosCovid(true)
@@ -148,6 +150,7 @@ const ListaPasajeros = () => {
     const confirmarDatosCovid = async () => {
         let sospechoso = false
         if (temp >= 38) {
+            sintomasPasajero.push("temperatura mayor a 38 grados")
             alert("El pasajero no podra viajar por tener fiebre, asi mismo se devolvera su dinero y no podra comprar pasajes por 14 dias")
             sospechoso = true
         }
@@ -159,12 +162,29 @@ const ListaPasajeros = () => {
             console.log(cantSintomas)
             if (cantSintomas > 1) {
                 alert("El pasajero no podra viajar por tener mas de dos sintomas, asi mismo se devolvera su dinero y no podra comprar pasajes por 14 dias")
+                if (checkTemperatura){
+                    sintomasPasajero.push("tuvo una temperatura mayor a 38 grados durante la ultima semana")
+                }
+                if (checkGustoOlfato){
+                    sintomasPasajero.push("posee perdida de gusto y/o olfato")
+
+                }
+                if (checkDificultadResp) { 
+                    sintomasPasajero.push("posee dificultades respiratorias")
+                }
+                if (checkDolorGarganta){
+            sintomasPasajero.push("posee dolor de garganta")
+
+                }
+
+
                 sospechoso = true
             }
         }
         if (sospechoso) {
             const pasajeroSospechoso = {
-                datos: pasajero
+                datos: pasajero,
+                sintomas: sintomasPasajero
             }
             //FALTA MOSTRAR MSJ DE SUCESS
             await store.collection('reporteSospechosos').add(pasajeroSospechoso)
@@ -204,6 +224,7 @@ const ListaPasajeros = () => {
     const estaTildadoDificultadRespitaroria = (check) => {
         setCheckDificultadResp(check)
         if (check) {
+
             setCantidadSintomas(cantSintomas + 1)
         }
         else {
@@ -220,8 +241,6 @@ const ListaPasajeros = () => {
             setCantidadSintomas(cantSintomas - 1)
         }
     }
-
-
 
     return (
         <div>

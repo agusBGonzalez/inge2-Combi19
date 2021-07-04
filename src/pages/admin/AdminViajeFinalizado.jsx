@@ -206,8 +206,7 @@ const AdminViajeFinalizado = () => {
                                         <thead>
                                             <tr>
                                                 <th>Pasajero</th>
-                                                <th>Temperatura</th>
-                                                <th>Sintomas</th>
+                                                <th>Rechasado por</th>
 
                                             </tr>
                                         </thead>
@@ -218,13 +217,15 @@ const AdminViajeFinalizado = () => {
 
                                                         reporteSospechoso.map(item => (
                                                             item.datos.idViaje === viajeRepCovid.id ? (
+                                                                // item.sintomas.map(s => 
                                                                 <tr>
                                                                     <td>{item.datos.infoPasajero.apellido + ", " + item.datos.infoPasajero.nombres}</td>
+                                                                    <td>{
+                                                                        item.sintomas.map(sintoma => <tr>{sintoma}</tr>)
+                                                                    }</td>
 
                                                                 </tr>
-                                                            ) : (
-                                                                <></>
-                                                            )
+                                                            ) : (<></>)
                                                         )
                                                         )
 
@@ -243,11 +244,8 @@ const AdminViajeFinalizado = () => {
                             </Modal.Body>
 
                             <Modal.Footer>
-                                <Button variant="primary" onClick>
-                                    Confirmar
-                                </Button>
                                 <Button variant="secondary" onClick={() => { setShowModalViajeRepCovid(false); setMsgError(null); setShowAlert(false); }}>
-                                    Cancelar
+                                    Cerrar
                                 </Button>
                             </Modal.Footer>
                         </Modal>
