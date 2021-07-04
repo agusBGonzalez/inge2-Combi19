@@ -83,7 +83,7 @@ function MenuOpcAdmin(props) {
                         Viajes
                     </NavText>
                 </NavItem>
-                <NavItem eventKey="listaViajes">
+                <NavItem eventKey="listaViajesFinalizados">
                     <NavIcon>
                         <CalendarCheckFill color="black"></CalendarCheckFill>
                     </NavIcon>

@@ -7,7 +7,7 @@ import { store, auth } from '../../firebaseconf'
 import { useHistory, useLocation } from 'react-router-dom'
 
 
-
+// PARA COMPRAR EL PASAJE TIENEN Q VER QUE EL USUARIO NO ESTE EN ESTA COLECCION "reporteSospechosos", SI ESTA AHI ES PORQUE TIENEN SINTOMAS COVID
 function UsuarioComprarPasaje() {
 
     const subPageStyle = {
