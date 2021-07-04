@@ -82,132 +82,18 @@ function UsuarioBuscarViajes() {
             })
     }
 
-    // const getViajesFiltrados = () => {
-    //     store.collection('buscarViajes').get()
-    //         .then(response => {
-    //             const fetchedViajes = [];
-    //             response.docs.forEach(document => {
-    //                 const fetchedViaje = {
-    //                     id: document.id,
-    //                     ...document.data()
-    //                 };
-    //                 fetchedViajes.push(fetchedViaje)
-    //             });
-    //             setViajesFiltrados(fetchedViajes)
-
-    //         })
-    // }
-
-    // const getCombis = () => {
-    //     store.collection('combi').get()
-    //         .then(response => {
-    //             const fetchedCombis = [];
-    //             response.docs.forEach(document => {
-    //                 const fetchedCombi = {
-    //                     id: document.id,
-    //                     ...document.data()
-    //                 };
-    //                 fetchedCombis.push(fetchedCombi)
-    //             });
-    //             setCombi(fetchedCombis)
-    //         })
-    // }
-
-    // const getRutas = () => {
-    //     store.collection('rutasZaca').get()
-    //         .then(response => {
-    //             const fetchedCombis = [];
-    //             response.docs.forEach(document => {
-    //                 const fetchedCombi = {
-    //                     id: document.id,
-    //                     ...document.data()
-    //                 };
-    //                 fetchedCombis.push(fetchedCombi)
-    //             });
-    //             setRuta(fetchedCombis)
-    //         })
-    // }
     useEffect(() => {
         const datosViajes = async () => {
             const { docs } = await store.collection('sitios').get()
             const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
             setSitioSelect(nuevoArray)
-            
-            // const v = await store.collection('viaje').get()
-            // const viajesArray = v.docs.map(item => ({ id: item.id, ...item.data() }))
-            // setViajes(viajesArray)
-            // const r = await store.collection('rutasZaca').get()
-            // const rutaArray = r.docs.map(item => ({ id: item.id, ...item.data() }))
-            // setRuta(rutaArray)
-            // getCombis()
-            // getRutas()
+        
             getViajes()
         }
 
-        // store.collection('buscarViajes').get()
-        //     .then(response => {
-        //         const fetchedViajes = [];
-        //         response.docs.forEach(document => {
-        //             const fetchedViaje = {
-        //                 id: document.id,
-        //                 ...document.data()
-        //             };
-        //             fetchedViajes.push(fetchedViaje)
-        //         });
-        //         setViajesFiltrados(fetchedViajes)
-
-        //     })
-        //     .catch(error => {
-        //         setMsgError(error)
-        //         setShowAlert(true)
-        //     });
-            datosViajes()
+        datosViajes()
     }, []);
 
-        // async function deleteCollection(db, collectionPath, batchSize) {
-        //     const collectionRef = db.collection(collectionPath);
-        //     const query = collectionRef.orderBy('__name__').limit(batchSize);
-
-        //     return new Promise((resolve, reject) => {
-        //         deleteQueryBatch(db, query, resolve).catch(reject);
-        //     });
-        // }
-
-        // async function deleteQueryBatch(db, query, resolve) {
-        //     const snapshot = await query.get();
-
-        //     const batchSize = snapshot.size;
-        //     if (batchSize === 0) {
-        //         // When there are no documents left, we are done
-        //         resolve();
-        //         return;
-        //     }
-
-        //     // Delete documents in a batch
-        //     const batch = db.batch();
-        //     snapshot.docs.forEach((doc) => {
-        //         batch.delete(doc.ref);
-        //     });
-        //     await batch.commit();
-
-        //     // Recurse on the next process tick, to avoid
-        //     // exploding the stack.
-        //     process.nextTick(() => {
-        //         deleteQueryBatch(db, query, resolve);
-        //     });
-
-        // }
-
-  
-    // const buscarIdRuta =  (idruta) => {
-    //     console.log("id ruta" , idruta)
-    //     ruta.map(r=>{
-    //         console.log("map")
-    //         if(r.id === idruta ){
-    //             console.log(r)
-    //         }
-    //     })
-    // }
     
     const confirmarBusqueda = async () => {
         // deleteCollection(store, 'buscarViajes', 10);
@@ -243,7 +129,6 @@ function UsuarioBuscarViajes() {
             setShowAlert(true)
             return
         }
-        // getViajes()
 
         // aca lo que hago es guardar cual sera el origen y destino
  
@@ -257,51 +142,7 @@ function UsuarioBuscarViajes() {
             return sitioDst.id === idDestino
         })
 
-        // let gRutas = []
-        // ruta.map(r=>{
-        //     if((r.idOrigen === sitioOrigen.id ) && (r.idDestino === sitioDest.id)){
-        //         gRutas.push(r)
-        //     }
-        // }) 
 
-        // console.log(gRutas)
-
-
-        // viajes.map( v => {
-        //     console.log(" map")
-        //     gRutas.forEach(element =>{
-        //         console.log(" foreach")
-        //         console.log(v.idRuta)
-        //         console.log(element.id)
-        //         if(v.idRuta === element.id){
-        //             console.log("antes fecha")
-        //             if (v.fechaviaje === fecha) {
-        //                 console.log("entro en === fecha")
-        //                 combi.map(c => {
-                            
-        //                     if (c.id === v.idCombi) {
-        //                         combiViaje = c
-        //                     }
-        //                 })
-        //                 console.log(v.butacaDisponible)
-        //                 if (v.butacaDisponible >= 1 ) {
-        //                     const agregarViaje = {
-        //                         origen: sitioOrigen.provincia + " - "+sitioOrigen.ciudad,
-        //                         destino: sitioDest.provincia+ " - "+sitioDest.ciudad,
-        //                         fecha: fecha,
-        //                         horario: element.horario,
-        //                         tipoCombi: combiViaje.tipocombi,
-        //                         precio: v.precio,
-        //                         butacas: v.butacaDisponible
-        //                     }
-        //                     console.log(agregarViaje)
-        //                     store.collection('buscarViajes').add(agregarViaje)
-        //                 }                      
-        //             }
-        //         } 
-        //     });
-
-        // })
         const viajesConFiltro = viajes.filter( (viaje) => 
             viaje.butacaDisponible >= 1 && viaje.fechaviaje === fecha && viaje.datosRuta.idOrigen === sitioOrigen.id && viaje.datosRuta.idDestino === sitioDest.id
         )
@@ -380,7 +221,7 @@ function UsuarioBuscarViajes() {
                                                 <td style={{ width: "12%" }} >
                                                     <div className="d-flex justify-content-around">
                                                         <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { comprar(item.id) }}>
-                                                            <FileEarmarkSlidesFill color="white"></FileEarmarkSlidesFill>
+                                                            Comprar
                                                         </button>
                                                     </div>
                                                 </td>
@@ -442,7 +283,7 @@ function UsuarioBuscarViajes() {
                                         maxLength='8'
                                         placeholder='Fecha del viaje'
                                         id="fecha"
-                                        min="2021-06-15"
+                                        min= "2021-07-04"
                                         value={fecha}
                                     />
                                 </form>

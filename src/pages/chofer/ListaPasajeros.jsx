@@ -167,18 +167,18 @@ const ListaPasajeros = () => {
             console.log(cantSintomas)
             if (cantSintomas > 1) {
                 alert("El pasajero no podra viajar por tener mas de dos sintomas, asi mismo se devolvera su dinero y no podra comprar pasajes por 14 dias")
-                if (checkTemperatura) {
+                if (checkTemperatura){
                     sintomasPasajero.push("tuvo una temperatura mayor a 38 grados durante la ultima semana")
                 }
-                if (checkGustoOlfato) {
+                if (checkGustoOlfato){
                     sintomasPasajero.push("posee perdida de gusto y/o olfato")
 
                 }
-                if (checkDificultadResp) {
+                if (checkDificultadResp) { 
                     sintomasPasajero.push("posee dificultades respiratorias")
                 }
-                if (checkDolorGarganta) {
-                    sintomasPasajero.push("posee dolor de garganta")
+                if (checkDolorGarganta){
+            sintomasPasajero.push("posee dolor de garganta")
 
                 }
 
@@ -196,9 +196,9 @@ const ListaPasajeros = () => {
             //setMsgSucc('Registro Exitoso! Click aqui para cerrar')
             //(true
         }
-        else {
+        else{
             alert("en presentes estan los que pueden viajar")
-            pasajerosPresentes.push(pasajero)
+           // pasajerosPresentes
         }
         try {
             //FALTA MOSTRAR MSJ DE SUCESS
@@ -250,10 +250,10 @@ const ListaPasajeros = () => {
             setCantidadSintomas(cantSintomas - 1)
         }
     }
-    // borrar
-    const mostrarPasajeros = () => {
-        console.log(pasajerosPresentes)
-    }
+// borrar
+const mostrarPasajeros = () =>{
+   // console.log(presentes)
+}
     return (
         <div>
             <MenuUsuarioChofer />
@@ -267,8 +267,8 @@ const ListaPasajeros = () => {
                 <Button style={{ top: 105, position: 'absolute', right: 70, width: "150px", height: "40px" }} variant="danger " >Cancelar Viaje</Button>
                 // borrar este boton
                 <Button variant="success" style={{ top: 105, position: 'absolute', left: 600, width: "150px", height: "40px" }} onClick={(e) => { mostrarPasajeros() }}>ver pasajeros</Button>
-
-
+               
+                
                 {
 
                     ausente.length === pasajeVendido.length ?
