@@ -106,7 +106,6 @@ const ListaPasajeros = () => {
             }
             )
             setSnack(snackPasaje)
-
             setPasajeVendido(arregloPasaje)
 
         }
@@ -132,6 +131,10 @@ const ListaPasajeros = () => {
             }
         }
         console.log('Cantidad en el arreglo', ausente.length)
+        item.estadoPasaje="Ausente"
+        if (!check) {
+            item.estadoPasaje="Pendiente"
+        }
 
     }
     const mostrar = () => {
@@ -167,22 +170,20 @@ const ListaPasajeros = () => {
             console.log(cantSintomas)
             if (cantSintomas > 1) {
                 alert("El pasajero no podra viajar por tener mas de dos sintomas, asi mismo se devolvera su dinero y no podra comprar pasajes por 14 dias")
-                if (checkTemperatura){
+                if (checkTemperatura) {
                     sintomasPasajero.push("tuvo una temperatura mayor a 38 grados durante la ultima semana")
                 }
-                if (checkGustoOlfato){
+                if (checkGustoOlfato) {
                     sintomasPasajero.push("posee perdida de gusto y/o olfato")
 
                 }
-                if (checkDificultadResp) { 
+                if (checkDificultadResp) {
                     sintomasPasajero.push("posee dificultades respiratorias")
                 }
-                if (checkDolorGarganta){
-            sintomasPasajero.push("posee dolor de garganta")
+                if (checkDolorGarganta) {
+                    sintomasPasajero.push("posee dolor de garganta")
 
                 }
-
-
                 sospechoso = true
             }
         }
@@ -191,14 +192,15 @@ const ListaPasajeros = () => {
                 datos: pasajero,
                 sintomas: sintomasPasajero
             }
-            //FALTA MOSTRAR MSJ DE SUCESS
+
+            pasajero.estadoPasaje="Sospechoso Covid"
+
             await store.collection('reporteSospechosos').add(pasajeroSospechoso)
-            //setMsgSucc('Registro Exitoso! Click aqui para cerrar')
-            //(true
         }
-        else{
+        else {
             alert("en presentes estan los que pueden viajar")
-           // pasajerosPresentes
+            pasajero.estadoPasaje="Arribo"
+            // pasajerosPresentes
         }
         try {
             //FALTA MOSTRAR MSJ DE SUCESS
@@ -253,14 +255,14 @@ const ListaPasajeros = () => {
 
     const venderPasaje = () => {
         historial.push('/venderPasaje', { idViaje: location.state.idViaje })
-        
-    }
-    
 
-// borrar
-const mostrarPasajeros = () =>{
-   // console.log(presentes)
-}
+    }
+
+
+    // borrar
+    const mostrarPasajeros = () => {
+        // console.log(presentes)
+    }
     return (
         <div>
             <MenuUsuarioChofer />
@@ -270,21 +272,16 @@ const mostrarPasajeros = () =>{
 
                 <h3 style={{ top: 150, position: 'absolute', left: 80, width: "60%", }}> Informacion del Viaje</h3>
                 <Button variant="secondary" style={{ top: 105, position: 'absolute', left: 80, width: "100px", height: "40px" }} onClick={(e) => { volverAtras() }}>Atras</Button>
-                <Button variant="primary" style={{ top: 105, position: 'absolute', left: 400, width: "150px", height: "40px" }} onClick = {(e)=> venderPasaje()}>Vender Pasaje</Button>
+                <Button variant="primary" style={{ top: 105, position: 'absolute', left: 400, width: "150px", height: "40px" }} onClick={(e) => venderPasaje()}>Vender Pasaje</Button>
                 <Button style={{ top: 105, position: 'absolute', right: 70, width: "150px", height: "40px" }} variant="danger " >Cancelar Viaje</Button>
                 // borrar este boton
                 <Button variant="success" style={{ top: 105, position: 'absolute', left: 600, width: "150px", height: "40px" }} onClick={(e) => { mostrarPasajeros() }}>ver pasajeros</Button>
-               
-                
+
+
                 {
 
-                    ausente.length === pasajeVendido.length ?
-                        (
-                            <div>
                                 <Button variant="secondary" style={{ top: 105, position: 'absolute', right: 360, width: "150px", height: "40px" }} variant="danger " onClick={(e) => { mostrar() }}>Finalizar Viaje</Button>
-                            </div>
-                        ) :
-                        (<></>)
+
                 }
 
                 <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{ bottom: 0, zIndex: 5, position: 'absolute', left: 75, width: "60%" }} >
