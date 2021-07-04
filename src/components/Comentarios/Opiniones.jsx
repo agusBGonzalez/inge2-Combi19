@@ -81,10 +81,8 @@ const Opiniones = () => {
                 if(user){
                    setUsuario(user.email)
                    setIdUsuarioLogueado(user.uid)
-                   console.log('FUERA DEL IF')
                    userConfig.map(item =>{
                     if(user.uid  === 'QQc6vciuwNPp1U0t7AStYzOimPg2'){
-                        console.log('ENTRO al IF')
                        setEsAdmin(true)
 
                     }else{

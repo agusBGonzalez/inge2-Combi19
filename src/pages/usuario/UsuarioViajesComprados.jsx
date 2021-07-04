@@ -85,8 +85,13 @@ function UsuarioViajesComprados() {
                         ...document.data()
                     };
                     fetchedViajes.push(fetchedViaje)
+
+                    auth.onAuthStateChanged((user) => {
+                        let userPasaje = fetchedViajes.filter((item) => item.infoPasajero.idUser === user.uid)
+                        setPasajesComprados(userPasaje)
+                        // setEstado(userPasaje.estadoPasaje)
+                    })
                 });
-                setPasajesComprados(fetchedViajes)
             })
     }
     const getPasajeVendido = () => {
@@ -103,6 +108,7 @@ function UsuarioViajesComprados() {
                 setPasajeViajeVendido(fetchedViajes)
             })
     }
+
     useEffect(() => {
         store.collection('pasajeComprados').get()
             .then(response => {
@@ -114,11 +120,11 @@ function UsuarioViajesComprados() {
                     };
                     fetchedViajes.push(fetchedViaje)
                 });
-                setPasajesComprados(fetchedViajes)
+
                 auth.onAuthStateChanged((user) => {
                     let userPasaje = fetchedViajes.filter((item) => item.infoPasajero.idUser === user.uid)
                     setPasajesComprados(userPasaje)
-                    setEstado(userPasaje.estadoPasaje)
+                    // setEstado(userPasaje.estadoPasaje)
                 })
             })
         store.collection('viaje').get()
@@ -182,6 +188,7 @@ function UsuarioViajesComprados() {
         }
         //Actualizo el estado del pasaje Comprado
 
+
         let actualizarPasajeComprado = {
             cantidadButacas: itemPasaje.cantidadButacas,
             estadoPasaje: 'Cancelado',
@@ -193,10 +200,10 @@ function UsuarioViajesComprados() {
             tieneSnackComprados: itemPasaje.tieneSnackComprados,
             totalPagado: itemPasaje.totalPagado
         }
-        console.log('hay algo aca', itemPasaje.idViaje)
-        await store.collection('pasajeComprados').doc(itemPasaje.idViaje).set(actualizarPasajeComprado)
+
+        await store.collection('pasajeComprados').doc(itemPasaje.id).set(actualizarPasajeComprado)
         getPasajeComprado()
-        actualizarPasajeComprado.infoViaje.butacaDisponible = actualizarPasajeComprado.infoViaje.butacaDisponible + parseInt(actualizarPasajeComprado.cantidadButacas)
+        // actualizarPasajeComprado.infoViaje.butacaDisponible = actualizarPasajeComprado.infoViaje.butacaDisponible + parseInt(actualizarPasajeComprado.cantidadButacas)
 
         // se busca por idViaje , idPasajero y cantidad de butacas
 
@@ -231,7 +238,7 @@ function UsuarioViajesComprados() {
             ruta_entera: buscarViaje.ruta_entera
 
         }
-        await store.collection('viaje').doc(itemPasaje.idViaje).set(modificarViaje)
+        await store.collection('viaje').doc(buscarViaje.id).set(modificarViaje)
         getViajes()
         setShowModalCancelar(false)
 
@@ -280,145 +287,144 @@ function UsuarioViajesComprados() {
                                                             <PencilFill color="white"></PencilFill>
                                                         </button>
                                                         {
-                                                            estado === 'Pendiente' ? (
-                                                                <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(e) => { cancelarPasajeModal(item) }}>
+                                                            item.estadoPasaje === "Pendiente" ?
+                                                                <button className="btn btn-danger d-flex justify-content-center p-2 align-items-center" onClick={(e) => { console.log(item.estadoPasaje); cancelarPasajeModal(item) }}>
                                                                     Cancelar Pasaje
                                                                 </button>
-                                                            ) : (<></>)
-                                                        }
-
+                                                                : <></>
+}
                                                     </div>
                                                 </td>
                                             </tr>
-                                        ))
-                                    ) : (
-                                        <></>
-                                    )
+                        ))
+                        ) : (
+                        <></>
+                        )
                             }
                         </tbody>
                     </Table>
-                    {
-                        pasajesComprados.length === 0 ? <div className="alert alert-warning mt-19"> No hay elementos en la lista </div> : <div></div>
-                    }
-                </div>
+                {
+                    pasajesComprados.length === 0 ? <div className="alert alert-warning mt-19"> No hay elementos en la lista </div> : <div></div>
+                }
             </div>
+        </div>
             {
-                showModalEdit ?
-                    (
-                        <Modal id="modalEditar" show={showModalEdit} onHide={handleCloseEdit}>
-                            <Modal.Header >
-                                <Modal.Title>Mostrar detalles del pasaje</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <form className='form-group'>
-                                    <p>Origen:</p>
-                                    <input
-                                        className='form-control mt-2'
-                                        type="text"
-                                        placeholder={origen}
-                                        id="origen"
-                                        value={origen}
-                                        disabled
-                                    />
-                                    <p>Destino:</p>
-                                    <input
-                                        className='form-control mt-2'
-                                        type="text"
-                                        placeholder={destino}
-                                        id="destino"
-                                        value={destino}
-                                        disabled
-                                    />
-                                    <p>Fecha del Pasaje:</p>
+        showModalEdit ?
+            (
+                <Modal id="modalEditar" show={showModalEdit} onHide={handleCloseEdit}>
+                    <Modal.Header >
+                        <Modal.Title>Mostrar detalles del pasaje</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <form className='form-group'>
+                            <p>Origen:</p>
+                            <input
+                                className='form-control mt-2'
+                                type="text"
+                                placeholder={origen}
+                                id="origen"
+                                value={origen}
+                                disabled
+                            />
+                            <p>Destino:</p>
+                            <input
+                                className='form-control mt-2'
+                                type="text"
+                                placeholder={destino}
+                                id="destino"
+                                value={destino}
+                                disabled
+                            />
+                            <p>Fecha del Pasaje:</p>
 
-                                    <input
-                                        className='form-control mt-2'
-                                        type="data"
-                                        placeholder={fecha}
-                                        id="fecha"
-                                        value={fecha}
-                                        disabled
-                                    />
+                            <input
+                                className='form-control mt-2'
+                                type="data"
+                                placeholder={fecha}
+                                id="fecha"
+                                value={fecha}
+                                disabled
+                            />
 
-                                    <p>Cantidad de Pasajes:</p>
-                                    <input
-                                        className='form-control mt-2'
-                                        type="number"
-                                        placeholder={cantidadPasajes}
-                                        id="destino"
-                                        value={cantidadPasajes}
-                                        disabled
-                                    />
+                            <p>Cantidad de Pasajes:</p>
+                            <input
+                                className='form-control mt-2'
+                                type="number"
+                                placeholder={cantidadPasajes}
+                                id="destino"
+                                value={cantidadPasajes}
+                                disabled
+                            />
 
-                                </form>
-                                <Alert className="mt-4" variant="danger" show={showAlert}>
-                                    {msgError}
-                                </Alert>
-                            </Modal.Body>
+                        </form>
+                        <Alert className="mt-4" variant="danger" show={showAlert}>
+                            {msgError}
+                        </Alert>
+                    </Modal.Body>
 
-                            <Modal.Footer>
-                                <Button variant="secondary" onClick={() => { setShowModalEdit(false); setMsgError(null); setShowAlert(false); }}>
-                                    Cancelar
-                                </Button>
-                            </Modal.Footer>
-                        </Modal>
-                    ) : (
-                        <></>
-                    )
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => { setShowModalEdit(false); setMsgError(null); setShowAlert(false); }}>
+                            Cancelar
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            ) : (
+                <></>
+            )
 
-            }
+    }
 
-            {
-                showModalCancelar ?
-                    (
-                        <Modal id="modalCancelar" show={showModalCancelar} onHide={handleCloseCancelar}>
-                            <Modal.Header >
-                                <Modal.Title>Cancelar Pasaje</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                Esta seguro/a que desea cancelar el pasaje?
-                                {/* <Alert className="mt-4" variant="danger" show={showAlert}>
+    {
+        showModalCancelar ?
+            (
+                <Modal id="modalCancelar" show={showModalCancelar} onHide={handleCloseCancelar}>
+                    <Modal.Header >
+                        <Modal.Title>Cancelar Pasaje</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        Esta seguro/a que desea cancelar el pasaje?
+                        {/* <Alert className="mt-4" variant="danger" show={showAlert}>
                                     {msgError}
                                 </Alert> */}
-                            </Modal.Body>
+                    </Modal.Body>
 
-                            <Modal.Footer>
-                                <Button variant="primary" onClick={cancelarPasaje}>
-                                    Confirmar
-                                </Button>
-                                <Button variant="secondary" onClick={() => { setShowModalCancelar(false); setMsgError(null); setShowAlert(false); }}>
-                                    Cancelar
-                                </Button>
-                            </Modal.Footer>
-                        </Modal>
-                    ) : (
-                        <></>
-                    )
+                    <Modal.Footer>
+                        <Button variant="primary" onClick={cancelarPasaje}>
+                            Confirmar
+                        </Button>
+                        <Button variant="secondary" onClick={() => { setShowModalCancelar(false); setMsgError(null); setShowAlert(false); }}>
+                            Cancelar
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            ) : (
+                <></>
+            )
 
-            }
-            {
-                showModalAviso ?
-                    (
-                        <Modal id="modalCancelar" show={showModalAviso} onHide={handleCloseAviso}>
-                            <Modal.Header >
-                                <Modal.Title></Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                {msgError}
-                            </Modal.Body>
+    }
+    {
+        showModalAviso ?
+            (
+                <Modal id="modalCancelar" show={showModalAviso} onHide={handleCloseAviso}>
+                    <Modal.Header >
+                        <Modal.Title></Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {msgError}
+                    </Modal.Body>
 
-                            <Modal.Footer>
-                                <Button variant="secondary" onClick={() => { setShowModalAviso(false); setMsgError(null); setShowAlert(false); }}>
-                                    Cancelar
-                                </Button>
-                            </Modal.Footer>
-                        </Modal>
-                    ) : (
-                        <></>
-                    )
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => { setShowModalAviso(false); setMsgError(null); setShowAlert(false); }}>
+                            Cancelar
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            ) : (
+                <></>
+            )
 
-            }
-        </div>
+    }
+        </div >
 
 
     );

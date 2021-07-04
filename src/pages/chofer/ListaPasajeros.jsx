@@ -242,6 +242,11 @@ const ListaPasajeros = () => {
         }
     }
 
+    const venderPasaje = () => {
+        historial.push('/venderPasaje', { idViaje: location.state.idViaje })
+    }
+    
+
     return (
         <div>
             <MenuUsuarioChofer />
@@ -251,7 +256,7 @@ const ListaPasajeros = () => {
 
                 <h3 style={{ top: 150, position: 'absolute', left: 80, width: "60%", }}> Informacion del Viaje</h3>
                 <Button variant="secondary" style={{ top: 105, position: 'absolute', left: 80, width: "100px", height: "40px" }} onClick={(e) => { volverAtras() }}>Atras</Button>
-                <Button variant="primary" style={{ top: 105, position: 'absolute', left: 400, width: "150px", height: "40px" }}>Vender Pasaje</Button>
+                <Button variant="primary" style={{ top: 105, position: 'absolute', left: 400, width: "150px", height: "40px" }} onClick={(e) => {venderPasaje()}}>Vender Pasaje</Button>
                 <Button style={{ top: 105, position: 'absolute', right: 70, width: "150px", height: "40px" }} variant="danger " >Cancelar Viaje</Button>
                 {
 

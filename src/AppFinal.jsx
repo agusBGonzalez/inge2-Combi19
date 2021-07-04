@@ -23,7 +23,7 @@ import ChoferPageListarViaje from './pages/chofer/ChoferPageListarViaje';
 import ChoferPageVerDetalleCombi from './pages/chofer/ChoferPageVerDetalleCombi';
 import RegistrarDatosCovid from './pages/chofer/RegistrarDatosCovid'
 import AdminViajeFinalizado from './pages/admin/AdminViajeFinalizado';
-
+import ChoferVenderPasaje from './pages/chofer/ChoferVenderPasaje';
 
 
 function AppFinal() {
@@ -61,10 +61,8 @@ function AppFinal() {
           <Route path='/choferListarViaje' component={ChoferPageListarViaje}></Route>
           <Route path='/choferMiCombi' component={ChoferPageVerDetalleCombi}></Route>
           <Route path='/registrarDatosCovid' component={RegistrarDatosCovid}></Route>
-
-          
-
-
+          <Route path='/venderPasaje' component={ChoferVenderPasaje}></Route>
+            
         </Switch>
       </Router>
 

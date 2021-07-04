@@ -122,7 +122,7 @@ function ChoferPageVerDetalleCombi() {
                     const comb = await store.collection('combi').get()
                     const combisFirebase = comb.docs.map(item => ({ id: item.id, ...item.data() }))
 
-                    console.log(combisFirebase)
+                    //console.log(combisFirebase)
 
                     combisFirebase.map(c => {
                         if (c.idChofer === choferLogueado.id) {
