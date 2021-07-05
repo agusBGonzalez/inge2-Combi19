@@ -23,8 +23,6 @@ function ChoferPageListarViaje() {
     //ALERT ERROR
     const [showAlert, setShowAlert] = useState(false);
 
-    const [showAlert2, setShowAlert2] = useState(false);
-
     const [msgError, setMsgError] = useState(null)
 
     //ALERT SUCESS
@@ -51,8 +49,6 @@ function ChoferPageListarViaje() {
     // colecciones de firebase
     const [viajes, setViajes] = useState([])
     const [choferes, setChoferes] = useState([])
-    const [comenzar, setComenzar] = useState([])
-    const [combis, setCombis] = useState([])
     const [userConfig, setUserConfig] = useState([]) // lo uso para detectar que la id del logeado sea igual que idUsuario de algun elemento
 
 
@@ -61,8 +57,6 @@ function ChoferPageListarViaje() {
     const [idUsuarioLogueado, setIdUsuarioLogueado] = useState('')
 
     const [usuario, setUsuario] = useState('')
-    const [esAdmin, setEsAdmin] = useState(false)
-    const [esUsuarioLog, setEsUsuarioLog] = useState(false)
     const historial = useHistory()
 
     const comenzarViaje = (item) => {
@@ -163,7 +157,7 @@ function ChoferPageListarViaje() {
 
     const confirmarFiltro = () => {
 
-        console.log(idUsuarioLogueado)
+        
         // recorro los viajes
 
         const choferActual = choferes.find((chofer) => {
@@ -173,41 +167,46 @@ function ChoferPageListarViaje() {
         let mesHoy = hoy.getMonth()
         let anioHoy = hoy.getFullYear()
         let viajesFiltroChofer = []
-        let arregloComenzar = []
         let idRandom = 0
         viajes.map(v => {
             if ((v.estado === estado) || (estado === "Todos")) {
                 if (v.datosCombi.idChofer === choferActual.id) {
-                    const agregarViaje = {
-                        id: idRandom,
-                        origen: v.origen,
-                        destino: v.destino,
-                        fecha: v.fechaviaje,
-                        estadoViaje: v.estado,
-                        infoViaje: v
-                    }
-                    let fechaViaje = new Date(agregarViaje.fecha)
-                    viajesFiltroChofer.push(agregarViaje);
-                    let c = {
-                        idV: idRandom,
-                        inicio: false
-
-                    }
+                    let fechaViaje = new Date(v.fechaviaje)
                     let diaFecha = fechaViaje.getDate() + 1
                     let mesFecha = fechaViaje.getMonth()
                     let anioFecha = fechaViaje.getFullYear()
                     if (diaHoy === diaFecha && mesHoy === mesFecha && anioHoy === anioFecha) {
-                        c.inicio = true
-                        arregloComenzar.push(c)
+                        const agregarViaje = {
+                            id: idRandom,
+                            origen: v.origen,
+                            destino: v.destino,
+                            fecha: v.fechaviaje,
+                            estadoViaje: v.estado,
+                            infoViaje: v,
+                            inicio:true
+                        }
+                        viajesFiltroChofer.push(agregarViaje);
+                    }else{
+                        const agregarViaje = {
+                            id: idRandom,
+                            origen: v.origen,
+                            destino: v.destino,
+                            fecha: v.fechaviaje,
+                            estadoViaje: v.estado,
+                            infoViaje: v,
+                            inicio:false
+                        } 
+                        viajesFiltroChofer.push(agregarViaje);
                     }
+                    
+                    
+
                 }
                 idRandom = idRandom + 1
             }
         })
 
         setViajesFiltrados(viajesFiltroChofer)
-        setComenzar(arregloComenzar)
-        console.log(arregloComenzar)
         try {
             //FALTA MOSTRAR MSJ DE SUCESS
             setShowModalFiltar(false)
@@ -256,8 +255,7 @@ function ChoferPageListarViaje() {
                                                 <td>{item.estadoViaje}</td>
                                                 <td style={{ width: "15%" }} >
                                                     <div className="d-flex justify-content-around">
-                                                    {/* disabled = {item.id === comenzar[0].idV && !comenzar.inicio ? false : true} */}
-                                                        <button  className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { comenzarViaje(item) }}>
+                                                        <button disabled ={item.inicio? false:true} className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { comenzarViaje(item) }}>
                                                                     Comenzar Viaje
                                                         </button>
 
