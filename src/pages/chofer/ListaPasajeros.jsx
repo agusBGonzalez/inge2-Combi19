@@ -255,14 +255,32 @@ const ListaPasajeros = () => {
             }
 
             pasajero.estadoPasaje = "Sospechoso Covid"
-            // actualiza estado ... ver si anda xd
-            let actualizarSospechoso = usuariosConfig.find((item)=>{
-                return item.idUser ===pasajero.infoPasajero.idUser
-            })
-            actualizarSospechoso.estadoPasaje = "Sospechoso Covid"
-            await store.collection('pasajeViajeVendido').doc(pasajero.infoPasajero.idUser).set(actualizarSospechoso)
-
             await store.collection('reporteSospechosos').add(pasajeroSospechoso)
+
+            // marco como sospechoso en pasajesComprados
+            pasajesComprados.map(itemViajeChofer => {
+                if (itemViajeChofer.idViaje === itemPasaje.infoViaje.id && itemViajeChofer.estadoPasaje === 'En curso') {
+                    console.log(itemViajeChofer)
+                    let actualizarPasajeComprado = {
+                        cantidadButacas: itemViajeChofer.cantidadButacas,
+                        estadoPasaje: 'Sospechoso Covid',
+                        idPasajero: itemViajeChofer.idPasajero,
+                        idViaje: itemViajeChofer.idViaje,
+                        infoPasajero: itemViajeChofer.infoPasajero,
+                        infoViaje: itemViajeChofer.infoViaje,
+                        snackComprados: itemViajeChofer.snackComprados,
+                        tieneSnackComprados: itemViajeChofer.tieneSnackComprados,
+                        totalPagado: itemViajeChofer.totalPagado
+                    }
+                    store.collection('pasajeComprados').doc(itemViajeChofer.id).set(actualizarPasajeComprado)
+                    getPasajeComprado()
+                }
+    
+    
+            })
+
+
+            
         }
         else {
             alert("en presentes estan los que pueden viajar")
