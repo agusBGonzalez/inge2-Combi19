@@ -3,7 +3,7 @@ import MenuUsuarioChofer from '../../components/menus/MenuUsuarioChofer'
 import MenuOpcChofer from '../../components/menus/MenuOpcChofer'
 import { Table, Modal, Button, Alert } from 'react-bootstrap'
 import { store, auth } from '../../firebaseconf'
-import { useHistory} from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { TrashFill, PencilFill } from 'react-bootstrap-icons';
 
 
@@ -46,45 +46,64 @@ function ChoferPageListarViaje() {
     const [estado, setEstado] = useState('')
 
     // select
-    var hoy = new Date().toLocaleDateString()
+    var hoy = new Date()
 
     // colecciones de firebase
     const [viajes, setViajes] = useState([])
     const [choferes, setChoferes] = useState([])
-
+    const [comenzar, setComenzar] = useState([])
     const [combis, setCombis] = useState([])
     const [userConfig, setUserConfig] = useState([]) // lo uso para detectar que la id del logeado sea igual que idUsuario de algun elemento
 
 
     const [viajesFiltrados, setViajesFiltrados] = useState([])
-
+    const [pasajeComprados, setPasajeComprados] = useState([])
     const [idUsuarioLogueado, setIdUsuarioLogueado] = useState('')
 
     const [usuario, setUsuario] = useState('')
     const [esAdmin, setEsAdmin] = useState(false)
     const [esUsuarioLog, setEsUsuarioLog] = useState(false)
-
     const historial = useHistory()
 
     const comenzarViaje = (item) => {
 
+        pasajeComprados.map(pc => {
+            if (item.infoViaje.id === pc.idViaje && pc.estadoPasaje === 'Pendiente') {
+
+                let actualizarPasajeComprado = {
+                    cantidadButacas: pc.cantidadButacas,
+                    estadoPasaje: 'En curso',
+                    idPasajero: pc.idPasajero,
+                    idViaje: pc.idViaje,
+                    infoPasajero: pc.infoPasajero,
+                    infoViaje: pc.infoViaje,
+                    snackComprados: pc.snackComprados,
+                    tieneSnackComprados: pc.tieneSnackComprados,
+                    totalPagado: pc.totalPagado
+                }
+                console.log(actualizarPasajeComprado)
+                store.collection('pasajeComprados').doc(pc.id).set(actualizarPasajeComprado)
+                getPasajeComprado()
+            }
+
+        })
         historial.push('/listaPasajeros', { idViaje: item })
     }
 
-    const getChoferes =  () => {
+    const getChoferes = () => {
         store.collection('choferes').get()
-        .then(response => {
-            const fetchedChoferes = [];
-            response.docs.forEach(document => {
-            const fetchedChofer = {
-                id: document.id,
-                ...document.data()
-            };
-            fetchedChoferes.push(fetchedChofer)
-            });
-            setChoferes(fetchedChoferes)
-        })
-    }  
+            .then(response => {
+                const fetchedChoferes = [];
+                response.docs.forEach(document => {
+                    const fetchedChofer = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedChoferes.push(fetchedChofer)
+                });
+                setChoferes(fetchedChoferes)
+            })
+    }
 
     const getViajes = () => {
         store.collection('viaje').get()
@@ -101,9 +120,25 @@ function ChoferPageListarViaje() {
             })
     }
 
+    const getPasajeComprado = () => {
+        store.collection('pasajeComprados').get()
+            .then(response => {
+                const fetchedViajes = [];
+                response.docs.forEach(document => {
+                    const fetchedViaje = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedViajes.push(fetchedViaje)
+                });
+                setPasajeComprados(fetchedViajes)
+            })
+    }
+
     useEffect(() => {
         getViajes()
         getChoferes()
+        getPasajeComprado()
         const datos = async () => {
             const { docs } = await store.collection('usuariosConfig').get()
             const userArray = docs.map(item => ({ id: item.id, ...item.data() }))
@@ -134,11 +169,14 @@ function ChoferPageListarViaje() {
         const choferActual = choferes.find((chofer) => {
             return idUsuarioLogueado === chofer.idUser
         })
-
+        let diaHoy = hoy.getDate()
+        let mesHoy = hoy.getMonth()
+        let anioHoy = hoy.getFullYear()
         let viajesFiltroChofer = []
+        let arregloComenzar = []
         let idRandom = 0
         viajes.map(v => {
-            if((v.estado === estado) || (estado === "Todos")){
+            if ((v.estado === estado) || (estado === "Todos")) {
                 if (v.datosCombi.idChofer === choferActual.id) {
                     const agregarViaje = {
                         id: idRandom,
@@ -148,17 +186,28 @@ function ChoferPageListarViaje() {
                         estadoViaje: v.estado,
                         infoViaje: v
                     }
-    
+                    let fechaViaje = new Date(agregarViaje.fecha)
                     viajesFiltroChofer.push(agregarViaje);
+                    let c = {
+                        idV: idRandom,
+                        inicio: false
+
+                    }
+                    let diaFecha = fechaViaje.getDate() + 1
+                    let mesFecha = fechaViaje.getMonth()
+                    let anioFecha = fechaViaje.getFullYear()
+                    if (diaHoy === diaFecha && mesHoy === mesFecha && anioHoy === anioFecha) {
+                        c.inicio = true
+                        arregloComenzar.push(c)
+                    }
                 }
                 idRandom = idRandom + 1
             }
-            
-
         })
 
         setViajesFiltrados(viajesFiltroChofer)
-        console.log(viajesFiltrados)
+        setComenzar(arregloComenzar)
+        console.log(arregloComenzar)
         try {
             //FALTA MOSTRAR MSJ DE SUCESS
             setShowModalFiltar(false)
@@ -175,7 +224,7 @@ function ChoferPageListarViaje() {
             <MenuOpcChofer optionName="choferListarViaje" />
             <div>
                 <h3 style={{ top: 110, position: 'absolute', left: 80, width: "60%", }}> Listado de mis Viajes</h3>
-                <Button style={{ top: 105, position: 'absolute', right: 70, width: "200px", height: "40px" }} onClick={(e) => { filtarViajes() }} variant="secondary " >filtrar viajes</Button>
+                <Button style={{ top: 105, position: 'absolute', right: 70, width: "200px", height: "40px" }} onClick={(e) => { filtarViajes() }} variant="secondary " >Filtrar Viajes</Button>
 
                 <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{ bottom: 0, zIndex: 5, position: 'absolute', left: 75, width: "60%" }} >
                     {msgSucc}
@@ -205,14 +254,12 @@ function ChoferPageListarViaje() {
                                                 <td>{item.destino}</td>
                                                 <td>{item.fecha}</td>
                                                 <td>{item.estadoViaje}</td>
-                                                <td style={{ width: "30%" }} >
+                                                <td style={{ width: "15%" }} >
                                                     <div className="d-flex justify-content-around">
-                                                        <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { }}>
-                                                            Ver detalle de viaje
+                                                        <button disabled = {item.id === comenzar[0].idV && !comenzar.inicio ? false : true} className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { comenzarViaje(item) }}>
+                                                                    Comenzar Viaje
                                                         </button>
-                                                        <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => {comenzarViaje(item) }}>
-                                                            Comenzar Viaje
-                                                        </button>
+
                                                     </div>
                                                 </td>
                                             </tr>

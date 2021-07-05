@@ -75,7 +75,51 @@ const ListaPasajeros = () => {
     const handleCloseRegistrarDatosCovid = () => showModalRegistrarDatosCovid(false)
     const [pasajero, setPasajero] = useState('')
 
+    //Cancelar Viaje
+    const [itemPasaje, setItemPasaje] = useState([])
+    const [showModalCancelar, setShowModalCancelar] = useState(false)
+    const handleCloseCancelar = () => setShowModalCancelar(false)
+    const [pasajesComprados, setPasajesComprados] = useState([])
+    const [viaje, setViaje] = useState([])
+
+
+    const getPasajeComprado = () => {
+        store.collection('pasajeComprados').get()
+            .then(response => {
+                const fetchedViajes = [];
+                response.docs.forEach(document => {
+                    const fetchedViaje = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedViajes.push(fetchedViaje)
+                    setPasajesComprados(fetchedViajes)
+                    // auth.onAuthStateChanged((user) => {
+                    //     let userPasaje = fetchedViajes.filter((item) => item.infoPasajero.idUser === user.uid)
+                    //     setPasajesComprados(userPasaje)
+                    //     // setEstado(userPasaje.estadoPasaje)
+                    // })
+                });
+            })
+    }
+
+    const getViajes = () => {
+        store.collection('viaje').get()
+            .then(response => {
+                const fetchedViajes = [];
+                response.docs.forEach(document => {
+                    const fetchedViaje = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedViajes.push(fetchedViaje)
+                });
+                setViaje(fetchedViajes)
+            })
+    }
     useEffect(() => {
+        getPasajeComprado()
+        getViajes()
         const datos = async () => {
             const { docs } = await store.collection('pasajeViajeVendido').get()
             const pasajeArray = docs.map(item => ({ id: item.id, ...item.data() }))
@@ -83,6 +127,7 @@ const ListaPasajeros = () => {
             let arregloPasaje = []
             pasajeArray.map(pasaje => {
                 if (datosViaje.infoViaje.id === pasaje.idViaje) {
+                    setItemPasaje(datosViaje)
                     arregloPasaje.push(pasaje)
                     if (pasaje.tieneSnackComprados) {
                         pasaje.snackComprados.map(sn => {
@@ -109,8 +154,8 @@ const ListaPasajeros = () => {
             setPasajeVendido(arregloPasaje)
 
         }
-
         datos()
+        
     }, []);
 
 
@@ -131,17 +176,13 @@ const ListaPasajeros = () => {
             }
         }
         console.log('Cantidad en el arreglo', ausente.length)
-        item.estadoPasaje="Ausente"
+        item.estadoPasaje = "Ausente"
         if (!check) {
-            item.estadoPasaje="Pendiente"
+            item.estadoPasaje = "Pendiente"
         }
 
     }
-    const mostrar = () => {
-        // console.log(datosViaje)
-        // console.log(pasajeVendido)
-        console.log(snack)
-    }
+
 
     //control datos covid
     let sintomasPasajero = []
@@ -193,13 +234,13 @@ const ListaPasajeros = () => {
                 sintomas: sintomasPasajero
             }
 
-            pasajero.estadoPasaje="Sospechoso Covid"
+            pasajero.estadoPasaje = "Sospechoso Covid"
 
             await store.collection('reporteSospechosos').add(pasajeroSospechoso)
         }
         else {
             alert("en presentes estan los que pueden viajar")
-            pasajero.estadoPasaje="Arribo"
+            pasajero.estadoPasaje = "Arribo"
             // pasajerosPresentes
         }
         try {
@@ -258,11 +299,73 @@ const ListaPasajeros = () => {
 
     }
 
-
-    // borrar
-    const mostrarPasajeros = () => {
-        // console.log(presentes)
+    const cancelarViajeModal = () => {
+        setShowModalCancelar(true)
     }
+
+    const cancelarViaje =  () => {
+
+        //Actualizo el estado del pasaje Comprado
+        
+        let cantidad = 0
+        pasajesComprados.map(itemViajeChofer => {
+            if (itemViajeChofer.idViaje === itemPasaje.infoViaje.id && itemViajeChofer.estadoPasaje === 'En curso') {
+                console.log(itemViajeChofer)
+                let actualizarPasajeComprado = {
+                    cantidadButacas: itemViajeChofer.cantidadButacas,
+                    estadoPasaje: 'Cancelado',
+                    idPasajero: itemViajeChofer.idPasajero,
+                    idViaje: itemViajeChofer.idViaje,
+                    infoPasajero: itemViajeChofer.infoPasajero,
+                    infoViaje: itemViajeChofer.infoViaje,
+                    snackComprados: itemViajeChofer.snackComprados,
+                    tieneSnackComprados: itemViajeChofer.tieneSnackComprados,
+                    totalPagado: itemViajeChofer.totalPagado
+                }
+                cantidad = cantidad + parseInt(actualizarPasajeComprado.cantidadButacas)
+                store.collection('pasajeComprados').doc(itemViajeChofer.id).set(actualizarPasajeComprado)
+                getPasajeComprado()
+            }
+     
+        
+        })
+          
+        //Actualizo la cantidad de butacas del viaje y la cargo
+        console.log(cantidad)
+        viaje.map(iViaje => {
+            if (iViaje.id === itemPasaje.infoViaje.id) {
+                let modificarViaje = {
+                    butacaDisponible: iViaje.butacaDisponible + cantidad,
+                    combi: iViaje.combi,
+                    datosCombi: iViaje.datosCombi,
+                    datosRuta: iViaje.datosRuta,
+                    destino: iViaje.destino,
+                    estado: 'Cancelado',
+                    fechaviaje: iViaje.fechaviaje,
+                    id: iViaje.id,
+                    idCombi: iViaje.idCombi,
+                    idRuta: iViaje.idRuta,
+                    origen: iViaje.origen,
+                    precio: iViaje.precio,
+                    ruta_entera: iViaje.ruta_entera
+
+                }
+                console.log(modificarViaje)
+                store.collection('viaje').doc(iViaje.id).set(modificarViaje)
+                getViajes()
+                
+            }
+            
+
+        })
+        
+
+        setShowModalCancelar(false)
+
+
+    }
+
+
     return (
         <div>
             <MenuUsuarioChofer />
@@ -273,17 +376,8 @@ const ListaPasajeros = () => {
                 <h3 style={{ top: 150, position: 'absolute', left: 80, width: "60%", }}> Informacion del Viaje</h3>
                 <Button variant="secondary" style={{ top: 105, position: 'absolute', left: 80, width: "100px", height: "40px" }} onClick={(e) => { volverAtras() }}>Atras</Button>
                 <Button variant="primary" style={{ top: 105, position: 'absolute', left: 400, width: "150px", height: "40px" }} onClick={(e) => venderPasaje()}>Vender Pasaje</Button>
-                <Button style={{ top: 105, position: 'absolute', right: 70, width: "150px", height: "40px" }} variant="danger " >Cancelar Viaje</Button>
-                // borrar este boton
-                <Button variant="success" style={{ top: 105, position: 'absolute', left: 600, width: "150px", height: "40px" }} onClick={(e) => { mostrarPasajeros() }}>ver pasajeros</Button>
-
-
-                {
-
-                                <Button variant="secondary" style={{ top: 105, position: 'absolute', right: 360, width: "150px", height: "40px" }} variant="danger " onClick={(e) => { mostrar() }}>Finalizar Viaje</Button>
-
-                }
-
+                <Button style={{ top: 105, position: 'absolute', right: 70, width: "150px", height: "40px" }} variant="danger " onClick={(e) => cancelarViajeModal()}>Cancelar Viaje</Button>
+                <Button variant="secondary" style={{ top: 105, position: 'absolute', right: 360, width: "150px", height: "40px" }} variant="danger " >Finalizar Viaje</Button>
                 <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{ bottom: 0, zIndex: 5, position: 'absolute', left: 75, width: "60%" }} >
                     {msgSucc}
                 </Alert>
@@ -489,6 +583,31 @@ const ListaPasajeros = () => {
                         </Modal.Footer>
                     </Modal>
                 ) : (<></>)
+            }
+            {
+                showModalCancelar ?
+                    (
+                        <Modal id="modalCancelar" show={showModalCancelar} onHide={handleCloseCancelar}>
+                            <Modal.Header >
+                                <Modal.Title>Cancelar Pasaje</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                Esta seguro/a que desea cancelar el viaje?
+                            </Modal.Body>
+
+                            <Modal.Footer>
+                                <Button variant="primary" onClick={cancelarViaje}>
+                                    Confirmar
+                                </Button>
+                                <Button variant="secondary" onClick={() => { setShowModalCancelar(false); setMsgError(null); setShowAlert(false); }}>
+                                    Cancelar
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
+                    ) : (
+                        <></>
+                    )
+
             }
         </div>
 

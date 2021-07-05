@@ -220,7 +220,7 @@ function UsuarioViajesComprados() {
         })
 
         //Actualizo la cantidad de butacas del viaje y la cargo
-
+ 
 
         let modificarViaje = {
             butacaDisponible: buscarViaje.butacaDisponible + parseInt(itemPasaje.cantidadButacas),
