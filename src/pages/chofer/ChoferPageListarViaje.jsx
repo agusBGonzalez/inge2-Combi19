@@ -270,7 +270,7 @@ function ChoferPageListarViaje() {
                         </tbody>
                     </Table>
                     {
-                        viajesFiltrados.length === 0 ? <div className="alert alert-warning mt-19"> No hay elementos en la lista </div> : <div></div>
+                        viajesFiltrados.length === 0 ? <div className="alert alert-warning mt-19"> No se encontraron viajes con ese criterio de busqueda </div> : <div></div>
                     }
                 </div>
             </div>
