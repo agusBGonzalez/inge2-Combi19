@@ -256,7 +256,8 @@ function ChoferPageListarViaje() {
                                                 <td>{item.estadoViaje}</td>
                                                 <td style={{ width: "15%" }} >
                                                     <div className="d-flex justify-content-around">
-                                                        <button disabled = {item.id === comenzar[0].idV && !comenzar.inicio ? false : true} className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { comenzarViaje(item) }}>
+                                                    {/* disabled = {item.id === comenzar[0].idV && !comenzar.inicio ? false : true} */}
+                                                        <button  className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { comenzarViaje(item) }}>
                                                                     Comenzar Viaje
                                                         </button>
 

@@ -85,6 +85,8 @@ const ListaPasajeros = () => {
     //usuariosConfig
     const [usuariosConfig, setUsuariosConfig] =useState([])
 
+    const [showModalAviso, setShowModalAviso] = useState(false)
+    const handleCloseAviso = () => setShowModalAviso(false)
 
     const getPasajeComprado = () => {
         store.collection('pasajeComprados').get()
@@ -384,6 +386,8 @@ const ListaPasajeros = () => {
         })
 
 
+        setMsgError('Se procede a devolver el 100% del valor del pasaje, esperamos que pueda contar con nuestro servicio mas adelante')
+        setShowModalAviso(true)
         setShowModalCancelar(false)
 
 
@@ -624,6 +628,28 @@ const ListaPasajeros = () => {
                                     Confirmar
                                 </Button>
                                 <Button variant="secondary" onClick={() => { setShowModalCancelar(false); setMsgError(null); setShowAlert(false); }}>
+                                    Cancelar
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
+                    ) : (
+                        <></>
+                    )
+
+            }
+            {
+                showModalAviso ?
+                    (
+                        <Modal id="modalCancelar" show={showModalAviso} onHide={handleCloseAviso}>
+                            <Modal.Header >
+                                <Modal.Title></Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                {msgError}
+                            </Modal.Body>
+
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={() => { setShowModalAviso(false); setMsgError(null); setShowAlert(false); volverAtras() }}>
                                     Cancelar
                                 </Button>
                             </Modal.Footer>
