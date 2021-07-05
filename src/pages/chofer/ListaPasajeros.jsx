@@ -82,6 +82,9 @@ const ListaPasajeros = () => {
     const [pasajesComprados, setPasajesComprados] = useState([])
     const [viaje, setViaje] = useState([])
 
+    //usuariosConfig
+    const [usuariosConfig, setUsuariosConfig] =useState([])
+
 
     const getPasajeComprado = () => {
         store.collection('pasajeComprados').get()
@@ -153,9 +156,24 @@ const ListaPasajeros = () => {
             setSnack(snackPasaje)
             setPasajeVendido(arregloPasaje)
 
+            //usuariosConfig
+            store.collection('usuariosConfig').get()
+            .then(response => {
+                const fetchedUsers = [];
+                response.docs.forEach(document => {
+                    const fetchedUser = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedUsers.push(fetchedUser)
+                });
+
+                setUsuariosConfig(fetchedUsers)
+            })
+
         }
         datos()
-        
+
     }, []);
 
 
@@ -235,6 +253,12 @@ const ListaPasajeros = () => {
             }
 
             pasajero.estadoPasaje = "Sospechoso Covid"
+            // actualiza estado ... ver si anda xd
+            let actualizarSospechoso = usuariosConfig.find((item)=>{
+                return item.idUser ===pasajero.infoPasajero.idUser
+            })
+            actualizarSospechoso.estadoPasaje = "Sospechoso Covid"
+            await store.collection('pasajeViajeVendido').doc(pasajero.infoPasajero.idUser).set(actualizarSospechoso)
 
             await store.collection('reporteSospechosos').add(pasajeroSospechoso)
         }
@@ -303,10 +327,10 @@ const ListaPasajeros = () => {
         setShowModalCancelar(true)
     }
 
-    const cancelarViaje =  () => {
+    const cancelarViaje = () => {
 
         //Actualizo el estado del pasaje Comprado
-        
+
         let cantidad = 0
         pasajesComprados.map(itemViajeChofer => {
             if (itemViajeChofer.idViaje === itemPasaje.infoViaje.id && itemViajeChofer.estadoPasaje === 'En curso') {
@@ -326,10 +350,10 @@ const ListaPasajeros = () => {
                 store.collection('pasajeComprados').doc(itemViajeChofer.id).set(actualizarPasajeComprado)
                 getPasajeComprado()
             }
-     
-        
+
+
         })
-          
+
         //Actualizo la cantidad de butacas del viaje y la cargo
         console.log(cantidad)
         viaje.map(iViaje => {
@@ -353,12 +377,12 @@ const ListaPasajeros = () => {
                 console.log(modificarViaje)
                 store.collection('viaje').doc(iViaje.id).set(modificarViaje)
                 getViajes()
-                
+
             }
-            
+
 
         })
-        
+
 
         setShowModalCancelar(false)
 
