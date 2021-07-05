@@ -213,11 +213,11 @@ function AdminViajePage() {
         fecha2 = new Date(fecha)
         aux = new Date(fecha2.setDate(fecha2.getDate() + dia)).toLocaleDateString()
 
-        if(hoy > aux){
-            setMsgError('No se puede cargar fechas anteriores a la de hoy' )
-            setShowAlert(true)
-            return
-        }
+        // if(hoy > aux){
+        //     setMsgError('No se puede cargar fechas anteriores a la de hoy' )
+        //     setShowAlert(true)
+        //     return
+        // }
 
         combiSelect.map( itemcombi =>{
             if(itemcombi.id === combi ){

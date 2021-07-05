@@ -175,7 +175,7 @@ function ChoferPageListarViaje() {
                     let diaFecha = fechaViaje.getDate() + 1
                     let mesFecha = fechaViaje.getMonth()
                     let anioFecha = fechaViaje.getFullYear()
-                    if (diaHoy === diaFecha && mesHoy === mesFecha && anioHoy === anioFecha) {
+                    if (diaHoy === diaFecha && mesHoy === mesFecha && anioHoy === anioFecha && v.estado === 'Pendiente') {
                         const agregarViaje = {
                             id: idRandom,
                             origen: v.origen,

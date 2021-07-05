@@ -74,6 +74,7 @@ const ListaPasajeros = () => {
     const [showModalRegistrarDatosCovid, setShowModalRegistrarDatosCovid] = useState(false)
     const handleCloseRegistrarDatosCovid = () => showModalRegistrarDatosCovid(false)
     const [pasajero, setPasajero] = useState('')
+    const hoy = new Date()
 
     //Cancelar Viaje
     const [itemPasaje, setItemPasaje] = useState([])
@@ -211,6 +212,10 @@ const ListaPasajeros = () => {
         setPasajero(item)
         setShowModalRegistrarDatosCovid(true)
     }
+
+
+
+
     const confirmarDatosCovid = async () => {
         let sospechoso = false
         if (temp === "") {
@@ -220,17 +225,17 @@ const ListaPasajeros = () => {
         }
         if (temp >= 38) {
             sintomasPasajero.push("temperatura mayor a 38 grados")
-            alert("El pasajero no podra viajar por tener fiebre, asi mismo se devolvera su dinero y no podra comprar pasajes por 14 dias")
+            // alert("El pasajero no podra viajar por tener fiebre, asi mismo se devolvera su dinero y no podra comprar pasajes por 14 dias")
             sospechoso = true
         }
         else {
-            console.log(" temperatura alta por 1 semana ", checkTemperatura)
-            console.log(" perdida del gusto ", checkGustoOlfato)
-            console.log(" dificultad respiratoria", checkDificultadResp)
-            console.log("dolorGarganta ", checkDolorGarganta)
-            console.log(cantSintomas)
+            // console.log(" temperatura alta por 1 semana ", checkTemperatura)
+            // console.log(" perdida del gusto ", checkGustoOlfato)
+            // console.log(" dificultad respiratoria", checkDificultadResp)
+            // console.log("dolorGarganta ", checkDolorGarganta)
+            // console.log(cantSintomas)
             if (cantSintomas > 1) {
-                alert("El pasajero no podra viajar por tener mas de dos sintomas, asi mismo se devolvera su dinero y no podra comprar pasajes por 14 dias")
+                // alert("El pasajero no podra viajar por tener mas de dos sintomas, asi mismo se devolvera su dinero y no podra comprar pasajes por 14 dias")
                 if (checkTemperatura) {
                     sintomasPasajero.push("tuvo una temperatura mayor a 38 grados durante la ultima semana")
                 }
@@ -260,7 +265,7 @@ const ListaPasajeros = () => {
             // marco como sospechoso en pasajesComprados
             pasajesComprados.map(itemViajeChofer => {
                 if (itemViajeChofer.idViaje === itemPasaje.infoViaje.id && itemViajeChofer.estadoPasaje === 'En curso') {
-                    console.log(itemViajeChofer)
+                    // console.log(itemViajeChofer)
                     let actualizarPasajeComprado = {
                         cantidadButacas: itemViajeChofer.cantidadButacas,
                         estadoPasaje: 'Sospechoso Covid',
@@ -274,8 +279,38 @@ const ListaPasajeros = () => {
                     }
                     store.collection('pasajeComprados').doc(itemViajeChofer.id).set(actualizarPasajeComprado)
                     getPasajeComprado()
+                }else{
+                    let fechaViaje = new Date(itemViajeChofer.infoViaje.fechaviaje)
+                    let diaFecha = fechaViaje.getDate() + 1
+                    let mesFecha = fechaViaje.getMonth()
+                    let diacovid = diaFecha + 14
+                    let mescovid = 0
+                    if(diacovid > 30){
+                        mescovid = mesFecha + 1
+                        diacovid = 30 - diaFecha
+                    }
+                    if(diaFecha < diacovid ){
+                        console.log('entre')
+                        if (itemViajeChofer.idPasajero === pasajero.idPasajero && itemViajeChofer.estadoPasaje === 'Pendiente') {
+                            console.log(itemViajeChofer)
+                            let actualizarPasajeComprado = {
+                                cantidadButacas: itemViajeChofer.cantidadButacas,
+                                estadoPasaje: 'Rechazado',
+                                idPasajero: itemViajeChofer.idPasajero,
+                                idViaje: itemViajeChofer.idViaje,
+                                infoPasajero: itemViajeChofer.infoPasajero,
+                                infoViaje: itemViajeChofer.infoViaje,
+                                snackComprados: itemViajeChofer.snackComprados,
+                                tieneSnackComprados: itemViajeChofer.tieneSnackComprados,
+                                totalPagado: itemViajeChofer.totalPagado
+                            }
+                            store.collection('pasajeComprados').doc(itemViajeChofer.id).set(actualizarPasajeComprado)
+                            getPasajeComprado()
+                        }    
+                    }
+                    
                 }
-    
+                
     
             })
 
@@ -283,7 +318,7 @@ const ListaPasajeros = () => {
             
         }
         else {
-            alert("en presentes estan los que pueden viajar")
+            // alert("en presentes estan los que pueden viajar")
             pasajero.estadoPasaje = "Arribo"
             // pasajerosPresentes
         }
@@ -513,7 +548,7 @@ const ListaPasajeros = () => {
                                         {
                                             pasajeVendido.length === 0 ?
                                                 (
-                                                    <h5>"No pasajeros para este viaje"</h5>
+                                                    <h5>"No hay pasajeros para este viaje"</h5>
                                                 ) : (<></>)
                                         }
                                     </Table>

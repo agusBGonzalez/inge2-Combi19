@@ -116,8 +116,10 @@ function UsuarioBuscarViajes() {
             return
         } else {
             fecha2 = new Date(fecha)
-            aux = new Date(fecha2.setDate(fecha2.getDate() + dia))
-            if (hoy > aux.toLocaleDateString()) {
+            let hoydia = new Date().getDate() + 1
+            let fechadia = fecha2.getDate() + 1
+            // aux = new Date(fecha2.setDate(fecha2.getDate() + dia))
+            if (hoydia > fechadia) {
                 setMsgError('La fecha no puede ser posterior a la fecha actual')
                 setShowAlert(true)
                 return
