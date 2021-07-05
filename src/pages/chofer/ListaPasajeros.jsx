@@ -81,7 +81,8 @@ const ListaPasajeros = () => {
     const handleCloseCancelar = () => setShowModalCancelar(false)
     const [pasajesComprados, setPasajesComprados] = useState([])
     const [viaje, setViaje] = useState([])
-
+    const [showModalAviso, setShowModalAviso] = useState(false)
+    const handleCloseAviso = () => setShowModalAviso(false)
 
     const getPasajeComprado = () => {
         store.collection('pasajeComprados').get()
@@ -155,7 +156,7 @@ const ListaPasajeros = () => {
 
         }
         datos()
-        
+
     }, []);
 
 
@@ -303,10 +304,10 @@ const ListaPasajeros = () => {
         setShowModalCancelar(true)
     }
 
-    const cancelarViaje =  () => {
+    const cancelarViaje = () => {
 
         //Actualizo el estado del pasaje Comprado
-        
+
         let cantidad = 0
         pasajesComprados.map(itemViajeChofer => {
             if (itemViajeChofer.idViaje === itemPasaje.infoViaje.id && itemViajeChofer.estadoPasaje === 'En curso') {
@@ -326,10 +327,10 @@ const ListaPasajeros = () => {
                 store.collection('pasajeComprados').doc(itemViajeChofer.id).set(actualizarPasajeComprado)
                 getPasajeComprado()
             }
-     
-        
+
+
         })
-          
+
         //Actualizo la cantidad de butacas del viaje y la cargo
         console.log(cantidad)
         viaje.map(iViaje => {
@@ -353,13 +354,14 @@ const ListaPasajeros = () => {
                 console.log(modificarViaje)
                 store.collection('viaje').doc(iViaje.id).set(modificarViaje)
                 getViajes()
-                
+
             }
-            
+
 
         })
-        
 
+        setMsgError('Se procede a devolver el 100% del valor del pasaje, esperamos que pueda contar con nuestro servicio mas adelante')
+        setShowModalAviso(true)
         setShowModalCancelar(false)
 
 
@@ -600,6 +602,28 @@ const ListaPasajeros = () => {
                                     Confirmar
                                 </Button>
                                 <Button variant="secondary" onClick={() => { setShowModalCancelar(false); setMsgError(null); setShowAlert(false); }}>
+                                    Cancelar
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
+                    ) : (
+                        <></>
+                    )
+
+            }
+            {
+                showModalAviso ?
+                    (
+                        <Modal id="modalCancelar" show={showModalAviso} onHide={handleCloseAviso}>
+                            <Modal.Header >
+                                <Modal.Title></Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                {msgError}
+                            </Modal.Body>
+
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={() => { setShowModalAviso(false); setMsgError(null); setShowAlert(false); volverAtras() }}>
                                     Cancelar
                                 </Button>
                             </Modal.Footer>
