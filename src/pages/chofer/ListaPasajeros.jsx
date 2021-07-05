@@ -404,7 +404,7 @@ const ListaPasajeros = () => {
         })
 
 
-        setMsgError('Se procede a devolver el 100% del valor del pasaje, esperamos que pueda contar con nuestro servicio mas adelante')
+        setMsgError('Se procede a devolver el 100% del valor del pasaje a cada pasajero')
         setShowModalAviso(true)
         setShowModalCancelar(false)
 
@@ -510,6 +510,12 @@ const ListaPasajeros = () => {
                                                     )
                                             }
                                         </tbody>
+                                        {
+                                            pasajeVendido.length === 0 ?
+                                                (
+                                                    <h5>"No pasajeros para este viaje"</h5>
+                                                ) : (<></>)
+                                        }
                                     </Table>
 
 
