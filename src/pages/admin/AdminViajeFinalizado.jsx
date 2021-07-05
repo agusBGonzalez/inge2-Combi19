@@ -55,6 +55,7 @@ const AdminViajeFinalizado = () => {
     var hoy = new Date().toLocaleDateString()
     const fechaHoy = hoy.substr(0, hoy.indexOf(','))
     let aux = false
+    let totFin = 0
 
     //REPORTE COVID
     const [reporteSospechoso, setReporteSospechoso] = useState([])
@@ -88,7 +89,6 @@ const AdminViajeFinalizado = () => {
             const rutaArray = respuesta.docs.map(item => ({ id: item.id, ...item.data() }))
             setRutaSelect(rutaArray)
         }
-
         datos()
         store.collection('viaje').get()
             .then(response => {
@@ -108,14 +108,16 @@ const AdminViajeFinalizado = () => {
             });
     }, []);
 
-    const getReportes = async () => {
+    const getReportes = async (item) => {
         const { docs } = await store.collection('reporteSospechosos').get()
         const reporteSospechosoArray = docs.map(item => ({ id: item.id, ...item.data() }))
-        setReporteSospechoso(reporteSospechosoArray)
+
+        const existeSospechoso = reporteSospechosoArray.filter((itemS) => itemS.datos.idViaje === item.id)
+        setReporteSospechoso(existeSospechoso)
     }
     const verReporteCovid = (item) => {
         setViajeRepCovid(item)
-        getReportes()
+        getReportes(item)
         let encontre = false
         let idViaje
         reporteSospechoso.map(rs => {
@@ -126,11 +128,8 @@ const AdminViajeFinalizado = () => {
             }
 
         })
-        if (encontre) {
-            setShowModalViajeRepCovid(true)
-        } else {
-            alert("agregar un mensaje que no hay reportes para este viaje")
-        }
+        setShowModalViajeRepCovid(true)
+
 
     }
     return (
@@ -161,6 +160,7 @@ const AdminViajeFinalizado = () => {
                                     (
                                         viajes.map(item => (
                                             item.estado === "Finalizado" ? (
+                                                totFin = totFin + 1,
                                                 <tr key={item.id}>
                                                     <td>{item.fechaviaje}</td>
                                                     <td>{item.ruta_entera}</td>
@@ -173,11 +173,11 @@ const AdminViajeFinalizado = () => {
                                                         </div>
                                                     </td>
                                                 </tr>
-
                                             ) : (
-                                                aux === false ? (aux = true) : (<></>)
+                                                <></>
                                             )
                                         ))
+
                                     ) : (
                                         <></>
                                     )
@@ -188,7 +188,7 @@ const AdminViajeFinalizado = () => {
                         viajes.length === 0 ?
                             (<div className="alert alert-warning mt-19"> No se encontraron Viajes registrados </div>)
                             : (
-                                aux === true ? (<div className="alert alert-warning mt-19"> No se encontraron Viajes Finalizados </div>) : (<div></div>)
+                                totFin > 0 ? (<div></div>) : (<div className="alert alert-warning mt-19"> No se encontraron Viajes Finalizados </div>)
                             )
                     }
                 </div>
@@ -214,7 +214,6 @@ const AdminViajeFinalizado = () => {
                                             {
                                                 reporteSospechoso.length !== 0 ?
                                                     (
-
                                                         reporteSospechoso.map(item => (
                                                             item.datos.idViaje === viajeRepCovid.id ? (
                                                                 // item.sintomas.map(s => 
@@ -226,12 +225,11 @@ const AdminViajeFinalizado = () => {
 
                                                                 </tr>
                                                             ) : (<></>)
-                                                        )
-                                                        )
-
-
-                                                    ) : (
-                                                        <></>
+                                                        
+                                                        )) 
+                                                    ): (
+                                                        
+                                                        <div className="alert alert-warning mt-17"> No se reportaron sospechosos de COVID para este viaje. </div>
                                                     )
                                             }
 
