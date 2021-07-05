@@ -64,6 +64,12 @@ const ListaPasajeros = () => {
     const [snack, setSnack] = useState([])
     const [infoSnack, setInfoSnack] = useState({})
 
+    //desabilitar boton sintomas
+    const [habilita, setHabilita] = useState(false);
+
+
+
+
     // controlar covid
     const [temp, setTemp] = useState('')
     const [checkGustoOlfato, setCheckGustoOlfato] = useState(false)
@@ -83,7 +89,7 @@ const ListaPasajeros = () => {
     const [viaje, setViaje] = useState([])
 
     //usuariosConfig
-    const [usuariosConfig, setUsuariosConfig] =useState([])
+    const [usuariosConfig, setUsuariosConfig] = useState([])
 
     const [showModalAviso, setShowModalAviso] = useState(false)
     const handleCloseAviso = () => setShowModalAviso(false)
@@ -125,6 +131,7 @@ const ListaPasajeros = () => {
     useEffect(() => {
         getPasajeComprado()
         getViajes()
+        desbloquearFinViaje()
         const datos = async () => {
             const { docs } = await store.collection('pasajeViajeVendido').get()
             const pasajeArray = docs.map(item => ({ id: item.id, ...item.data() }))
@@ -160,18 +167,18 @@ const ListaPasajeros = () => {
 
             //usuariosConfig
             store.collection('usuariosConfig').get()
-            .then(response => {
-                const fetchedUsers = [];
-                response.docs.forEach(document => {
-                    const fetchedUser = {
-                        id: document.id,
-                        ...document.data()
-                    };
-                    fetchedUsers.push(fetchedUser)
-                });
+                .then(response => {
+                    const fetchedUsers = [];
+                    response.docs.forEach(document => {
+                        const fetchedUser = {
+                            id: document.id,
+                            ...document.data()
+                        };
+                        fetchedUsers.push(fetchedUser)
+                    });
 
-                setUsuariosConfig(fetchedUsers)
-            })
+                    setUsuariosConfig(fetchedUsers)
+                })
 
         }
         datos()
@@ -275,12 +282,12 @@ const ListaPasajeros = () => {
                     store.collection('pasajeComprados').doc(itemViajeChofer.id).set(actualizarPasajeComprado)
                     getPasajeComprado()
                 }
-    
-    
+
+
             })
 
 
-            
+
         }
         else {
             alert("en presentes estan los que pueden viajar")
@@ -411,15 +418,28 @@ const ListaPasajeros = () => {
 
     }
 
+    const desbloquearFinViaje = () => {
 
+        let numero=0
+        pasajeVendido.map(p => {
+            if(p.estadoPasaje === "Pendiente"){
+                numero=numero+1
+            }
+        })
+        if (numero > 0){
+            alert(numero)
+        }
+    }
+    // desbloquear boton finalizar viaje, cuando estan todos los presentes / ausentes / sospechoso 
     return (
         <div>
             <MenuUsuarioChofer />
             <MenuOpcChofer />
 
             <div>
-
                 <h3 style={{ top: 150, position: 'absolute', left: 80, width: "60%", }}> Informacion del Viaje</h3>
+                <Button variant="secondary" style={{ top: 150, position: 'absolute', left: 80, width: "100px", height: "40px" }} onClick={(e) => { desbloquearFinViaje() }}>verificar</Button>
+
                 <Button variant="secondary" style={{ top: 105, position: 'absolute', left: 80, width: "100px", height: "40px" }} onClick={(e) => { volverAtras() }}>Atras</Button>
                 <Button variant="primary" style={{ top: 105, position: 'absolute', left: 400, width: "150px", height: "40px" }} onClick={(e) => venderPasaje()}>Vender Pasaje</Button>
                 <Button style={{ top: 105, position: 'absolute', right: 70, width: "150px", height: "40px" }} variant="danger " onClick={(e) => cancelarViajeModal()}>Cancelar Viaje</Button>
@@ -494,13 +514,17 @@ const ListaPasajeros = () => {
                                                                 <td>{item.cantidadButacas}</td>
                                                                 <td>{item.estadoPasaje}</td>
                                                                 <td style={{ width: "15px" }}>
-                                                                    <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => registrarDatosCovid(item)}>
+                                                                    <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" disabled={habilita} onClick={(e) => registrarDatosCovid(item)}>
                                                                         Sintomas
                                                                     </button>
                                                                 </td>
                                                                 <td style={{ width: "10px" }}>
                                                                     <div class="custom-control custom-checkbox">
-                                                                        <input type="checkbox" defaultChecked={check} onClick={(e) => estaTildado(e.target.checked, item)} />
+                                                                        {/* 
+                                                                            disabled ={item.inicio? false:true}
+                                                                         */}
+
+                                                                        <input type="checkbox" defaultChecked={check} onChange={(e) => { estaTildado(e.target.checked, item); setHabilita(!habilita) }} />
                                                                     </div>
                                                                 </td>
                                                             </tr>
