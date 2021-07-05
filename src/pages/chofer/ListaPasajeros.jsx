@@ -668,7 +668,7 @@ const ListaPasajeros = () => {
 
                             <Modal.Footer>
                                 <Button variant="secondary" onClick={() => { setShowModalAviso(false); setMsgError(null); setShowAlert(false); volverAtras() }}>
-                                    Cancelar
+                                    Cerrar
                                 </Button>
                             </Modal.Footer>
                         </Modal>

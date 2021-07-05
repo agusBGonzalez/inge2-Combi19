@@ -415,7 +415,7 @@ function UsuarioViajesComprados() {
 
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => { setShowModalAviso(false); setMsgError(null); setShowAlert(false); }}>
-                            Cancelar
+                            Cerrar
                         </Button>
                     </Modal.Footer>
                 </Modal>
