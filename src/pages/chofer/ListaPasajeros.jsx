@@ -385,7 +385,7 @@ const ListaPasajeros = () => {
                         return itemViaje.id === item.idViaje
                     })
                     let modificarViaje = {
-                        butacaDisponible: viajeParaActualizar.butacaDisponible + parseInt(item.cantidadButacas),
+                        butacaDisponible: parseInt(viajeParaActualizar.butacaDisponible) + parseInt(item.cantidadButacas),
                         combi: viajeParaActualizar.combi,
                         datosCombi: viajeParaActualizar.datosCombi,
                         datosRuta: viajeParaActualizar.datosRuta,
@@ -520,7 +520,7 @@ const ListaPasajeros = () => {
         viaje.map(iViaje => {
             if (iViaje.id === itemPasaje.infoViaje.id) {
                 let modificarViaje = {
-                    butacaDisponible: iViaje.butacaDisponible + cantidad,
+                    butacaDisponible: parseInt(iViaje.butacaDisponible) + parseInt(cantidad),
                     combi: iViaje.combi,
                     datosCombi: iViaje.datosCombi,
                     datosRuta: iViaje.datosRuta,
@@ -598,7 +598,7 @@ const ListaPasajeros = () => {
         viaje.map(iViaje => {
             if (iViaje.id === itemPasaje.infoViaje.id) {
                 let modificarViaje = {
-                    butacaDisponible: iViaje.butacaDisponible + cantidad,
+                    butacaDisponible: parseInt(iViaje.butacaDisponible) + parseInt(cantidad),
                     combi: iViaje.combi,
                     datosCombi: iViaje.datosCombi,
                     datosRuta: iViaje.datosRuta,
