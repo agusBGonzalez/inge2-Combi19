@@ -81,6 +81,9 @@ const ListaPasajeros = () => {
     const handleCloseRegistrarDatosCovid = () => showModalRegistrarDatosCovid(false)
     const [pasajero, setPasajero] = useState('')
     const hoy = new Date()
+    const [idS,setIdS] = useState('')
+    const [tamaño,setTamaño] = useState(0)
+
 
     //Cancelar Viaje
     const [itemPasaje, setItemPasaje] = useState([])
@@ -132,7 +135,6 @@ const ListaPasajeros = () => {
     useEffect(() => {
         getPasajeComprado()
         getViajes()
-        desbloquearFinViaje()
         const datos = async () => {
             const { docs } = await store.collection('pasajeViajeVendido').get()
             const pasajeArray = docs.map(item => ({ id: item.id, ...item.data() }))
@@ -164,6 +166,7 @@ const ListaPasajeros = () => {
             }
             )
             setSnack(snackPasaje)
+            setTamaño(arregloPasaje.length)
             setPasajeVendido(arregloPasaje)
 
             //usuariosConfig
@@ -190,6 +193,7 @@ const ListaPasajeros = () => {
 
     const estaTildado = (check, item) => {
         setCheck(check)
+        setIdS(item.id)
         let arreglo = ausente
         const repetidoAusente = ausente.find(elemento => elemento === item.id)
         console.log('por aca pasa')
@@ -207,6 +211,11 @@ const ListaPasajeros = () => {
         item.estadoPasaje = "Ausente"
         if (!check) {
             item.estadoPasaje = "Pendiente"
+            setHabilita(false)
+            setTamaño(tamaño +1 )
+        } else {
+            setHabilita(true)
+            setTamaño(tamaño -1 )
         }
 
     }
@@ -225,6 +234,17 @@ const ListaPasajeros = () => {
 
     const confirmarDatosCovid = async () => {
         let sospechoso = false
+        console.log(temp)
+        if ( parseInt(temp) > 40) {
+            setMsgError('El valor de la temperatura asignada es invalido')
+            setShowAlert(true)
+            return
+        }
+        if ( parseInt(temp) < 35) {
+            setMsgError('El valor de la temperatura asignada es invalido')
+            setShowAlert(true)
+            return
+        }
         if (temp === "") {
             setMsgError('El campo temperatura esta vacio')
             setShowAlert(true)
@@ -261,6 +281,7 @@ const ListaPasajeros = () => {
             }
         }
         if (sospechoso) {
+            setTamaño(tamaño-1)
             const pasajeroSospechoso = {
                 datos: pasajero,
                 sintomas: sintomasPasajero
@@ -286,17 +307,17 @@ const ListaPasajeros = () => {
                     }
                     store.collection('pasajeComprados').doc(itemViajeChofer.id).set(actualizarPasajeComprado)
                     getPasajeComprado()
-                }else{
+                } else {
                     let fechaViaje = new Date(itemViajeChofer.infoViaje.fechaviaje)
                     let diaFecha = fechaViaje.getDate() + 1
                     let mesFecha = fechaViaje.getMonth()
                     let diacovid = diaFecha + 14
                     let mescovid = 0
-                    if(diacovid > 30){
+                    if (diacovid > 30) {
                         mescovid = mesFecha + 1
                         diacovid = 30 - diaFecha
                     }
-                    if(diaFecha < diacovid ){
+                    if (diaFecha < diacovid) {
                         console.log('entre')
                         if (itemViajeChofer.idPasajero === pasajero.idPasajero && itemViajeChofer.estadoPasaje === 'Pendiente') {
                             console.log(itemViajeChofer)
@@ -313,9 +334,9 @@ const ListaPasajeros = () => {
                             }
                             store.collection('pasajeComprados').doc(itemViajeChofer.id).set(actualizarPasajeComprado)
                             getPasajeComprado()
-                        }    
+                        }
                     }
-                    
+
                 }
 
 
@@ -326,8 +347,9 @@ const ListaPasajeros = () => {
         }
         else {
             // alert("en presentes estan los que pueden viajar")
-            pasajero.estadoPasaje = "Arribo"
+            pasajero.estadoPasaje = "Arribó"
             // pasajerosPresentes
+            setTamaño(tamaño-1)
         }
         try {
             //FALTA MOSTRAR MSJ DE SUCESS
@@ -453,18 +475,6 @@ const ListaPasajeros = () => {
 
     }
 
-    const desbloquearFinViaje = () => {
-
-        let numero=0
-        pasajeVendido.map(p => {
-            if(p.estadoPasaje === "Pendiente"){
-                numero=numero+1
-            }
-        })
-        if (numero > 0){
-            alert(numero)
-        }
-    }
     // desbloquear boton finalizar viaje, cuando estan todos los presentes / ausentes / sospechoso 
     return (
         <div>
@@ -473,12 +483,11 @@ const ListaPasajeros = () => {
 
             <div>
                 <h3 style={{ top: 150, position: 'absolute', left: 80, width: "60%", }}> Informacion del Viaje</h3>
-                <Button variant="secondary" style={{ top: 150, position: 'absolute', left: 80, width: "100px", height: "40px" }} onClick={(e) => { desbloquearFinViaje() }}>verificar</Button>
 
                 <Button variant="secondary" style={{ top: 105, position: 'absolute', left: 80, width: "100px", height: "40px" }} onClick={(e) => { volverAtras() }}>Atras</Button>
                 <Button variant="primary" style={{ top: 105, position: 'absolute', left: 400, width: "150px", height: "40px" }} onClick={(e) => venderPasaje()}>Vender Pasaje</Button>
                 <Button style={{ top: 105, position: 'absolute', right: 70, width: "150px", height: "40px" }} variant="danger " onClick={(e) => cancelarViajeModal()}>Cancelar Viaje</Button>
-                <Button variant="secondary" style={{ top: 105, position: 'absolute', right: 360, width: "150px", height: "40px" }} variant="danger " >Finalizar Viaje</Button>
+                <Button variant="secondary" style={{ top: 105, position: 'absolute', right: 360, width: "150px", height: "40px" }} disabled = {tamaño === 0? false:true} variant="danger " >Finalizar Viaje</Button>
                 <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{ bottom: 0, zIndex: 5, position: 'absolute', left: 75, width: "60%" }} >
                     {msgSucc}
                 </Alert>
@@ -549,7 +558,7 @@ const ListaPasajeros = () => {
                                                                 <td>{item.cantidadButacas}</td>
                                                                 <td>{item.estadoPasaje}</td>
                                                                 <td style={{ width: "15px" }}>
-                                                                    <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" disabled={habilita} onClick={(e) => registrarDatosCovid(item)}>
+                                                                    <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" disabled={ item.id === idS && habilita? true:false} onClick={(e) => registrarDatosCovid(item)}>
                                                                         Sintomas
                                                                     </button>
                                                                 </td>
@@ -559,7 +568,7 @@ const ListaPasajeros = () => {
                                                                             disabled ={item.inicio? false:true}
                                                                          */}
 
-                                                                        <input type="checkbox" defaultChecked={check} onChange={(e) => { estaTildado(e.target.checked, item); setHabilita(!habilita) }} />
+                                                                        <input type="checkbox" defaultChecked={check} onChange={(e) => { estaTildado(e.target.checked, item) }} />
                                                                     </div>
                                                                 </td>
                                                             </tr>
