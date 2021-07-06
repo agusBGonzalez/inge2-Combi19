@@ -63,7 +63,7 @@ const ListaPasajeros = () => {
     const [pasajeVendido, setPasajeVendido] = useState([])
     const [snack, setSnack] = useState([])
     const [infoSnack, setInfoSnack] = useState({})
-
+    const [pasajeViajeVendido, setPasajeViajeVendido] = useState([])
     //desabilitar boton sintomas
     const [habilita, setHabilita] = useState(false);
 
@@ -81,8 +81,8 @@ const ListaPasajeros = () => {
     const handleCloseRegistrarDatosCovid = () => showModalRegistrarDatosCovid(false)
     const [pasajero, setPasajero] = useState('')
     const hoy = new Date()
-    const [idS,setIdS] = useState('')
-    const [tamaño,setTamaño] = useState(0)
+    const [idS, setIdS] = useState('')
+    const [tamaño, setTamaño] = useState(0)
 
 
     //Cancelar Viaje
@@ -132,12 +132,28 @@ const ListaPasajeros = () => {
                 setViaje(fetchedViajes)
             })
     }
+
+    const getPasajeViajeVendido = () => {
+        store.collection('pasajeViajeVendido').get()
+            .then(response => {
+                const fetchedViajes = [];
+                response.docs.forEach(document => {
+                    const fetchedViaje = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedViajes.push(fetchedViaje)
+                });
+                setPasajeViajeVendido(fetchedViajes)
+            })
+    }
     useEffect(() => {
         getPasajeComprado()
         getViajes()
         const datos = async () => {
             const { docs } = await store.collection('pasajeViajeVendido').get()
             const pasajeArray = docs.map(item => ({ id: item.id, ...item.data() }))
+            setPasajeViajeVendido(pasajeArray)
             let snackPasaje = []
             let arregloPasaje = []
             pasajeArray.map(pasaje => {
@@ -212,10 +228,10 @@ const ListaPasajeros = () => {
         if (!check) {
             item.estadoPasaje = "Pendiente"
             setHabilita(false)
-            setTamaño(tamaño +1 )
+            setTamaño(tamaño + 1)
         } else {
             setHabilita(true)
-            setTamaño(tamaño -1 )
+            setTamaño(tamaño - 1)
         }
 
     }
@@ -234,13 +250,14 @@ const ListaPasajeros = () => {
 
     const confirmarDatosCovid = async () => {
         let sospechoso = false
-        console.log(temp)
-        if ( parseInt(temp) > 40) {
+
+
+        if (parseInt(temp) > 40) {
             setMsgError('El valor de la temperatura asignada es invalido')
             setShowAlert(true)
             return
         }
-        if ( parseInt(temp) < 35) {
+        if (parseInt(temp) < 35) {
             setMsgError('El valor de la temperatura asignada es invalido')
             setShowAlert(true)
             return
@@ -281,7 +298,7 @@ const ListaPasajeros = () => {
             }
         }
         if (sospechoso) {
-            setTamaño(tamaño-1)
+            setTamaño(tamaño - 1)
             const pasajeroSospechoso = {
                 datos: pasajero,
                 sintomas: sintomasPasajero
@@ -341,15 +358,47 @@ const ListaPasajeros = () => {
 
 
             })
+            let arregloViaje = []
+            pasajeViajeVendido.map(item => {
+                if (item.id !== pasajero.id && item.idPasajero === pasajero.idPasajero) {
+                    console.log(item.id)
+                    arregloViaje.push(item)
+                    let viajeParaActualizar = viaje.find((itemViaje) => {
+                        return itemViaje.id === item.idViaje
+                    })
+                    let modificarViaje = {
+                        butacaDisponible: viajeParaActualizar.butacaDisponible + parseInt(item.cantidadButacas),
+                        combi: viajeParaActualizar.combi,
+                        datosCombi: viajeParaActualizar.datosCombi,
+                        datosRuta: viajeParaActualizar.datosRuta,
+                        destino: viajeParaActualizar.destino,
+                        estado: viajeParaActualizar.estado,
+                        fechaviaje: viajeParaActualizar.fechaviaje,
+                        id: viajeParaActualizar.id,
+                        idCombi: viajeParaActualizar.idCombi,
+                        idRuta: viajeParaActualizar.idRuta,
+                        origen: viajeParaActualizar.origen,
+                        precio: viajeParaActualizar.precio,
+                        ruta_entera: viajeParaActualizar.ruta_entera
 
+                    }
+                    store.collection('viaje').doc(viajeParaActualizar.id).set(modificarViaje)
+                    getViajes()
+                    store.collection('pasajeViajeVendido').doc(item.id).delete()
+                    getPasajeViajeVendido()
+                }
+                
+            })
+            
+            
 
-
+            
         }
         else {
             // alert("en presentes estan los que pueden viajar")
             pasajero.estadoPasaje = "Arribó"
             // pasajerosPresentes
-            setTamaño(tamaño-1)
+            setTamaño(tamaño - 1)
         }
         try {
             //FALTA MOSTRAR MSJ DE SUCESS
@@ -487,7 +536,7 @@ const ListaPasajeros = () => {
                 <Button variant="secondary" style={{ top: 105, position: 'absolute', left: 80, width: "100px", height: "40px" }} onClick={(e) => { volverAtras() }}>Atras</Button>
                 <Button variant="primary" style={{ top: 105, position: 'absolute', left: 400, width: "150px", height: "40px" }} onClick={(e) => venderPasaje()}>Vender Pasaje</Button>
                 <Button style={{ top: 105, position: 'absolute', right: 70, width: "150px", height: "40px" }} variant="danger " onClick={(e) => cancelarViajeModal()}>Cancelar Viaje</Button>
-                <Button variant="secondary" style={{ top: 105, position: 'absolute', right: 360, width: "150px", height: "40px" }} disabled = {tamaño === 0? false:true} variant="danger " >Finalizar Viaje</Button>
+                <Button variant="secondary" style={{ top: 105, position: 'absolute', right: 360, width: "150px", height: "40px" }} disabled={tamaño === 0 ? false : true} variant="danger " >Finalizar Viaje</Button>
                 <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{ bottom: 0, zIndex: 5, position: 'absolute', left: 75, width: "60%" }} >
                     {msgSucc}
                 </Alert>
@@ -558,7 +607,7 @@ const ListaPasajeros = () => {
                                                                 <td>{item.cantidadButacas}</td>
                                                                 <td>{item.estadoPasaje}</td>
                                                                 <td style={{ width: "15px" }}>
-                                                                    <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" disabled={ item.id === idS && habilita? true:false} onClick={(e) => registrarDatosCovid(item)}>
+                                                                    <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" disabled={item.id === idS && habilita ? true : false} onClick={(e) => registrarDatosCovid(item)}>
                                                                         Sintomas
                                                                     </button>
                                                                 </td>
