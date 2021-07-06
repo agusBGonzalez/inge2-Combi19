@@ -393,19 +393,19 @@ function UsuarioComprarPasaje() {
         }
 
         if (!numTarjeta.trim() || (numTarjeta.trim().length < 16)){
-            setMsgDanger('Debe ingresar los 16 números de su tarjeta para crear un usuario Gold')
+            setMsgDanger('Debe ingresar los 16 números de su tarjeta para realizar el pago')
             setShowAlertDanger(true)
             return
         }
 
         if (!codTarjeta.trim() || (codTarjeta.trim().length < 3)){
-            setMsgDanger('Debe ingresar el código de seguridad de la tarjeta, deben ser al menos 3 caracteres')
+            setMsgDanger('Debe ingresar el código de seguridad de la tarjeta, deben ser al menos 3 digitos,para realizar el pago')
             setShowAlertDanger(true)
             return
         }
 
         if (!fechaTarjeta.trim()){
-            setMsgDanger('Debe ingresar la fecha de vencimiento de su tarjeta')
+            setMsgDanger('Debe ingresar la fecha de vencimiento de su tarjeta para realizar el pago')
             setShowAlertDanger(true)
             return
         }

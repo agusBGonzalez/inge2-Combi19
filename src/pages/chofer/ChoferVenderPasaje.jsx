@@ -905,7 +905,7 @@ function ChoferVenderPasaje() {
                                         {
                                             !esSospechoso ?
                                                 <div className="form-group row">
-                                                    <label className="col-sm-10 col-form-label"><b>Total a pagar:</b> $ {totalPasajePagar} </label>
+                                                    <label className="col-sm-10 col-form-label"><b>Total a pagar:</b> $ {precioPasajeViaje} </label>
                                                 </div>
                                                 :
                                                 <></>
