@@ -436,6 +436,7 @@ function UsuarioComprarPasaje() {
 
         const ventaPasaje = {
             idViaje: viajeCompra.id,
+            infoViaje: viajeCompra,
             idRuta: viajeCompra.idRuta,
             idCombi: viajeCompra.idCombi,
             idChofer: viajeCompra.datosCombi.idChofer,

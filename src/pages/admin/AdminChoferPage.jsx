@@ -287,7 +287,9 @@
                                 tarjetaCod: '',
                                 tarjetaVen: '',
                                 idUser: userCredential.user.uid,
-                                password:password
+                                password:password,
+                                esSospechoso:false,
+                                sospechosoFecha:''
                             }
 
                             const choferAct = {

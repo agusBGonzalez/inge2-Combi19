@@ -83,6 +83,7 @@ const ListaPasajeros = () => {
     const hoy = new Date()
     const [idS, setIdS] = useState('')
     const [tamaño, setTamaño] = useState(0)
+    const [pasaCheckIn, setPasaCheckIn] = useState([])
 
 
     //Cancelar Viaje
@@ -91,6 +92,13 @@ const ListaPasajeros = () => {
     const handleCloseCancelar = () => setShowModalCancelar(false)
     const [pasajesComprados, setPasajesComprados] = useState([])
     const [viaje, setViaje] = useState([])
+
+        //Cancelar Viaje
+        // const [itemPasaje, setItemPasaje] = useState([])
+        const [showModalFinalizar, setShowModalFinalizar] = useState(false)
+        const handleCloseFinalizar = () => setShowModalFinalizar(false)
+        // const [pasajesComprados, setPasajesComprados] = useState([])
+        // const [viaje, setViaje] = useState([])
 
     //usuariosConfig
     const [usuariosConfig, setUsuariosConfig] = useState([])
@@ -184,6 +192,11 @@ const ListaPasajeros = () => {
             setSnack(snackPasaje)
             setTamaño(arregloPasaje.length)
             setPasajeVendido(arregloPasaje)
+            let checkIn = []
+            arregloPasaje.forEach(document => {
+                checkIn.push(false)
+            });
+            setPasaCheckIn(checkIn)
 
             //usuariosConfig
             store.collection('usuariosConfig').get()
@@ -208,13 +221,17 @@ const ListaPasajeros = () => {
 
 
     const estaTildado = (check, item) => {
-        setCheck(check)
+        
+        let index = pasajeVendido.findIndex(todo => todo.id === item.id);
+        let pasaj = pasaCheckIn
+        pasaj[index] = ! pasaj[index]
+        pasajeVendido[index].estadoPasaje = pasaj[index] === true ? "Ausente" : "Pendiente"
+        setPasaCheckIn(pasaj)
+        setCheck(pasaj[index])
         setIdS(item.id)
         let arreglo = ausente
         const repetidoAusente = ausente.find(elemento => elemento === item.id)
-        console.log('por aca pasa')
         if (repetidoAusente === undefined && check) {
-            console.log('entre')
             arreglo.push(item)
             setAusente(arreglo)
         } else {
@@ -223,10 +240,9 @@ const ListaPasajeros = () => {
                 setAusente(arreglo)
             }
         }
-        console.log('Cantidad en el arreglo', ausente.length)
-        item.estadoPasaje = "Ausente"
+        // item.estadoPasaje = "Ausente"
         if (!check) {
-            item.estadoPasaje = "Pendiente"
+            // item.estadoPasaje = "Pendiente"
             setHabilita(false)
             setTamaño(tamaño + 1)
         } else {
@@ -309,7 +325,9 @@ const ListaPasajeros = () => {
 
             // marco como sospechoso en pasajesComprados
             pasajesComprados.map(itemViajeChofer => {
+                console.log("ajskdhs")
                 if (itemViajeChofer.idViaje === itemPasaje.infoViaje.id && itemViajeChofer.estadoPasaje === 'En curso') {
+                    console.log("safasfasf")
                     // console.log(itemViajeChofer)
                     let actualizarPasajeComprado = {
                         cantidadButacas: itemViajeChofer.cantidadButacas,
@@ -322,6 +340,7 @@ const ListaPasajeros = () => {
                         tieneSnackComprados: itemViajeChofer.tieneSnackComprados,
                         totalPagado: itemViajeChofer.totalPagado
                     }
+                    console.log(itemViajeChofer.infoPasajero)
                     store.collection('pasajeComprados').doc(itemViajeChofer.id).set(actualizarPasajeComprado)
                     getPasajeComprado()
                 } else {
@@ -335,7 +354,6 @@ const ListaPasajeros = () => {
                         diacovid = 30 - diaFecha
                     }
                     if (diaFecha < diacovid) {
-                        console.log('entre')
                         if (itemViajeChofer.idPasajero === pasajero.idPasajero && itemViajeChofer.estadoPasaje === 'Pendiente') {
                             console.log(itemViajeChofer)
                             let actualizarPasajeComprado = {
@@ -517,9 +535,77 @@ const ListaPasajeros = () => {
         })
 
 
-        setMsgError('Se procede a devolver el 100% del valor del pasaje a cada pasajero')
+        setMsgError('Viaje Cancelado! Se procede a devolver el 100% del valor del pasaje a cada pasajero')
         setShowModalAviso(true)
         setShowModalCancelar(false)
+
+
+    }
+
+    const finalizarViajeModal = () => {
+        setShowModalFinalizar(true)
+    }
+
+    const finalizarViaje = () => {
+
+        //Actualizo el estado del pasaje Comprado
+
+        let cantidad = 0
+        pasajesComprados.map(itemViajeChofer => {
+            console.log(itemViajeChofer)
+            console.log(itemPasaje)
+            if (itemViajeChofer.idViaje === itemPasaje.infoViaje.id && itemViajeChofer.estadoPasaje === 'En curso') {
+                console.log(itemViajeChofer)
+                let actualizarPasajeComprado = {
+                    cantidadButacas: itemViajeChofer.cantidadButacas,
+                    estadoPasaje: 'Finalizado',
+                    idPasajero: itemViajeChofer.idPasajero,
+                    idViaje: itemViajeChofer.idViaje,
+                    infoPasajero: itemViajeChofer.infoPasajero,
+                    infoViaje: itemViajeChofer.infoViaje,
+                    snackComprados: itemViajeChofer.snackComprados,
+                    tieneSnackComprados: itemViajeChofer.tieneSnackComprados,
+                    totalPagado: itemViajeChofer.totalPagado
+                }
+                cantidad = cantidad + parseInt(actualizarPasajeComprado.cantidadButacas)
+                store.collection('pasajeComprados').doc(itemViajeChofer.id).set(actualizarPasajeComprado)
+                getPasajeComprado()
+            }
+        })
+
+        //Actualizo la cantidad de butacas del viaje y la cargo
+        console.log(cantidad)
+        viaje.map(iViaje => {
+            if (iViaje.id === itemPasaje.infoViaje.id) {
+                let modificarViaje = {
+                    butacaDisponible: iViaje.butacaDisponible + cantidad,
+                    combi: iViaje.combi,
+                    datosCombi: iViaje.datosCombi,
+                    datosRuta: iViaje.datosRuta,
+                    destino: iViaje.destino,
+                    estado: 'Finalizado',
+                    fechaviaje: iViaje.fechaviaje,
+                    id: iViaje.id,
+                    idCombi: iViaje.idCombi,
+                    idRuta: iViaje.idRuta,
+                    origen: iViaje.origen,
+                    precio: iViaje.precio,
+                    ruta_entera: iViaje.ruta_entera
+
+                }
+                console.log(modificarViaje)
+                store.collection('viaje').doc(iViaje.id).set(modificarViaje)
+                getViajes()
+
+            }
+        })
+
+
+        setMsgError('Viaje Finalizado!')
+        setShowModalAviso(true)
+        setShowModalFinalizar(false)
+        setMsgError(null)
+        setShowAlert(false);
 
 
     }
@@ -528,7 +614,7 @@ const ListaPasajeros = () => {
     return (
         <div>
             <MenuUsuarioChofer />
-            <MenuOpcChofer />
+            <MenuOpcChofer optionName="choferListarViaje"/>
 
             <div>
                 <h3 style={{ top: 150, position: 'absolute', left: 80, width: "60%", }}> Informacion del Viaje</h3>
@@ -536,7 +622,7 @@ const ListaPasajeros = () => {
                 <Button variant="secondary" style={{ top: 105, position: 'absolute', left: 80, width: "100px", height: "40px" }} onClick={(e) => { volverAtras() }}>Atras</Button>
                 <Button variant="primary" style={{ top: 105, position: 'absolute', left: 400, width: "150px", height: "40px" }} onClick={(e) => venderPasaje()}>Vender Pasaje</Button>
                 <Button style={{ top: 105, position: 'absolute', right: 70, width: "150px", height: "40px" }} variant="danger " onClick={(e) => cancelarViajeModal()}>Cancelar Viaje</Button>
-                <Button variant="secondary" style={{ top: 105, position: 'absolute', right: 360, width: "150px", height: "40px" }} disabled={tamaño === 0 ? false : true} variant="danger " >Finalizar Viaje</Button>
+                <Button variant="secondary" style={{ top: 105, position: 'absolute', right: 360, width: "150px", height: "40px" }} disabled={tamaño === 0 ? false : true} variant="danger " onClick={(e) => finalizarViajeModal()}>Finalizar Viaje</Button>
                 <Alert id="success" className="" variant="success" show={showAlertSucc} onClick={handleCloseAlertSucc} style={{ bottom: 0, zIndex: 5, position: 'absolute', left: 75, width: "60%" }} >
                     {msgSucc}
                 </Alert>
@@ -598,7 +684,7 @@ const ListaPasajeros = () => {
                                             {
                                                 pasajeVendido.length !== 0 ?
                                                     (
-                                                        pasajeVendido.map(item => (
+                                                        pasajeVendido.map((item, index) => (
 
                                                             <tr key={item.id}>
                                                                 <td>{item.infoPasajero.apellido}</td>
@@ -607,7 +693,7 @@ const ListaPasajeros = () => {
                                                                 <td>{item.cantidadButacas}</td>
                                                                 <td>{item.estadoPasaje}</td>
                                                                 <td style={{ width: "15px" }}>
-                                                                    <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" disabled={item.id === idS && habilita ? true : false} onClick={(e) => registrarDatosCovid(item)}>
+                                                                    <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" disabled={pasaCheckIn[index] ? true : false} onClick={(e) => registrarDatosCovid(item)}>
                                                                         Sintomas
                                                                     </button>
                                                                 </td>
@@ -617,7 +703,7 @@ const ListaPasajeros = () => {
                                                                             disabled ={item.inicio? false:true}
                                                                          */}
 
-                                                                        <input type="checkbox" defaultChecked={check} onChange={(e) => { estaTildado(e.target.checked, item) }} />
+                                                                        <input type="checkbox" value={pasaCheckIn[index]} onChange={(e) => { estaTildado(e.target.checked, item)}} />
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -705,7 +791,7 @@ const ListaPasajeros = () => {
                                     value={temp}
                                 />
                                 <br></br>
-                                <Table striped bordered hover variant="secondary" className="animate__animated animate__slideInUp" >
+                                <Table striped bordered hover variant="secondary" >
                                     <thead>
                                         <tr>
                                             <th>Sintomas</th>
@@ -720,7 +806,7 @@ const ListaPasajeros = () => {
                                             {/* <th><input type="checkbox" name="fiebreUltimaSemana" value="no" /></th> */}
                                         </tr>
                                         <tr>
-                                            <th><label for="gustoOlfato">Tiente perdida del olfato y/o gusto</label></th>
+                                            <th><label for="gustoOlfato">Tiene perdida del olfato y/o gusto</label></th>
                                             <th><input type="checkbox" defaultChecked={checkGustoOlfato} onClick={(e) => estaTildadoGustoOlfato(e.target.checked)} /></th>
                                             {/* <th><input type="checkbox" name="gustoOlfato" value="no" /></th> */}
                                         </tr>
@@ -746,7 +832,7 @@ const ListaPasajeros = () => {
                             <Button variant="primary" onClick={() => { confirmarDatosCovid() }} >
                                 Confirmar
                             </Button>
-                            <Button variant="secondary" onClick={() => { setShowModalRegistrarDatosCovid(false); setMsgError(null); setShowAlert(false); }}>
+                            <Button variant="secondary" onClick={() => {setShowModalRegistrarDatosCovid(false); setMsgError(null); setShowAlert(false); setCheckGustoOlfato(false); setCheckTemperatura(false); setCheckDificultadResp(false); setCheckDolorGarganta(false); setCantidadSintomas(false); setCantidadSintomas(0); setTemp('') }}>
                                 Cancelar
                             </Button>
                         </Modal.Footer>
@@ -758,7 +844,7 @@ const ListaPasajeros = () => {
                     (
                         <Modal id="modalCancelar" show={showModalCancelar} onHide={handleCloseCancelar}>
                             <Modal.Header >
-                                <Modal.Title>Cancelar Pasaje</Modal.Title>
+                                <Modal.Title>Cancelar Viaje</Modal.Title>
                             </Modal.Header>
                             <Modal.Body>
                                 Esta seguro/a que desea cancelar el viaje?
@@ -769,6 +855,31 @@ const ListaPasajeros = () => {
                                     Confirmar
                                 </Button>
                                 <Button variant="secondary" onClick={() => { setShowModalCancelar(false); setMsgError(null); setShowAlert(false); }}>
+                                    Cancelar
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
+                    ) : (
+                        <></>
+                    )
+
+            }
+            {
+                showModalFinalizar ?
+                    (
+                        <Modal id="modalCancelar" show={showModalFinalizar} onHide={handleCloseFinalizar}>
+                            <Modal.Header >
+                                <Modal.Title>Finalizar Viaje</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                Esta seguro/a que desea finalizar el viaje?
+                            </Modal.Body>
+
+                            <Modal.Footer>
+                                <Button variant="primary" onClick={finalizarViaje}>
+                                    Confirmar
+                                </Button>
+                                <Button variant="secondary" onClick={() => { setShowModalFinalizar(false); setMsgError(null); setShowAlert(false); }}>
                                     Cancelar
                                 </Button>
                             </Modal.Footer>

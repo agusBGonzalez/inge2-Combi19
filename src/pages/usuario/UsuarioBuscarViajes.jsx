@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react'
 import MenuUsuario from '../../components/menus/MenuUsuario'
 import MenuOpcUsuario from '../../components/menus/MenuOpcUsuario'
 import { Table, Modal, Button, Alert } from 'react-bootstrap'
-import { store } from '../../firebaseconf'
+import { store, auth } from '../../firebaseconf'
 import { FileEarmarkSlidesFill } from 'react-bootstrap-icons'
-import { useHistory} from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 
 
 
@@ -66,6 +66,10 @@ function UsuarioBuscarViajes() {
     const [sitioSelect, setSitioSelect] = useState([])
     var hoy = new Date().toLocaleDateString()
 
+    //bloquear busqueda por covid
+    const [fechaSospechoso, setFechaSospechoso] = useState('')
+    const [usuario, setUsuario] = useState(null)
+
 
     const getViajes = () => {
         store.collection('viaje').get()
@@ -87,14 +91,59 @@ function UsuarioBuscarViajes() {
             const { docs } = await store.collection('sitios').get()
             const nuevoArray = docs.map(item => ({ id: item.id, ...item.data() }))
             setSitioSelect(nuevoArray)
-        
             getViajes()
+
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    store.collection('usuariosConfig').get()
+                        .then(response => {
+                            const fetchedUsers = [];
+                            response.docs.forEach(document => {
+                                const fetchedUser = {
+                                    id: document.id,
+                                    ...document.data()
+                                };
+                                fetchedUsers.push(fetchedUser)
+                            });
+
+                            const usuarioEncontrado = fetchedUsers.find((itemUser) => {
+                                return itemUser.idUser === user.uid
+                            })
+                            setUsuario(usuarioEncontrado)
+
+                            if (usuarioEncontrado !== undefined && usuarioEncontrado.esSospechoso) {
+                                let fechaViaje = new Date(usuarioEncontrado.sospechosoFecha)
+                                let diaFecha = fechaViaje.getDate() + 1
+                                let mesFecha = fechaViaje.getMonth()
+                                let diacovid = diaFecha + 15
+                                let mescovid = 0
+                                if (diacovid > 30) {
+                                    mescovid = mesFecha + 1
+                                    diacovid = 30 - diaFecha
+                                }
+                                let fechaFin = "2021-07-" + diacovid
+                                setFechaSospechoso(fechaFin)
+                                console.log(fechaFin)
+                                console.log((fechaSospechoso > "2021-07-06") ? fechaSospechoso : "2021-07-06")
+                            } else {
+                                console.log("entra al else")
+                                setFechaSospechoso("2021-07-06")
+                            }
+                            
+
+                        })
+                        .catch(error => {
+                            setMsgError(error)
+                            setShowAlert(true)
+                        });
+                }
+            })
         }
 
         datosViajes()
     }, []);
 
-    
+
     const confirmarBusqueda = async () => {
         // deleteCollection(store, 'buscarViajes', 10);
         let fecha2
@@ -114,18 +163,19 @@ function UsuarioBuscarViajes() {
             setMsgError('El campo fecha esta vacio')
             setShowAlert(true)
             return
-        } else {
-            fecha2 = new Date(fecha)
-            let hoydia = new Date().getDate() + 1
-            let fechadia = fecha2.getDate() + 1
-            // aux = new Date(fecha2.setDate(fecha2.getDate() + dia))
-            if (hoydia > fechadia) {
-                setMsgError('La fecha no puede ser posterior a la fecha actual')
-                setShowAlert(true)
-                return
-            }
+        } 
+        // else {
+        //     fecha2 = new Date(fecha)
+        //     let hoydia = new Date().getDate() + 1
+        //     let fechadia = fecha2.getDate() + 1
+        //     // aux = new Date(fecha2.setDate(fecha2.getDate() + dia))
+        //     if (hoydia > fechadia) {
+        //         setMsgError('La fecha no puede ser posterior a la fecha actual')
+        //         setShowAlert(true)
+        //         return
+        //     }
 
-        }
+        // }
         if (origen === destino) {
             setMsgError('Origen y destino deben ser diferentes')
             setShowAlert(true)
@@ -133,7 +183,7 @@ function UsuarioBuscarViajes() {
         }
 
         // aca lo que hago es guardar cual sera el origen y destino
- 
+
         let combiViaje
 
         const sitioOrigen = sitioSelect.find((sitioOr) => {
@@ -145,7 +195,7 @@ function UsuarioBuscarViajes() {
         })
 
 
-        const viajesConFiltro = viajes.filter( (viaje) => 
+        const viajesConFiltro = viajes.filter((viaje) =>
             viaje.butacaDisponible >= 1 && viaje.fechaviaje === fecha && viaje.datosRuta.idOrigen === sitioOrigen.id && viaje.datosRuta.idDestino === sitioDest.id
         )
 
@@ -180,6 +230,7 @@ function UsuarioBuscarViajes() {
     const buscarIdDestino = (id) => {
         setIdDestino(id)
     }
+
     return (
         <div>
             <MenuUsuario />
@@ -261,7 +312,7 @@ function UsuarioBuscarViajes() {
                                         <option disabled="disabled" value="">Seleccione una Origen </option>
                                         {
                                             sitioSelect.map(item2 => (
-                                                <option value={item2.id} key={item2.id}> provincia:{item2.provincia} ciudad:{item2.ciudad} </option>
+                                                <option value={item2.id} key={item2.id}>{item2.provincia} - {item2.ciudad} </option>
                                             )
                                             )
                                         }
@@ -273,7 +324,7 @@ function UsuarioBuscarViajes() {
                                         <option disabled="disabled" value="">Seleccione una Destino </option>
                                         {
                                             sitioSelect.map(item => (
-                                                <option value={item.id} key={item.id}> provincia:{item.provincia} ciudad:{item.ciudad} </option>
+                                                <option value={item.id} key={item.id}> {item.provincia} - {item.ciudad} </option>
                                             )
                                             )
                                         }
@@ -285,7 +336,7 @@ function UsuarioBuscarViajes() {
                                         maxLength='8'
                                         placeholder='Fecha del viaje'
                                         id="fecha"
-                                        min= "2021-07-04"
+                                        min={(fechaSospechoso > "2021-07-06") ? fechaSospechoso : "2021-07-06"}
                                         value={fecha}
                                     />
                                 </form>

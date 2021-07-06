@@ -168,7 +168,7 @@ const AdminViajeFinalizado = () => {
                                                     <td style={{ width: "12%" }} >
                                                         <div className="d-flex justify-content-around">
                                                             <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => { verReporteCovid(item) }}>
-                                                                verReporteCovid
+                                                                Ver reporte COVID
                                                             </button>
                                                         </div>
                                                     </td>
@@ -198,7 +198,7 @@ const AdminViajeFinalizado = () => {
                     (
                         <Modal id="ModalViajeRepCovid" show={showModalViajeRepCovid} onHide={handleCloseshowModalViajeRepCovid}>
                             <Modal.Header >
-                                <Modal.Title>VerReporteCovid</Modal.Title>
+                                <Modal.Title>Ver Reporte COVID</Modal.Title>
                             </Modal.Header>
                             <Modal.Body>
                                 <form className='form-group'>

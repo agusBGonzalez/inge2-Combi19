@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import MenuUsuarioChofer from '../../components/menus/MenuUsuarioChofer'
 import MenuOpcChofer from '../../components/menus/MenuOpcChofer'
-import { Table, Modal, Button, Alert, Accordion, Card, Form, Spinner } from 'react-bootstrap'
+import { Modal, Button, Alert, Accordion, Card, Spinner, Table } from 'react-bootstrap'
 import { store, auth } from '../../firebaseconf'
 import { useHistory, useLocation } from 'react-router-dom'
 
@@ -30,6 +30,30 @@ function ChoferVenderPasaje() {
 
     const volverAtras = () => {
         //TE LLEVA A COMPRAR -- NO BORRAR
+        if (esSospechoso){
+            const nuevoModUser = {
+                nombres: usuario.nombres,
+                apellido: usuario.apellido,
+                fechaNac: usuario.fechaNac,
+                email: usuario.email,
+                tipo: "usuario",
+                esGold: usuario.esGold,
+                tarjetaNum: usuario.tarjetaNum,
+                tarjetaCod: usuario.tarjetaCod,
+                tarjetaVen: usuario.tarjetaVen,
+                idUser: usuario.idUser,
+                password: usuario.password,
+                esSospechoso: esSospechoso,
+                sospechosoFecha: fechaSospechoso
+            }
+
+            const tempUser = usuarios.find((itemUser) => {
+                return itemUser.email === email
+            })
+
+            store.collection('usuariosConfig').doc(tempUser.id).set(nuevoModUser)
+        }
+
         historial.push('/listaPasajeros', { idViaje: datosViaje })
     }
     //-------------------------------------------------HISTORIA------------------------------END----------------------------------------
@@ -50,9 +74,9 @@ function ChoferVenderPasaje() {
 
 
     // //MODAL ELIMINAR
-    const [showModal, setShowModal] = useState(false);
-    const [snackEliminar, setSnackEliminar] = useState('')
-    const handleClose = () => setShowModal(false);
+    // const [showModal, setShowModal] = useState(false);
+    // const [snackEliminar, setSnackEliminar] = useState('')
+    // const handleClose = () => setShowModal(false);
 
 
     // //ALERT ERROR
@@ -69,6 +93,12 @@ function ChoferVenderPasaje() {
     const [showAlertDanger, setShowAlertDanger] = useState(false)
     const handleCloseAlertDanger = () => setShowAlertDanger(false)
     const [msgDanger, setMsgDanger] = useState(null)
+
+    //MODAL COVID 
+    const [showModalRegistrarDatosCovid, setShowModalRegistrarDatosCovid] = useState(false)
+    const handleCloseRegistrarDatosCovid = () => showModalRegistrarDatosCovid(false)
+
+    const [fechaSospechoso, setFechaSospechoso] = useState('')
 
 
 
@@ -93,10 +123,14 @@ function ChoferVenderPasaje() {
 
     //-----INFO DE PASAJERO
     const [email, setEmail] = useState('')
+    const [nombres, setNombres] = useState('')
+    const [apellido, setApellido] = useState('')
     const [mailCreado, setMailCreado] = useState(false)
     const [esUsuarioExistente, setEsUsuarioExistente] = useState(false)
     const [esUsuarioNuevoCreado, setEsUsuarioNuevoCreado] = useState(false)
-    const [validando, setValidando] = useState(false)
+    const [fueUsuarioNuevoCreado, setFueUsuarioNuevoCreado] = useState(false)
+    const [creando, setCreando] = useState(false)
+
 
 
 
@@ -109,33 +143,91 @@ function ChoferVenderPasaje() {
     // const [idUser, setIdUser] = useState('')
 
 
+
+    //-----INFO CONTROLAR COVID
+    const [temp, setTemp] = useState('')
+    const [checkGustoOlfato, setCheckGustoOlfato] = useState(false)
+    const [checkTemperatura, setCheckTemperatura] = useState(false)
+    const [checkDificultadResp, setCheckDificultadResp] = useState(false)
+    const [checkDolorGarganta, setCheckDolorGarganta] = useState(false)
+    const [cantSintomas, setCantidadSintomas] = useState(0)
+    const [esSospechoso, setEsSospechoso] = useState(true)
+    const [tieneResultado, setTieneResultad] = useState(false)
+
+
+    //----INFO ACTUALIZAR PASAJES DEL USUARIO SOSPECHOSO
+    const [pasajeViajeVendido, setPasajeViajeVendido] = useState([])
+    const [pasajesComprados, setPasajesComprados] = useState([])
+    const [viaje, setViaje] = useState([])
+
+
     //-----------------------------------------------DATOS COMPONENTE--------------------------END------------------------------------------
 
     //----------------------------------------------------FUNCIONES--------------------------BEGIN------------------------------------------
 
-    // const getViajes = () => {
-    //     store.collection('viaje').get()
-    //         .then(response => {
-    //             const fetchedViajes = [];
-    //             response.docs.forEach(document => {
-    //                 const fetchedViaje = {
-    //                     id: document.id,
-    //                     ...document.data()
-    //                 };
-    //                 fetchedViajes.push(fetchedViaje)
-    //             });
-    //             setViajes(fetchedViajes)
-    //             //ASIGNO LA INFORMACION DEL VIAJE CON EL QUE SE VA A COMPRAR EL PASAJE
-    //             const infoViajeCompra = fetchedViajes.find((itemViaje) => {
-    //                 return itemViaje.id === location.state.idViaje
-    //             })
-    //             setViajeCompra(infoViajeCompra)
-    //         })
-    // }
+    const getUsuarioConfig =  () => {
+        store.collection('usuariosConfig').get()
+        .then(response => {
+            const fetchedUsers = [];
+            response.docs.forEach(document => {
+            const fetchedUser = {
+                id: document.id,
+                ...document.data()
+            };
+            fetchedUsers.push(fetchedUser)
+            });
+            setUsuarios(fetchedUsers)
+        })
+    }
 
+    const getViajes = () => {
+        store.collection('viaje').get()
+            .then(response => {
+                const fetchedViajes = [];
+                response.docs.forEach(document => {
+                    const fetchedViaje = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedViajes.push(fetchedViaje)
+                });
+                setViaje(fetchedViajes)
+            })
+    }
+
+    const getPasajeComprado = () => {
+        store.collection('pasajeComprados').get()
+            .then(response => {
+                const fetchedViajes = [];
+                response.docs.forEach(document => {
+                    const fetchedViaje = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedViajes.push(fetchedViaje)
+                    setPasajesComprados(fetchedViajes)
+
+                });
+            })
+    }
+
+    const getPasajeViajeVendido = () => {
+        store.collection('pasajeViajeVendido').get()
+            .then(response => {
+                const fetchedViajes = [];
+                response.docs.forEach(document => {
+                    const fetchedViaje = {
+                        id: document.id,
+                        ...document.data()
+                    };
+                    fetchedViajes.push(fetchedViaje)
+                });
+                setPasajeViajeVendido(fetchedViajes)
+            })
+    }
 
     useEffect(() => {
-        console.log(datosViaje)
+        // console.log(datosViaje)
         const datosCompraViaje = async () => {
             // getUsuarioConfig()
 
@@ -151,19 +243,6 @@ function ChoferVenderPasaje() {
                     });
 
                     setUsuarios(fetchedUsers)
-
-                    // const usuarioEncontrado = fetchedUsers.find((itemUser) => {
-                    //     return itemUser.idUser === user.uid
-                    // })
-                    // setUsuario(usuarioEncontrado)
-
-                    // if (usuarioEncontrado !== undefined) {
-
-                    //     setNumTarjeta(usuarioEncontrado.tarjetaNum)
-                    //     setCodTarjeta(usuarioEncontrado.tarjetaCod)
-                    //     setFechaTarjeta(usuarioEncontrado.tarjetaVen)
-                    //     setShowGoldInfo(usuarioEncontrado.esGold)
-                    // }
 
                 })
                 .catch(error => {
@@ -189,6 +268,8 @@ function ChoferVenderPasaje() {
             setCantButacasViaje(infoViajeCompra.butacaDisponible)
             setHorarioViaje(infoViajeCompra.datosRuta.horario)
             setPrecioPasajeViaje(infoViajeCompra.precio)
+            getPasajeViajeVendido()
+            getViajes()
         }
 
         datosCompraViaje()
@@ -198,148 +279,445 @@ function ChoferVenderPasaje() {
     const emailValidation = () => {
         if (/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email,)) {
             validarCorreo()
+            console.log("validado")
         } else {
-            setMsgDanger('EL formato del email ingresado no es válido  para verificar.')
+            setMsgDanger('El formato del email ingresado no es válido  para verificar.')
             setShowAlertDanger(true)
         }
     };
 
+    const nomValidation = () => {
+        if (!nombres.trim()) {
+            setMsgDanger('El campo nombre es necesario.')
+            setShowAlertDanger(true)
+            return
+        } else if (apellido.trim() && nombres.trim()) {
+            crearCorreo()
+        }
+    };
+
+    const apeValidation = () => {
+        if (!apellido.trim()) {
+            setMsgDanger('El campo apellido es necesario.')
+            setShowAlertDanger(true)
+            return
+        } else if (apellido.trim() && nombres.trim()) {
+            setCreando(true)
+            crearCorreo()
+        }
+    };
+
+    const crearCorreo = () => {
+        const password = '123456'
+        auth.createUserWithEmailAndPassword(email, password)
+            .then(async (userCredential) => {
+
+                const nuevoUser = {
+                    nombres: nombres,
+                    apellido: apellido,
+                    fechaNac: '',
+                    email: email,
+                    tipo: "usuario",
+                    esGold: false,
+                    tarjetaNum: '',
+                    tarjetaCod: '',
+                    tarjetaVen: '',
+                    idUser: userCredential.user.uid,
+                    password: password,
+                    esSospechoso: false,
+                    sospechosoFecha: ''
+                }
+
+
+                try {
+
+                    await store.collection('usuariosConfig').add(nuevoUser)
+
+                    const userr = await store.collection('usuariosConfig').get()
+                    const userArray = userr.docs.map(item => ({ id: item.id, ...item.data() }))
+                    const infoUser = userArray.find((itemUser) => {
+                        return itemUser.email === email
+                    })
+
+                    const notificacionCovid = {
+                        fecha: datosViaje.fecha,
+                        idUser:userCredential.user.uid,
+                        leido: false,
+                        mensaje: "BIENVENIDO A NUESTRA PLATAFORMA - gracias por usar nuestro servicio.",
+                        tipo: 'info'
+                    }
+        
+                    await store.collection('notificaciones').add(notificacionCovid)
+
+                    setUsuario(infoUser)
+                    setMailCreado(true)
+                    setFueUsuarioNuevoCreado(true)
+                    setCreando(false)
+                    getUsuarioConfig()
+
+                } catch (e) {
+                    setMsgDanger('Uups! Hubo un problema al registrar el usuario en el sistema')
+                    setShowAlertDanger(true)
+                    console.log(e)
+                }
+
+            })
+            .catch(err => {
+                console.log(err)
+                if (err.code === 'auth/invalid-email') {
+                    setMsgDanger('Formato de Email incorrecto')
+                    setShowAlertDanger(true)
+                }
+
+                if (err.code === 'auth/weak-password') {
+                    setMsgDanger('La password debe tener 6 caracteres o más')
+                    setShowAlertDanger(true)
+                }
+                if (err.code === 'auth/email-already-in-use') {
+                    setMsgDanger('El email que ingresó ya se encuentra registrado')
+                    setShowAlertDanger(true)
+                }
+
+                console.log(err)
+            })
+    }
+
+    const registrarDatosCovid = () => {
+
+        setShowModalRegistrarDatosCovid(true)
+    }
+
+    const confirmarDatosCovid = async () => {
+        let sospechoso = false
+        let sintomasPasajero = []
+
+        if (parseInt(temp) > 40) {
+            setMsgError('El valor del campo Temperatura establece un máximo de 40 grados')
+            setShowAlert(true)
+            return
+        }
+        if (parseInt(temp) < 35) {
+            setMsgError('El valor del campo Temperatura establece un mínimo de 35 grados.')
+            setShowAlert(true)
+            return
+        }
+        if (temp === "") {
+            setMsgError('El campo temperatura esta vacio')
+            setShowAlert(true)
+            return
+        }
+
+        if (temp >= 38) {
+            sintomasPasajero.push("temperatura mayor a 38 grados")
+            // alert("El pasajero no podra viajar por tener fiebre, asi mismo se devolvera su dinero y no podra comprar pasajes por 14 dias")
+            sospechoso = true
+        } else {
+            if (cantSintomas > 1) {
+                // alert("El pasajero no podra viajar por tener mas de dos sintomas, asi mismo se devolvera su dinero y no podra comprar pasajes por 14 dias")
+                if (checkTemperatura) {
+                    sintomasPasajero.push("tuvo una temperatura mayor a 38 grados durante la ultima semana")
+                }
+                if (checkGustoOlfato) {
+                    sintomasPasajero.push("posee perdida de gusto y/o olfato")
+
+                }
+                if (checkDificultadResp) {
+                    sintomasPasajero.push("posee dificultades respiratorias")
+                }
+                if (checkDolorGarganta) {
+                    sintomasPasajero.push("posee dolor de garganta")
+
+                }
+                sospechoso = true
+            }
+        }
+        // console.log(sospechoso)
+        if (sospechoso) {
+            setEsSospechoso(true)
+            console.log("jsahfaskjfhahsjkfha")
+            // setTamaño(tamaño - 1)
+            const idTemp = Math.random().toString(36).substr(2, 16)
+
+            
+            let mensaje = (temp >= 38 ) ?  (cantSintomas > 1) ? " COVID POSITIVO - Temperatura mayor a 38 grados y más de dos sintomas detectados" : "COVID POSITIVO - Temperatura mayor a 38 grados"  : "COVID POSITIVO - COVID POSITIVO - Temperatura menor a 38 grados, pero poseía más de dos sintomas detectados"
+
+            const notificacionCovid = {
+                fecha: datosViaje.fecha,
+                idUser:usuario.idUser,
+                leido: false,
+                mensaje: mensaje,
+                tipo: 'warning'
+            }
+
+            await store.collection('notificaciones').add(notificacionCovid)
+
+            const pasajero = {
+                cantidadButacas: 1,
+                estadoPasaje: "Sospechoso Covid",
+                id: idTemp,
+                idChofer: datosViaje.infoViaje.datosCombi.idChofer,
+                idCombi: datosViaje.infoViaje.idCombi,
+                idPasajero: usuario.id,
+                infoPasajero: usuario,
+                snackComprados: [],
+                tieneSnackComprados: false,
+                totalPagado: precioPasajeViaje
+            }
+
+            const pasajeroSospechoso = {
+                datos: pasajero,
+                sintomas: sintomasPasajero
+            }
+
+            await store.collection('reporteSospechosos').add(pasajeroSospechoso)
+
+            // COMO ES UN PASAJE QUE NO EXISTE, TENGO QUE SUMARLO A LAS COLECCIONES 
+            let nuevoPasajeComprado = {
+                cantidadButacas: 1,
+                estadoPasaje: 'Sospechoso Covid',
+                idPasajero: usuario.id,
+                idViaje: datosViaje.infoViaje.id,
+                infoPasajero: usuario,
+                infoViaje: datosViaje.infoViaje,
+                snackComprados: [],
+                tieneSnackComprados: false,
+                totalPagado: precioPasajeViaje
+            }
+
+            await store.collection('pasajeComprados').add(nuevoPasajeComprado)
+
+            let nuevoPasajeVendido = {
+                cantidadButacas: 1,
+                estadoPasaje: 'Sospechoso Covid',
+                idChofer: datosViaje.infoViaje.datosCombi.idChofer,
+                idCombi: datosViaje.infoViaje.idCombi,
+                idRuta: datosViaje.infoViaje.idRuta,
+                idPasajero: usuario.id,
+                idViaje: datosViaje.infoViaje.id,
+                infoViaje: datosViaje.infoViaje,
+                infoPasajero: usuario,
+                snackComprados: [],
+                tieneSnackComprados: false,
+                totalPagado: precioPasajeViaje
+            }
+
+            await store.collection('pasajeViajeVendido').add(nuevoPasajeVendido)
+
+            // USO LA FECHA DE ESTE VIAJE PARA CANCELARLE LOS PROXIMOS VIAJES POR COVID
+            let fechaViaje = new Date(datosViaje.fecha)
+            let diaFecha = fechaViaje.getDate() + 1
+            let mesFecha = fechaViaje.getMonth()
+            let diacovid = diaFecha + 14
+            let mescovid = 0
+            if (diacovid > 30) {
+                mescovid = mesFecha + 1
+                diacovid = 30 - diaFecha
+            }
+            let fechaFin = "2021-07-" + diacovid
+            setFechaSospechoso(fechaFin)
+
+            // marco como sospechoso en pasajesComprados
+            pasajesComprados.map(itemViajeChofer => {
+                console.log(itemViajeChofer)
+                if (itemViajeChofer.infoViaje.fechaviaje <= fechaFin) {
+                    console.log('entre')
+                    if (itemViajeChofer.idPasajero === pasajero.idPasajero && itemViajeChofer.estadoPasaje === 'Pendiente') {
+                        console.log('MDIFICAD COMPRADOS')
+                        console.log(itemViajeChofer)
+                        let actualizarPasajeComprado = {
+                            cantidadButacas: itemViajeChofer.cantidadButacas,
+                            estadoPasaje: 'Rechazado - CUARENTENA',
+                            idPasajero: itemViajeChofer.idPasajero,
+                            idViaje: itemViajeChofer.idViaje,
+                            infoPasajero: itemViajeChofer.infoPasajero,
+                            infoViaje: itemViajeChofer.infoViaje,
+                            snackComprados: itemViajeChofer.snackComprados,
+                            tieneSnackComprados: itemViajeChofer.tieneSnackComprados,
+                            totalPagado: itemViajeChofer.totalPagado
+                        }
+                        store.collection('pasajeComprados').doc(itemViajeChofer.id).set(actualizarPasajeComprado)
+
+                    }
+                }
+            })
+            getPasajeComprado()
+            console.log("dsaihfsaufnasuhfashsafuhfasui")
+            pasajeViajeVendido.map(item => {
+                console.log(item)
+                if (item.infoViaje.fechaviaje <= fechaFin) {
+                    if (item.id !== pasajero.id && item.idPasajero === pasajero.idPasajero) {
+                        console.log('MDIFICAD VENDIDOS')
+                        let viajeParaActualizar = viaje.find((itemViaje) => {
+                            return itemViaje.id === item.idViaje
+                        })
+                        let modificarViaje = {
+                            butacaDisponible: viajeParaActualizar.butacaDisponible,
+                            combi: viajeParaActualizar.combi,
+                            datosCombi: viajeParaActualizar.datosCombi,
+                            datosRuta: viajeParaActualizar.datosRuta,
+                            destino: viajeParaActualizar.destino,
+                            estado: viajeParaActualizar.estado,
+                            fechaviaje: viajeParaActualizar.fechaviaje,
+                            id: viajeParaActualizar.id,
+                            idCombi: viajeParaActualizar.idCombi,
+                            idRuta: viajeParaActualizar.idRuta,
+                            origen: viajeParaActualizar.origen,
+                            precio: viajeParaActualizar.precio,
+                            ruta_entera: viajeParaActualizar.ruta_entera
+                        }
+                        store.collection('viaje').doc(viajeParaActualizar.id).set(modificarViaje)
+                        getViajes()
+                        store.collection('pasajeViajeVendido').doc(item.id).delete()
+                        getPasajeViajeVendido()
+
+                    }
+                }
+            })
+            setTieneResultad(true)
+            setShowModalRegistrarDatosCovid(false)
+            setMsgError(null)
+            setShowAlert(false)
+            setCheckGustoOlfato(false)
+            setCheckTemperatura(false)
+            setCheckDificultadResp(false)
+            setCheckDolorGarganta(false)
+            setCantidadSintomas(false)
+            setCantidadSintomas(0)
+            setTemp('')
+
+        } else {
+            try {
+
+                // COMO ES UN PASAJE QUE NO EXISTE, Y NO TIENE SINTOMAS TENGO QUE SUMARLO A LAS COLECCIONES
+                const notificacionCovid = {
+                    fecha: datosViaje.fecha,
+                    idUser:usuario.idUser,
+                    leido: false,
+                    mensaje: "PASAJE COMPRADO A CHOFER - gracias por viajar con nosotros.",
+                    tipo: 'exito'
+                }
+    
+                await store.collection('notificaciones').add(notificacionCovid)
+
+                let nuevoPasajeComprado = {
+                    cantidadButacas: 1,
+                    estadoPasaje: 'En Curso',
+                    idPasajero: usuario.id,
+                    idViaje: datosViaje.infoViaje.id,
+                    infoPasajero: usuario,
+                    infoViaje: datosViaje.infoViaje,
+                    snackComprados: [],
+                    tieneSnackComprados: false,
+                    totalPagado: precioPasajeViaje
+                }
+
+                await store.collection('pasajeComprados').add(nuevoPasajeComprado)
+
+                let nuevoPasajeVendido = {
+                    cantidadButacas: 1,
+                    estadoPasaje: 'Arribó',
+                    idChofer: datosViaje.infoViaje.datosCombi.idChofer,
+                    idCombi: datosViaje.infoViaje.idCombi,
+                    idRuta: datosViaje.infoViaje.idRuta,
+                    idPasajero: usuario.id,
+                    idViaje: datosViaje.infoViaje.id,
+                    infoViaje: datosViaje.infoViaje,
+                    infoPasajero: usuario,
+                    snackComprados: [],
+                    tieneSnackComprados: false,
+                    totalPagado: precioPasajeViaje
+                }
+
+                await store.collection('pasajeViajeVendido').add(nuevoPasajeVendido)
+
+                setEsSospechoso(false)
+                setTieneResultad(true)
+                //FALTA MOSTRAR MSJ DE SUCESS
+                setShowModalRegistrarDatosCovid(false)
+                setMsgError(null)
+                setShowAlert(false)
+                setCheckGustoOlfato(false)
+                setCheckTemperatura(false)
+                setCheckDificultadResp(false)
+                setCheckDolorGarganta(false)
+                setCantidadSintomas(false)
+                setCantidadSintomas(0)
+                setTemp('')
+
+            } catch (err) {
+                console.log(err)
+                setMsgError(err)
+                setShowAlert(true)
+            }
+
+        }
+    }
+
+    const estaTildadoTemperatura = (check) => {
+        setCheckTemperatura(check)
+        if (check) {
+            setCantidadSintomas(cantSintomas + 1)
+        }
+        else {
+            setCantidadSintomas(cantSintomas - 1)
+        }
+
+
+    }
+
+    const estaTildadoGustoOlfato = (check) => {
+        setCheckGustoOlfato(check)
+        if (check) {
+            setCantidadSintomas(cantSintomas + 1)
+        }
+        else {
+            setCantidadSintomas(cantSintomas - 1)
+        }
+
+    }
+
+    const estaTildadoDificultadRespitaroria = (check) => {
+        setCheckDificultadResp(check)
+        if (check) {
+
+            setCantidadSintomas(cantSintomas + 1)
+        }
+        else {
+            setCantidadSintomas(cantSintomas - 1)
+        }
+    }
+
+    const estaTildadoDolorGarganta = (check) => {
+        setCheckDolorGarganta(check)
+
+        if (check) {
+            setCantidadSintomas(cantSintomas + 1)
+        }
+        else {
+            setCantidadSintomas(cantSintomas - 1)
+        }
+    }
+
 
     const validarCorreo = () => {
-        setValidando(true)
-
+        
         // console.log(usuarios)
         const usuarioEncontrado = usuarios.find((itemUser) => {
             return itemUser.email === email
         })
 
-
-        console.log(usuarioEncontrado)
-
         if (usuarioEncontrado === undefined) {
-            console.log("entra ")
             setEsUsuarioNuevoCreado(true)
             setEsUsuarioExistente(false)
-
-
         } else {
-            console.log("entra 222")
+            setMailCreado(true)
             setEsUsuarioNuevoCreado(false)
             setEsUsuarioExistente(true)
         }
         setUsuario(usuarioEncontrado)
-        setMailCreado(true)
-        setValidando(false)
-
-
-
-        console.log(usuarioEncontrado)
 
     }
 
-
-
-
-    //------------------------------------------------------------------------------------------------------------------------------------
-    //----------------------------------------------------GRABA TODO LO DE PASAJE--------------------------BEGIN--------------------------
-
-    const finalizarCompra = async (e) => {
-        console.log("empieza la magia")
-        e.preventDefault();
-
-        if (!cantPasajesComprarViaje.trim() || (cantPasajesComprarViaje.trim().length < 0)) {
-            setMsgDanger('Debe ingresar una cantidad de pasajes para poder realizar la compra')
-            setShowAlertDanger(true)
-            return
-        }
-
-        if (parseInt(cantPasajesComprarViaje) > parseInt(viajeCompra.butacaDisponible)) {
-            setMsgDanger('La cantidad de pasajes ingresada es mayor a la cantidad de pasajes disponibles para la compra.')
-            setShowAlertDanger(true)
-            return
-        }
-
-        // if (!numTarjeta.trim() || (numTarjeta.trim().length < 16)){
-        //     setMsgDanger('Debe ingresar los 16 números de su tarjeta para crear un usuario Gold')
-        //     setShowAlertDanger(true)
-        //     return
-        // }
-
-        // if (!codTarjeta.trim() || (codTarjeta.trim().length < 3)){
-        //     setMsgDanger('Debe ingresar el código de seguridad de la tarjeta, deben ser al menos 3 caracteres')
-        //     setShowAlertDanger(true)
-        //     return
-        // }
-
-        // if (!fechaTarjeta.trim()){
-        //     setMsgDanger('Debe ingresar la fecha de vencimiento de su tarjeta')
-        //     setShowAlertDanger(true)
-        //     return
-        // }
-
-        // //VALIDACION DE FECHA DE LA TARJETA
-        // const cortoAnioFecTarjeta = fechaTarjeta.substr(0, fechaTarjeta.indexOf('-'))
-        // const cortoMesFecTarjeta = fechaTarjeta.substring(fechaTarjeta.indexOf('-') +1 ,fechaTarjeta.length)                
-
-        // const numMesTarj = Number(cortoMesFecTarjeta)
-        // const numAnioTarj = Number(cortoAnioFecTarjeta)
-
-        // // LO DEJO POR EL PROBLEMA QUE TUVO AGUS EN LA DEMO
-
-        // const mesHoyNumb = 7
-        // const anioHoyNumb = 2021
-
-        // if((anioHoyNumb > numAnioTarj) || ((mesHoyNumb > numMesTarj) && (anioHoyNumb === numAnioTarj)) ) {
-        //     setMsgDanger('La fecha de vencimiento de su tarjeta ya no es válida para poder realizar la operación')
-        //     setShowAlertDanger(true)
-        //     return
-
-        // }
-
-        // const tieneSnackComprado = snacksPasaje.length > 0 ? true : false
-
-        //DESCOMENTAR PARA VER LOS DATOS DEL USUARIO
-        // console.log(usuario)
-
-        const ventaPasaje = {
-            idViaje: viajeCompra.id,
-            idRuta: viajeCompra.idRuta,
-            idCombi: viajeCompra.idCombi,
-            idChofer: viajeCompra.datosCombi.idChofer,
-            totalPagado: totalPasajePagar,
-            cantidadButacas: cantPasajesComprarViaje,
-            tieneSnackComprados: false,
-            snackComprados: [],
-            estadoPasaje: "Pendiente",
-            idPasajero: usuario.id,
-            infoPasajero: usuario,
-            formatoPago: "efectivo"
-        }
-        //DESCOMENTAR PARA VER LOS DATOS DEL PASAJE POR REGISTRAR
-        // console.log(ventaPasaje)
-        try {
-            // ME TRAIGO EL VIAJE ORIGINAL PARA RESTARLE LAS BUTACAS QUE VOY A VENDER
-            let viajeParaActualizar = viajes.find((itemViaje) => {
-                return itemViaje.id === ventaPasaje.idViaje
-            })
-            viajeParaActualizar.butacaDisponible = viajeParaActualizar.butacaDisponible - cantPasajesComprarViaje
-
-            //RESTO LAS BUTACAS DISPONIBLES DEL VIAJE ORIGINAL
-            await store.collection('viaje').doc(ventaPasaje.idViaje).set(viajeParaActualizar)
-
-            await store.collection('pasajeViajeVendido').add(ventaPasaje)
-
-            setShowModalExito(true)
-
-        } catch (e) {
-            setMsgError('Uups! Hubo un problema al actualizar los datos en el sistema')
-            setShowAlert(true)
-            console.log(e)
-        }
-
-    }
-
-    //----------------------------------------------------GRABA TODO LO DE PASAJE--------------------------END----------------------------
 
     //------------------------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------FUNCIONES--------------------------END------------------------------------------
@@ -392,7 +770,7 @@ function ChoferVenderPasaje() {
                                                 <input
                                                     value={email}
                                                     onChange={(e) => { setEmail(e.target.value); }}
-                                                    onClick={(e) => { setShowAlertDanger(false); setValidando(false); setEsUsuarioExistente(false); setEsUsuarioNuevoCreado(false) }}
+                                                    onClick={(e) => { setShowAlertDanger(false); setEsUsuarioExistente(false); setEsUsuarioNuevoCreado(false) }}
                                                     className="form-control"
                                                     onBlur={emailValidation}
                                                     required
@@ -401,47 +779,149 @@ function ChoferVenderPasaje() {
                                                 />
                                             </div>
                                             {
-                                                validando ?
-                                                    <Spinner animation="border" role="status" />
-                                                    :
-                                                    <></>
-                                            }
-                                            {
                                                 esUsuarioExistente ?
                                                     <label className="col-sm-3 col-form-label" style={{ color: 'green' }}><b> Usuario existente en el sistema</b></label>
                                                     :
                                                     <></>
                                             }
                                             {
-                                                esUsuarioNuevoCreado ?
+                                                fueUsuarioNuevoCreado ?
                                                     <label className="col-sm-3 col-form-label" style={{ color: 'green' }}><b> Nuevo usuario creado en el sistema</b> </label>
+                                                    :
+                                                    <></>
+                                            }
+                                            {
+                                                creando ?
+                                                    <Spinner animation="border" role="status"></Spinner>
+                                                    :
+                                                    <></>
+                                            }
+
+                                            <br />
+                                            <br />
+                                            <div className="form-group row">
+                                                {
+                                                    esUsuarioNuevoCreado ?
+                                                        <div className="col-sm-3">
+                                                            <label hidden={mailCreado}>Nombres: </label>
+                                                            <input
+                                                                onChange={(e) => { setNombres(e.target.value) }}
+                                                                onClick={handleCloseAlert}
+                                                                onBlur={nomValidation}
+                                                                className="form-control"
+                                                                placeholder="Ingrese nombre cliente"
+                                                                disabled={mailCreado}
+                                                                hidden={mailCreado}
+                                                                type="text"
+                                                            />
+                                                        </div>
+                                                        :
+                                                        <></>
+                                                }
+
+                                                {
+                                                    esUsuarioNuevoCreado ?
+                                                        <div className="col-sm-4">
+                                                            <label hidden={mailCreado} >Apellido: </label>
+                                                            <input
+                                                                onChange={(e) => { setApellido(e.target.value) }}
+                                                                onClick={handleCloseAlert}
+                                                                onBlur={apeValidation}
+                                                                className="form-control"
+                                                                disabled={mailCreado}
+                                                                hidden={mailCreado}
+                                                                placeholder="Ingrese apellido cliente"
+                                                                type="text" />
+                                                        </div>
+                                                        :
+                                                        <></>
+                                                }
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div className="form-group row">
+                                            {
+                                                esUsuarioExistente || fueUsuarioNuevoCreado ?
+                                                    <div className="col-sm-4">
+                                                        <Button variant="primary" onClick={(e) => registrarDatosCovid()} >
+                                                            Sintomas
+                                                        </Button>
+                                                    </div>
                                                     :
                                                     <></>
                                             }
                                         </div>
                                         <br />
                                         <div className="form-group row">
-                                            <label id="cantidadPasajeCompra" className="col-sm-3 col-form-label"><b>Cantidad de pasajes a comprar:</b></label>
-                                            <div className="col-sm-2">
-                                                <input
-                                                    value={cantPasajesComprarViaje}
-                                                    onChange={(e) => { setCantPasajesComprarViaje(e.target.value) }}
-                                                    onClick={handleCloseAlert}
-                                                    className="form-control"
-                                                    maxLength='2'
-                                                    onBlur={(e) => { setTotalPasajePagar(e.target.value * precioPasajeViaje) }}
-                                                    onKeyPress={(event) => {
-                                                        if (!/[0-9]/.test(event.key)) {
-                                                            event.preventDefault();
-                                                        }
-                                                    }}
-                                                    type="text"
-                                                />
-                                            </div>
+                                            {(esUsuarioExistente || fueUsuarioNuevoCreado) ?
+                                                <div className="col-sm-6">
+                                                    <label ><b>Resultado de evaluación de síntomas :</b></label>
+                                                </div>
+                                                :
+                                                <></>
+
+
+                                            }
+
+                                            {
+                                                (esUsuarioExistente || fueUsuarioNuevoCreado) && esSospechoso && tieneResultado ?
+                                                    <div className="col-sm-6">
+                                                        <label style={{ color: 'red' }}><b>Sospechoso de COVID</b></label>
+                                                    </div>
+                                                    :
+                                                    <></>
+                                            }
+                                            {
+                                                (esUsuarioExistente || fueUsuarioNuevoCreado) && !esSospechoso && tieneResultado ?
+                                                    <div className="col-sm-4">
+                                                        <label style={{ color: 'green' }}><b>NO sospechoso de COVID</b></label>
+                                                    </div>
+                                                    :
+                                                    <></>
+                                            }
                                         </div>
+                                        <br />
+                                        <br />
                                         <div className="form-group row">
-                                            <label className="col-sm-10 col-form-label"><b>Total a pagar:</b> $ {totalPasajePagar} </label>
+                                        {
+                                                (esUsuarioExistente || fueUsuarioNuevoCreado) && esSospechoso && tieneResultado ?
+                                                    <div className="col-sm-10">
+                                                        <label ><b>NO se puede realizar la venta del pasaje, se registro el caso sospechoso! Presione "Volver" para continuar.</b></label>
+                                                    </div>
+                                                    :
+                                                    <></>
+                                            }
+                                            {
+                                                (esUsuarioExistente || fueUsuarioNuevoCreado) && !esSospechoso && tieneResultado ?
+                                                    <div className="col-sm-10">
+                                                        <label ><b>Compra registrada! Cobre el pago, y el pasajero está habilitado para subir la combi! Presione "Finalizar Venta Pasaje" para continuar.</b></label>
+                                                    </div>
+                                                    :
+                                                    <></>
+                                            }
                                         </div>
+
+
+                                        {
+                                            !esSospechoso ?
+                                                <div className="form-group row">
+                                                    <label className="col-sm-10 col-form-label"><b>Total a pagar:</b> $ {totalPasajePagar} </label>
+                                                </div>
+                                                :
+                                                <></>
+                                        }
+                                        {
+                                            !esSospechoso ?
+                                                <div className="form-group row">
+                                                    <div className="col-sm-4">
+                                                        <Button variant="success " onClick={(e) => volverAtras()} >
+                                                            Finalizar Venta Pasaje
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                                :
+                                                <></>
+                                        }
                                         <hr></hr>
                                         <br />
                                     </form>
@@ -451,6 +931,77 @@ function ChoferVenderPasaje() {
                     </Accordion>
                 </div>
             </div>
+            {
+                showModalRegistrarDatosCovid ? (
+                    <Modal id="registrsrDatosCovid" show={showModalRegistrarDatosCovid} onHide={handleCloseRegistrarDatosCovid}>
+                        <Modal.Header >
+                            <Modal.Title>Registrar Sintomas</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <form className='form-group'>
+                                <input onChange={(e) => { setTemp(e.target.value) }}
+                                    onClick={handleCloseAlert}
+                                    className='form-control mt-5'
+                                    type="text"
+                                    onKeyPress={(event) => {
+                                        if (!/[0-9]/.test(event.key)) {
+                                            event.preventDefault();
+                                        }
+                                    }}
+                                    maxLength='2'
+                                    placeholder='temperatura'
+                                    id="temperatura"
+                                    value={temp}
+                                />
+                                <br></br>
+                                <Table striped bordered hover variant="secondary"  >
+                                    <thead>
+                                        <tr>
+                                            <th>Sintomas</th>
+                                            <th>Si</th>
+                                            {/* <th>No</th> */}
+                                        </tr>
+                                    </thead>
+                                    <tbody >
+                                        <tr>
+                                            <th><label for="fiebreUltimaSemana">Tuvo fiebre la ultima semana</label></th>
+                                            <th><input type="checkbox" defaultChecked={checkTemperatura} name="fiebreUltimaSemana" onClick={(e) => estaTildadoTemperatura(e.target.checked)} /> </th>
+                                            {/* <th><input type="checkbox" name="fiebreUltimaSemana" value="no" /></th> */}
+                                        </tr>
+                                        <tr>
+                                            <th><label for="gustoOlfato">Tiene perdida del olfato y/o gusto</label></th>
+                                            <th><input type="checkbox" defaultChecked={checkGustoOlfato} onClick={(e) => estaTildadoGustoOlfato(e.target.checked)} /></th>
+                                            {/* <th><input type="checkbox" name="gustoOlfato" value="no" /></th> */}
+                                        </tr>
+                                        <tr>
+                                            <th>Posee dificultades respiratorias</th>
+                                            <th><input type="checkbox" defaultChecked={checkDificultadResp} onClick={(e) => estaTildadoDificultadRespitaroria(e.target.checked)} /></th>
+                                            {/* <th><input type="checkbox" name="gustoOlfato" value="no" /></th> */}
+                                        </tr>
+                                        <tr>
+                                            <th><label for="dolorGarganta">Posee dolor de garganta</label></th>
+                                            <th><input type="checkbox" defaultChecked={checkDolorGarganta} onClick={(e) => estaTildadoDolorGarganta(e.target.checked)} /></th>
+                                            {/* <th><input type="checkbox" name="dolorGarganta" value="no" /></th> */}
+                                        </tr>
+                                    </tbody>
+                                </Table>
+                            </form>
+                            <Alert className="mt-4" variant="danger" show={showAlert}>
+                                {msgError}
+                            </Alert>
+                        </Modal.Body>
+
+                        <Modal.Footer>
+                            <Button variant="primary" onClick={() => { confirmarDatosCovid() }} >
+                                Confirmar
+                            </Button>
+                            <Button variant="secondary" onClick={() => { setShowModalRegistrarDatosCovid(false); setMsgError(null); setShowAlert(false); setCheckGustoOlfato(false); setCheckTemperatura(false); setCheckDificultadResp(false); setCheckDolorGarganta(false); setCantidadSintomas(false); setCantidadSintomas(0); setTemp('') }}>
+                                Cancelar
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+                ) : (<></>)
+            }
 
             <Modal id="modalExitoVenta" show={showModalExito} onHide={handleCloseModalExito}>
                 <Modal.Header >

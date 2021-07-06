@@ -65,7 +65,6 @@ function UsuarioNotificacionesPage() {
                         <thead>
                             <tr>
                                 <th>Mensaje</th>
-                                <th>Tipo</th>
                                 <th>Fecha</th>
                             </tr>
                         </thead>
@@ -76,7 +75,6 @@ function UsuarioNotificacionesPage() {
                                         notificaciones.map(item => (
                                             <tr key={item.id}>
                                                 <td>{item.mensaje}</td>
-                                                <td>{item.tipo}</td>
                                                 <td>{item.fecha}</td>
                                             </tr>
                                         ))

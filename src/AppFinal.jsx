@@ -24,6 +24,7 @@ import ChoferPageVerDetalleCombi from './pages/chofer/ChoferPageVerDetalleCombi'
 import RegistrarDatosCovid from './pages/chofer/RegistrarDatosCovid'
 import AdminViajeFinalizado from './pages/admin/AdminViajeFinalizado';
 import ChoferVenderPasaje from './pages/chofer/ChoferVenderPasaje';
+import UsuarioNotificacionesPage from './pages/usuario/UsuarioNotificacionesPage'
 
 
 function AppFinal() {
@@ -54,6 +55,7 @@ function AppFinal() {
           <Route path='/comprarsnacks' component={ComprarSnacks}></Route>
           <Route path='/misDatosUsuario' component={MisDatosUsuarioPage}></Route>
           <Route path='/misDatosGold' component={UsuarioGoldDatosPage}></Route>
+          <Route path='/misNotificaciones' component={UsuarioNotificacionesPage}></Route>
           <Route path='/comprarPasaje' component={UsuarioComprarPasaje}></Route>
 
           {/* Choferes */}
