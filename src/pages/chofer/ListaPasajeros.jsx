@@ -499,6 +499,16 @@ const ListaPasajeros = () => {
                 }
                 cantidad = cantidad + parseInt(actualizarPasajeComprado.cantidadButacas)
                 store.collection('pasajeComprados').doc(itemViajeChofer.id).set(actualizarPasajeComprado)
+
+                const notificacionCovid = {
+                    fecha: itemViajeChofer.infoViaje.fechaviaje,
+                    idUser:itemViajeChofer.infoPasajero.idUser,
+                    leido: false,
+                    mensaje: "VIAJE CANCELADO - El chofer cancelo el viaje! Se le devolverá el 100% del costo del pasaje. Lamentamos los problemas.",
+                    tipo: 'cancelado'
+                }
+    
+                store.collection('notificaciones').add(notificacionCovid)
                 getPasajeComprado()
             }
 
@@ -569,6 +579,16 @@ const ListaPasajeros = () => {
                 }
                 cantidad = cantidad + parseInt(actualizarPasajeComprado.cantidadButacas)
                 store.collection('pasajeComprados').doc(itemViajeChofer.id).set(actualizarPasajeComprado)
+
+                const notificacionCovid = {
+                    fecha: itemViajeChofer.infoViaje.fechaviaje,
+                    idUser:itemViajeChofer.infoPasajero.idUser,
+                    leido: false,
+                    mensaje: "VIAJE FINALIZADO - gracias por elegirnos! Vuelva pronto!",
+                    tipo: 'exito'
+                }
+    
+                store.collection('notificaciones').add(notificacionCovid)
                 getPasajeComprado()
             }
         })
