@@ -84,6 +84,8 @@ const ListaPasajeros = () => {
     const [idS, setIdS] = useState('')
     const [tamaño, setTamaño] = useState(0)
     const [pasaCheckIn, setPasaCheckIn] = useState([])
+    const [posCheck, setPosCheck] = useState('')
+
 
 
     //Cancelar Viaje
@@ -93,12 +95,12 @@ const ListaPasajeros = () => {
     const [pasajesComprados, setPasajesComprados] = useState([])
     const [viaje, setViaje] = useState([])
 
-        //Cancelar Viaje
-        // const [itemPasaje, setItemPasaje] = useState([])
-        const [showModalFinalizar, setShowModalFinalizar] = useState(false)
-        const handleCloseFinalizar = () => setShowModalFinalizar(false)
-        // const [pasajesComprados, setPasajesComprados] = useState([])
-        // const [viaje, setViaje] = useState([])
+    //Cancelar Viaje
+    // const [itemPasaje, setItemPasaje] = useState([])
+    const [showModalFinalizar, setShowModalFinalizar] = useState(false)
+    const handleCloseFinalizar = () => setShowModalFinalizar(false)
+    // const [pasajesComprados, setPasajesComprados] = useState([])
+    // const [viaje, setViaje] = useState([])
 
     //usuariosConfig
     const [usuariosConfig, setUsuariosConfig] = useState([])
@@ -221,10 +223,10 @@ const ListaPasajeros = () => {
 
 
     const estaTildado = (check, item) => {
-        
+
         let index = pasajeVendido.findIndex(todo => todo.id === item.id);
         let pasaj = pasaCheckIn
-        pasaj[index] = ! pasaj[index]
+        pasaj[index] = !pasaj[index]
         pasajeVendido[index].estadoPasaje = pasaj[index] === true ? "Ausente" : "Pendiente"
         setPasaCheckIn(pasaj)
         setCheck(pasaj[index])
@@ -256,8 +258,9 @@ const ListaPasajeros = () => {
     //control datos covid
     let sintomasPasajero = []
     let pasajerosPresentes = []
-    const registrarDatosCovid = (item) => {
+    const registrarDatosCovid = (item, index) => {
         setPasajero(item)
+        setPosCheck(index)
         setShowModalRegistrarDatosCovid(true)
     }
 
@@ -283,6 +286,8 @@ const ListaPasajeros = () => {
             setShowAlert(true)
             return
         }
+        
+        pasaCheckIn[posCheck] = !pasaCheckIn[posCheck]
         if (temp >= 38) {
             sintomasPasajero.push("temperatura mayor a 38 grados")
             // alert("El pasajero no podra viajar por tener fiebre, asi mismo se devolvera su dinero y no podra comprar pasajes por 14 dias")
@@ -405,12 +410,12 @@ const ListaPasajeros = () => {
                     store.collection('pasajeViajeVendido').doc(item.id).delete()
                     getPasajeViajeVendido()
                 }
-                
-            })
-            
-            
 
-            
+            })
+
+
+
+
         }
         else {
             // alert("en presentes estan los que pueden viajar")
@@ -421,12 +426,16 @@ const ListaPasajeros = () => {
         try {
             //FALTA MOSTRAR MSJ DE SUCESS
             setShowModalRegistrarDatosCovid(false)
+
         } catch (err) {
             console.log(err)
             setMsgError(err)
             setShowAlert(true)
         }
     }
+
+
+
     const estaTildadoTemperatura = (check) => {
         setCheckTemperatura(check)
         if (check) {
@@ -502,12 +511,12 @@ const ListaPasajeros = () => {
 
                 const notificacionCovid = {
                     fecha: itemViajeChofer.infoViaje.fechaviaje,
-                    idUser:itemViajeChofer.infoPasajero.idUser,
+                    idUser: itemViajeChofer.infoPasajero.idUser,
                     leido: false,
                     mensaje: "VIAJE CANCELADO - El chofer cancelo el viaje! Se le devolverá el 100% del costo del pasaje. Lamentamos los problemas.",
                     tipo: 'cancelado'
                 }
-    
+
                 store.collection('notificaciones').add(notificacionCovid)
                 getPasajeComprado()
             }
@@ -582,12 +591,12 @@ const ListaPasajeros = () => {
 
                 const notificacionCovid = {
                     fecha: itemViajeChofer.infoViaje.fechaviaje,
-                    idUser:itemViajeChofer.infoPasajero.idUser,
+                    idUser: itemViajeChofer.infoPasajero.idUser,
                     leido: false,
                     mensaje: "VIAJE FINALIZADO - gracias por elegirnos! Vuelva pronto!",
                     tipo: 'exito'
                 }
-    
+
                 store.collection('notificaciones').add(notificacionCovid)
                 getPasajeComprado()
             }
@@ -634,7 +643,7 @@ const ListaPasajeros = () => {
     return (
         <div>
             <MenuUsuarioChofer />
-            <MenuOpcChofer optionName="choferListarViaje"/>
+            <MenuOpcChofer optionName="choferListarViaje" />
 
             <div>
                 <h3 style={{ top: 150, position: 'absolute', left: 80, width: "60%", }}> Informacion del Viaje</h3>
@@ -713,7 +722,7 @@ const ListaPasajeros = () => {
                                                                 <td>{item.cantidadButacas}</td>
                                                                 <td>{item.estadoPasaje}</td>
                                                                 <td style={{ width: "15px" }}>
-                                                                    <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" disabled={pasaCheckIn[index] ? true : false} onClick={(e) => registrarDatosCovid(item)}>
+                                                                    <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" disabled={pasaCheckIn[index] ? true : false} onClick={(e) => registrarDatosCovid(item, index)}>
                                                                         Sintomas
                                                                     </button>
                                                                 </td>
@@ -723,7 +732,7 @@ const ListaPasajeros = () => {
                                                                             disabled ={item.inicio? false:true}
                                                                          */}
 
-                                                                        <input type="checkbox" value={pasaCheckIn[index]} onChange={(e) => { estaTildado(e.target.checked, item)}} />
+                                                                        <input type="checkbox" value={pasaCheckIn[index]} onChange={(e) => { estaTildado(e.target.checked, item) }} />
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -852,7 +861,7 @@ const ListaPasajeros = () => {
                             <Button variant="primary" onClick={() => { confirmarDatosCovid() }} >
                                 Confirmar
                             </Button>
-                            <Button variant="secondary" onClick={() => {setShowModalRegistrarDatosCovid(false); setMsgError(null); setShowAlert(false); setCheckGustoOlfato(false); setCheckTemperatura(false); setCheckDificultadResp(false); setCheckDolorGarganta(false); setCantidadSintomas(false); setCantidadSintomas(0); setTemp('') }}>
+                            <Button variant="secondary" onClick={() => { setShowModalRegistrarDatosCovid(false); setMsgError(null); setShowAlert(false); setCheckGustoOlfato(false); setCheckTemperatura(false); setCheckDificultadResp(false); setCheckDolorGarganta(false); setCantidadSintomas(false); setCantidadSintomas(0); setTemp('') }}>
                                 Cancelar
                             </Button>
                         </Modal.Footer>
