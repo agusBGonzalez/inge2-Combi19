@@ -244,6 +244,7 @@ const ListaPasajeros = () => {
 
     const venderPasaje = () => {
         historial.push('/venderPasaje', { idViaje: location.state.idViaje })
+        
     }
     
 
