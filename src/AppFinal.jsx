@@ -22,6 +22,7 @@ import ListaPasajeros from './pages/chofer/ListaPasajeros';
 import ChoferPageListarViaje from './pages/chofer/ChoferPageListarViaje';
 import ChoferPageVerDetalleCombi from './pages/chofer/ChoferPageVerDetalleCombi';
 import RegistrarDatosCovid from './pages/chofer/RegistrarDatosCovid'
+import AdminViajeFinalizado from './pages/admin/AdminViajeFinalizado';
 
 
 
@@ -44,6 +45,8 @@ function AppFinal() {
           <Route path='/listaProductos' component={AdminProdPage}></Route>
           <Route path='/listaRutas' component={AdminRutaPage}></Route>
           <Route path='/listaViajes' component={AdminViajePage}></Route>
+          <Route path='/listaViajesFinalizados' component={AdminViajeFinalizado}></Route>
+
 
           {/* usuarios */}
           <Route path='/filtrarViajes' component={UsuarioBuscarViajes}></Route>

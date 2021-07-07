@@ -57,7 +57,7 @@ const ListaPasajeros = () => {
 
 
     const handleCloseEdit = () => setShowModalEdit(false)
-    
+
     const [check, setCheck] = useState(false)
     const [ausente, setAusente] = useState([])
     const [pasajeVendido, setPasajeVendido] = useState([])
@@ -73,7 +73,7 @@ const ListaPasajeros = () => {
     const [cantSintomas, setCantidadSintomas] = useState(0)
     const [showModalRegistrarDatosCovid, setShowModalRegistrarDatosCovid] = useState(false)
     const handleCloseRegistrarDatosCovid = () => showModalRegistrarDatosCovid(false)
-    const [pasajero, setPasajero] = useState ('')
+    const [pasajero, setPasajero] = useState('')
 
     useEffect(() => {
         const datos = async () => {
@@ -141,13 +141,16 @@ const ListaPasajeros = () => {
     }
 
     //control datos covid
+    let sintomasPasajero = []
+
     const registrarDatosCovid = (item) => {
         setPasajero(item)
         setShowModalRegistrarDatosCovid(true)
     }
     const confirmarDatosCovid = async () => {
-        let sospechoso= false
+        let sospechoso = false
         if (temp >= 38) {
+            sintomasPasajero.push("temperatura mayor a 38 grados")
             alert("El pasajero no podra viajar por tener fiebre, asi mismo se devolvera su dinero y no podra comprar pasajes por 14 dias")
             sospechoso = true
         }
@@ -159,19 +162,42 @@ const ListaPasajeros = () => {
             console.log(cantSintomas)
             if (cantSintomas > 1) {
                 alert("El pasajero no podra viajar por tener mas de dos sintomas, asi mismo se devolvera su dinero y no podra comprar pasajes por 14 dias")
-                sospechoso= true
+                if (checkTemperatura){
+                    sintomasPasajero.push("tuvo una temperatura mayor a 38 grados durante la ultima semana")
+                }
+                if (checkGustoOlfato){
+                    sintomasPasajero.push("posee perdida de gusto y/o olfato")
+
+                }
+                if (checkDificultadResp) { 
+                    sintomasPasajero.push("posee dificultades respiratorias")
+                }
+                if (checkDolorGarganta){
+            sintomasPasajero.push("posee dolor de garganta")
+
+                }
+
+
+                sospechoso = true
             }
         }
-        if (sospechoso){
+        if (sospechoso) {
             const pasajeroSospechoso = {
-                datos:pasajero
+                datos: pasajero,
+                sintomas: sintomasPasajero
             }
-                //FALTA MOSTRAR MSJ DE SUCESS
-                await store.collection('reporteSospechosos').add(pasajeroSospechoso)
-                //setMsgSucc('Registro Exitoso! Click aqui para cerrar')
-                //(true
-                showModalRegistrarDatosCovid(false)
-    
+            //FALTA MOSTRAR MSJ DE SUCESS
+            await store.collection('reporteSospechosos').add(pasajeroSospechoso)
+            //setMsgSucc('Registro Exitoso! Click aqui para cerrar')
+            //(true
+        }
+        try {
+            //FALTA MOSTRAR MSJ DE SUCESS
+            setShowModalRegistrarDatosCovid(false)
+        } catch (err) {
+            console.log(err)
+            setMsgError(err)
+            setShowAlert(true)
         }
     }
     const estaTildadoTemperatura = (check) => {
@@ -179,7 +205,9 @@ const ListaPasajeros = () => {
         if (check) {
             setCantidadSintomas(cantSintomas + 1)
         }
-        console.log(cantSintomas)
+        else {
+            setCantidadSintomas(cantSintomas - 1)
+        }
 
 
     }
@@ -188,12 +216,19 @@ const ListaPasajeros = () => {
         if (check) {
             setCantidadSintomas(cantSintomas + 1)
         }
+        else {
+            setCantidadSintomas(cantSintomas - 1)
+        }
 
     }
     const estaTildadoDificultadRespitaroria = (check) => {
         setCheckDificultadResp(check)
         if (check) {
+
             setCantidadSintomas(cantSintomas + 1)
+        }
+        else {
+            setCantidadSintomas(cantSintomas - 1)
         }
     }
     const estaTildadoDolorGarganta = (check) => {
@@ -202,9 +237,10 @@ const ListaPasajeros = () => {
         if (check) {
             setCantidadSintomas(cantSintomas + 1)
         }
+        else {
+            setCantidadSintomas(cantSintomas - 1)
+        }
     }
-
-
 
     return (
         <div>
@@ -356,10 +392,10 @@ const ListaPasajeros = () => {
                                             }
                                         </tbody>
                                         {
-                                            snack.length === 0?
-                                            (
-                                                <h5>"No hay Snacks comprados para este viaje"</h5>
-                                            ):(<></>)
+                                            snack.length === 0 ?
+                                                (
+                                                    <h5>"No hay Snacks comprados para este viaje"</h5>
+                                                ) : (<></>)
                                         }
                                     </Table>
                                 </Card.Body>
