@@ -296,7 +296,7 @@ const ListaPasajeros = () => {
                                                                 <td>{item.infoPasajero.nombres}</td>
                                                                 <td>{item.infoPasajero.email}</td>
                                                                 <td>{item.cantidadButacas}</td>
-                                                                <td>Pendiente</td>
+                                                                <td>{item.estadoPasaje}</td>
                                                                 <td style={{ width: "15px" }}>
                                                                     <button className="btn btn-primary d-flex justify-content-center p-2 align-items-center" onClick={(e) => registrarDatosCovid(item)}>
                                                                         Sintomas
