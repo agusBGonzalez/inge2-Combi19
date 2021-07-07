@@ -142,13 +142,18 @@ const ListaPasajeros = () => {
 
     //control datos covid
     let sintomasPasajero = []
-
+    let pasajerosPresentes = []
     const registrarDatosCovid = (item) => {
         setPasajero(item)
         setShowModalRegistrarDatosCovid(true)
     }
     const confirmarDatosCovid = async () => {
         let sospechoso = false
+        if (temp === "") {
+            setMsgError('El campo temperatura esta vacio')
+            setShowAlert(true)
+            return
+        }
         if (temp >= 38) {
             sintomasPasajero.push("temperatura mayor a 38 grados")
             alert("El pasajero no podra viajar por tener fiebre, asi mismo se devolvera su dinero y no podra comprar pasajes por 14 dias")
@@ -190,6 +195,10 @@ const ListaPasajeros = () => {
             await store.collection('reporteSospechosos').add(pasajeroSospechoso)
             //setMsgSucc('Registro Exitoso! Click aqui para cerrar')
             //(true
+        }
+        else{
+            alert("en presentes estan los que pueden viajar")
+           // pasajerosPresentes
         }
         try {
             //FALTA MOSTRAR MSJ DE SUCESS
@@ -248,6 +257,10 @@ const ListaPasajeros = () => {
     }
     
 
+// borrar
+const mostrarPasajeros = () =>{
+   // console.log(presentes)
+}
     return (
         <div>
             <MenuUsuarioChofer />
@@ -257,8 +270,12 @@ const ListaPasajeros = () => {
 
                 <h3 style={{ top: 150, position: 'absolute', left: 80, width: "60%", }}> Informacion del Viaje</h3>
                 <Button variant="secondary" style={{ top: 105, position: 'absolute', left: 80, width: "100px", height: "40px" }} onClick={(e) => { volverAtras() }}>Atras</Button>
-                <Button variant="primary" style={{ top: 105, position: 'absolute', left: 400, width: "150px", height: "40px" }} onClick={(e) => {venderPasaje()}}>Vender Pasaje</Button>
+                <Button variant="primary" style={{ top: 105, position: 'absolute', left: 400, width: "150px", height: "40px" }}>Vender Pasaje</Button>
                 <Button style={{ top: 105, position: 'absolute', right: 70, width: "150px", height: "40px" }} variant="danger " >Cancelar Viaje</Button>
+                // borrar este boton
+                <Button variant="success" style={{ top: 105, position: 'absolute', left: 600, width: "150px", height: "40px" }} onClick={(e) => { mostrarPasajeros() }}>ver pasajeros</Button>
+               
+                
                 {
 
                     ausente.length === pasajeVendido.length ?
@@ -433,29 +450,29 @@ const ListaPasajeros = () => {
                                         <tr>
                                             <th>Sintomas</th>
                                             <th>Si</th>
-                                            <th>No</th>
+                                            {/* <th>No</th> */}
                                         </tr>
                                     </thead>
                                     <tbody >
                                         <tr>
                                             <th><label for="fiebreUltimaSemana">Tuvo fiebre la ultima semana</label></th>
-                                            <th><input type="checkbox" defaultChecked={checkTemperatura} onClick={(e) => estaTildadoTemperatura(e.target.checked)} /> </th>
-                                            <th><input type="checkbox" name="fiebreUltimaSemana" value="no" /></th>
+                                            <th><input type="checkbox" defaultChecked={checkTemperatura} name="fiebreUltimaSemana" onClick={(e) => estaTildadoTemperatura(e.target.checked)} /> </th>
+                                            {/* <th><input type="checkbox" name="fiebreUltimaSemana" value="no" /></th> */}
                                         </tr>
                                         <tr>
                                             <th><label for="gustoOlfato">Tiente perdida del olfato y/o gusto</label></th>
                                             <th><input type="checkbox" defaultChecked={checkGustoOlfato} onClick={(e) => estaTildadoGustoOlfato(e.target.checked)} /></th>
-                                            <th><input type="checkbox" name="gustoOlfato" value="no" /></th>
+                                            {/* <th><input type="checkbox" name="gustoOlfato" value="no" /></th> */}
                                         </tr>
                                         <tr>
                                             <th>Posee dificultades respiratorias</th>
                                             <th><input type="checkbox" defaultChecked={checkDificultadResp} onClick={(e) => estaTildadoDificultadRespitaroria(e.target.checked)} /></th>
-                                            <th><input type="checkbox" name="gustoOlfato" value="no" /></th>
+                                            {/* <th><input type="checkbox" name="gustoOlfato" value="no" /></th> */}
                                         </tr>
                                         <tr>
                                             <th><label for="dolorGarganta">Posee dolor de garganta</label></th>
                                             <th><input type="checkbox" defaultChecked={checkDolorGarganta} onClick={(e) => estaTildadoDolorGarganta(e.target.checked)} /></th>
-                                            <th><input type="checkbox" name="dolorGarganta" value="no" /></th>
+                                            {/* <th><input type="checkbox" name="dolorGarganta" value="no" /></th> */}
                                         </tr>
                                     </tbody>
                                 </Table>
